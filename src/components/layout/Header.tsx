@@ -1,4 +1,3 @@
-import React from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link } from "react-router-dom";
 

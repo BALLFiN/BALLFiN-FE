@@ -1,5 +1,3 @@
-import React from "react";
-import BALLFiNLogo from "@/assets/BALLFiN.svg";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const StockSummary = () => {

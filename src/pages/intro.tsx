@@ -1,4 +1,3 @@
-import React from "react";
 import BALLFiNLogo from "../assets/BALLFiN.svg";
 
 export default function Intro() {

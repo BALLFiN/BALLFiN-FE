@@ -1,4 +1,3 @@
-import React from "react";
 import NewsSummary from "@/components/home/NewsSummary";
 import StockSummary from "@/components/home/StockSummary";
 import BotButton from "@/components/chat/BotButton";
