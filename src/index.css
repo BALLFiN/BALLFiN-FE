@@ -1,5 +1,7 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* 스크롤바 스타일링 */
 ::-webkit-scrollbar {
