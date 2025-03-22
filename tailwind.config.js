@@ -36,6 +36,9 @@ export default {
         slideRightFade:
           "slideRightFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
+      fontFamily: {
+        sans: ['"Noto Sans KR"', "sans-serif"],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
