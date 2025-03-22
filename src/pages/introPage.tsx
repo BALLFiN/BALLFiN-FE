@@ -39,8 +39,8 @@ export default function Intro() {
         </div>
 
         <div className="bg-gray-50 p-8 rounded-xl shadow-md hover:-translate-y-1 transition-transform duration-300">
-          <h2 className="text-2xl font-semibold text-[#0A5C2B] mb-4">
-            24/7 챗봇 상담
+          <h2 className="text-2xl font-semibold text-[#0A5C2B] mb-4 ">
+            챗봇 시스템
           </h2>
           <p className="text-gray-600 leading-relaxed">
             우측 하단의 챗봇 버튼을 통해 언제든지 금융 관련 질문을 하실 수
