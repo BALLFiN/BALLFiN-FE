@@ -1,10 +1,5 @@
-import React, { useState } from "react";
-import {
-  ChevronRight,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-} from "lucide-react";
+import { useState } from "react";
+import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
 
 interface NewsItem {
   id: number;
