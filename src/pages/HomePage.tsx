@@ -3,6 +3,8 @@ import StockSummary from "@/components/home/StockSummary";
 import BotButton from "@/components/chat/BotButton";
 import MarketOverview from "@/components/home/MarketOverview";
 import AIRecommendations from "@/components/home/AIRecommendations";
+import StockPrediction from "@/components/home/StockPrediction";
+import NewsAnalysis from "@/components/home/NewsAnalysis";
 
 const Home = () => {
   return (
@@ -25,6 +27,12 @@ const Home = () => {
       {/* AI 추천 종목 */}
       <div className="mt-8">
         <AIRecommendations />
+      </div>
+
+      {/* 주가 예측 및 뉴스 분석 */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <StockPrediction />
+        <NewsAnalysis />
       </div>
 
       {/* 뉴스 요약 및 주식 요약 */}
