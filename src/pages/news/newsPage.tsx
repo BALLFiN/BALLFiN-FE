@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+import NewsList from "../../components/news/NewsList";
+import NewsAnalysis from "../../components/news/NewsAnalysis";
 
 interface NewsItem {
   id: number;
@@ -58,108 +59,28 @@ export default function NewsPage() {
     }
   };
 
-  const getImpactIcon = (impact: NewsItem["impact"]) => {
-    switch (impact) {
-      case "positive":
-        return <TrendingUp className="w-5 h-5 text-green-500" />;
-      case "negative":
-        return <TrendingDown className="w-5 h-5 text-red-500" />;
-      default:
-        return <AlertCircle className="w-5 h-5 text-gray-500" />;
-    }
-  };
-
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* 뉴스 목록 */}
       <div
-        className={`fixed top-0 left-0 w-full h-full bg-white transition-all duration-500 ease-in-out ${
+        className={`pt-16 fixed top-0 left-0 w-full h-full bg-white transition-all duration-500 ease-in-out ${
           selectedNews ? "w-1/2" : "w-full"
         }`}
       >
-        <div className="p-6 h-full overflow-y-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">최신 뉴스</h1>
-          <div className="space-y-4">
-            {mockNews.map((news) => (
-              <div
-                key={news.id}
-                onClick={() => handleNewsClick(news)}
-                className={`p-4 rounded-lg cursor-pointer transition-all ${
-                  selectedNews?.id === news.id
-                    ? "bg-[#0A5C2B] text-white"
-                    : "bg-white hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  {getImpactIcon(news.impact)}
-                  <div>
-                    <h2 className="font-medium mb-1">{news.title}</h2>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span
-                        className={
-                          selectedNews?.id === news.id
-                            ? "text-white/80"
-                            : "text-gray-500"
-                        }
-                      >
-                        {news.source}
-                      </span>
-                      <span
-                        className={
-                          selectedNews?.id === news.id
-                            ? "text-white/80"
-                            : "text-gray-500"
-                        }
-                      >
-                        {news.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <NewsList
+          news={mockNews}
+          selectedNews={selectedNews}
+          onNewsClick={handleNewsClick}
+        />
       </div>
 
       {/* 뉴스 상세 */}
       <div
-        className={`fixed top-0 right-0 w-1/2 h-full bg-gray-50 transition-all duration-500 ease-in-out transform ${
+        className={`pt-16 fixed top-0 right-0 w-1/2 h-full bg-gray-50 transition-all duration-500 ease-in-out transform ${
           selectedNews ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-6 h-full overflow-y-auto">
-          {selectedNews ? (
-            <div className="space-y-6">
-              <div className="flex items-center gap-2">
-                {getImpactIcon(selectedNews.impact)}
-                <h2 className="text-xl font-bold text-gray-900">
-                  {selectedNews.title}
-                </h2>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>{selectedNews.source}</span>
-                <span>•</span>
-                <span>{selectedNews.date}</span>
-              </div>
-
-              <div className="bg-white rounded-lg p-6 shadow-sm">
-                <h3 className="font-semibold text-gray-900 mb-2">뉴스 요약</h3>
-                <p className="text-gray-600">{selectedNews.summary}</p>
-              </div>
-
-              <div className="bg-white rounded-lg p-6 shadow-sm">
-                <h3 className="font-semibold text-gray-900 mb-2">AI 분석</h3>
-                <p className="text-gray-600">{selectedNews.analysis}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center text-gray-500">
-              뉴스를 선택해주세요
-            </div>
-          )}
-        </div>
+        <NewsAnalysis news={selectedNews} />
       </div>
     </div>
   );
