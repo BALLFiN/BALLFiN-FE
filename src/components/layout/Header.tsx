@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
 const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY) {
-        // 아래로 스크롤
         setIsVisible(false);
       } else {
-        // 위로 스크롤
         setIsVisible(true);
       }
 
@@ -56,7 +56,6 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* 네비게이션 메뉴 */}
           <nav className="hidden md:flex space-x-8">
             {navItems.map((item) => (
               <Link
@@ -69,8 +68,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* 로그인/회원가입 버튼 */}
-          <div className="flex items-center space-x-4">
+          {/* 데스크톱 로그인/회원가입 버튼 */}
+          <div className="hidden md:flex items-center space-x-4">
             {authItems.map((item) => (
               <Link
                 key={item.to}
@@ -80,6 +79,55 @@ const Header = () => {
                     ? "bg-[#0A5C2B] text-white hover:bg-[#0A5C2B]/90"
                     : "text-gray-700 hover:text-[#0A5C2B]"
                 } px-4 py-2 rounded-md text-sm font-medium`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* 모바일 메뉴 버튼 */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-700 hover:text-[#0A5C2B] focus:outline-none"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 모바일 메뉴 */}
+        <div
+          className={`md:hidden transition-all duration-300 ease-in-out ${
+            isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          } overflow-hidden`}
+        >
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="block text-gray-700 hover:text-[#0A5C2B] px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="border-t border-gray-200 my-2"></div>
+            {authItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`block ${
+                  item.isPrimary
+                    ? "bg-[#0A5C2B] text-white hover:bg-[#0A5C2B]/90"
+                    : "text-gray-700 hover:text-[#0A5C2B]"
+                } px-4 py-2 rounded-md text-base font-medium text-center`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.label}
               </Link>
