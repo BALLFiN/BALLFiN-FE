@@ -208,7 +208,7 @@ const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                         type="text"
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
-                        className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
+                        className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent font-shrikhand"
                         autoFocus
                       />
                       <button
@@ -226,7 +226,9 @@ const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <h5 className="font-medium">{history.title}</h5>
+                      <h5 className="font-medium font-shrikhand text-lg">
+                        {history.title}
+                      </h5>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
