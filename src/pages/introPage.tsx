@@ -61,6 +61,29 @@ const stats = [
   { label: "보유 종목", value: "2,000+" },
 ];
 
+const aiModels = [
+  {
+    icon: TrendingUp,
+    title: "주가 예측 모델",
+    data: [
+      { label: "학습 데이터", value: "2010-2025 시장 데이터" },
+      { label: "알고리즘", value: "LSTM + 트랜스포머" },
+      { label: "정확도", value: "89.4%" },
+      { label: "최근 업데이트", value: "2025.03.20" },
+    ],
+  },
+  {
+    icon: MessageSquare,
+    title: "뉴스 분석 모델",
+    data: [
+      { label: "학습 데이터", value: "150만+ 금융 뉴스 아티클" },
+      { label: "알고리즘", value: "BERT 언어 모델" },
+      { label: "정확도", value: "93.2%" },
+      { label: "최근 업데이트", value: "2025.03.22" },
+    ],
+  },
+];
+
 export default function Intro() {
   return (
     <div className="min-h-screen bg-white">
@@ -131,58 +154,24 @@ export default function Intro() {
             AI 모델 정보
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-xl shadow-sm p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
-                <h3 className="text-xl font-semibold text-gray-900">
-                  주가 예측 모델
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm text-gray-600">학습 데이터</div>
-                  <div className="font-medium">2010-2025 시장 데이터</div>
+            {aiModels.map((model, index) => (
+              <div key={index} className="bg-white rounded-xl shadow-sm p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <model.icon className="w-6 h-6 text-[#0A5C2B]" />
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {model.title}
+                  </h3>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-600">알고리즘</div>
-                  <div className="font-medium">LSTM + 트랜스포머</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">정확도</div>
-                  <div className="font-medium">89.4%</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">최근 업데이트</div>
-                  <div className="font-medium">2025.03.20</div>
+                <div className="space-y-4">
+                  {model.data.map((item, dataIndex) => (
+                    <div key={dataIndex}>
+                      <div className="text-sm text-gray-600">{item.label}</div>
+                      <div className="font-medium">{item.value}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <MessageSquare className="w-6 h-6 text-[#0A5C2B]" />
-                <h3 className="text-xl font-semibold text-gray-900">
-                  뉴스 분석 모델
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm text-gray-600">학습 데이터</div>
-                  <div className="font-medium">150만+ 금융 뉴스 아티클</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">알고리즘</div>
-                  <div className="font-medium">BERT 언어 모델</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">정확도</div>
-                  <div className="font-medium">93.2%</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">최근 업데이트</div>
-                  <div className="font-medium">2025.03.22</div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
