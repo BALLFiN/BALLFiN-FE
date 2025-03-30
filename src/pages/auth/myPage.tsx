@@ -9,6 +9,20 @@ import {
 } from "lucide-react";
 
 export default function MyPage() {
+  const favoriteStocks = [
+    { name: "삼성전자", code: "005930", change: "+2.5%" },
+    { name: "SK하이닉스", code: "000660", change: "+1.8%" },
+    { name: "NAVER", code: "035420", change: "-0.5%" },
+  ];
+
+  const menuItems = [
+    { icon: User, label: "내 정보", color: "text-gray-600" },
+    { icon: Settings, label: "내 정보 수정", color: "text-gray-600" },
+    { icon: Bell, label: "알림 설정", color: "text-gray-600" },
+    { icon: HelpCircle, label: "고객센터", color: "text-gray-600" },
+    { icon: LogOut, label: "로그아웃", color: "text-red-600", isLogout: true },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 프로필 섹션 */}
@@ -40,16 +54,20 @@ export default function MyPage() {
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map((item) => (
+            {favoriteStocks.map((stock, index) => (
               <div
-                key={item}
+                key={index}
                 className="p-4 border border-gray-200 rounded-lg hover:border-[#0A5C2B] transition-colors cursor-pointer"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="font-medium">삼성전자</span>
-                  <span className="text-sm text-red-500">+2.5%</span>
+                  <span className="font-medium">{stock.name}</span>
+                  <span
+                    className={`text-sm ${stock.change.startsWith("+") ? "text-red-500" : "text-blue-500"}`}
+                  >
+                    {stock.change}
+                  </span>
                 </div>
-                <p className="text-sm text-gray-600">005930</p>
+                <p className="text-sm text-gray-600">{stock.code}</p>
               </div>
             ))}
           </div>
@@ -58,50 +76,27 @@ export default function MyPage() {
         {/* 메뉴 섹션 */}
         <section className="bg-white rounded-xl shadow-sm">
           <div className="divide-y divide-gray-100">
-            {/* 내 정보 */}
-            <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3">
-                <User size={20} className="text-gray-600" />
-                <span className="text-gray-900">내 정보</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400" />
-            </button>
-
-            {/* 내 정보 수정 */}
-            <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3">
-                <Settings size={20} className="text-gray-600" />
-                <span className="text-gray-900">내 정보 수정</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400" />
-            </button>
-
-            {/* 알림 설정 */}
-            <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3">
-                <Bell size={20} className="text-gray-600" />
-                <span className="text-gray-900">알림 설정</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400" />
-            </button>
-
-            {/* 고객센터 */}
-            <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3">
-                <HelpCircle size={20} className="text-gray-600" />
-                <span className="text-gray-900">고객센터</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400" />
-            </button>
-
-            {/* 로그아웃 */}
-            <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors text-red-600">
-              <div className="flex items-center gap-3">
-                <LogOut size={20} />
-                <span>로그아웃</span>
-              </div>
-              <ChevronRight size={20} />
-            </button>
+            {menuItems.map((item, index) => (
+              <button
+                key={index}
+                className={`w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${
+                  item.isLogout ? "text-red-600" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon size={20} className={item.color} />
+                  <span
+                    className={item.isLogout ? "text-red-600" : "text-gray-900"}
+                  >
+                    {item.label}
+                  </span>
+                </div>
+                <ChevronRight
+                  size={20}
+                  className={item.isLogout ? "text-red-600" : "text-gray-400"}
+                />
+              </button>
+            ))}
           </div>
         </section>
       </div>
