@@ -1,4 +1,8 @@
 import BALLFiNLogo from "../assets/BALLFiN.svg";
+import FinBung1 from "../assets/FinBung_1.svg";
+import FinBung2 from "../assets/FinBung_2.svg";
+import FinBung3 from "../assets/FinBung_3.svg";
+import FinBung4 from "../assets/FinBung_4.svg";
 import {
   TrendingUp,
   Brain,
@@ -8,6 +12,10 @@ import {
   MessageSquare,
   Target,
 } from "lucide-react";
+import { StatCard } from "../components/Intro/StatCard";
+import { AIModelCard } from "../components/Intro/AIModelCard";
+import { FeatureCard } from "../components/Intro/FeatureCard";
+import { FinBungImage } from "../components/Intro/FinBungImage";
 
 const features = [
   {
@@ -88,8 +96,20 @@ export default function Intro() {
   return (
     <div className="min-h-screen bg-white">
       {/* 헤더 섹션 */}
-      <div className="bg-gradient-to-b from-[#0A5C2B]/5 to-white py-24">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-b from-[#0A5C2B]/5 to-white py-24 relative overflow-hidden">
+        <FinBungImage
+          src={FinBung1}
+          alt="FinBung 1"
+          position="top-left"
+          opacity={20}
+        />
+        <FinBungImage
+          src={FinBung2}
+          alt="FinBung 2"
+          position="top-right"
+          opacity={20}
+        />
+        <div className="container mx-auto px-4 relative">
           <div className="flex flex-col items-center text-center">
             <div className="mb-12 w-[30vw] h-48 relative">
               <img
@@ -110,75 +130,59 @@ export default function Intro() {
       </div>
 
       {/* 통계 섹션 */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-12 relative">
+        <FinBungImage
+          src={FinBung3}
+          alt="FinBung 3"
+          position="top-left"
+          width="w-1/4"
+          className="left-1/4"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative max-w-7xl mx-auto">
           {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-3xl font-bold text-[#0A5C2B] mb-2">
-                {stat.value}
-              </div>
-              <div className="text-gray-600">{stat.label}</div>
-            </div>
+            <StatCard key={index} value={stat.value} label={stat.label} />
           ))}
         </div>
       </div>
 
       {/* 주요 기능 섹션 */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 relative">
+        <FinBungImage
+          src={FinBung4}
+          alt="FinBung 4"
+          position="bottom-right"
+          width="w-1/4"
+          className="right-1/4"
+        />
         <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
           주요 기능
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl shadow-sm p-8 hover:shadow-md transition-shadow"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 mb-4">{feature.description}</p>
-              <div className="text-sm text-[#0A5C2B] font-medium">
-                {feature.stats}
-              </div>
-            </div>
+            <FeatureCard key={index} {...feature} />
           ))}
         </div>
       </div>
 
       {/* AI 모델 정보 섹션 */}
-      <div className="bg-gray-50 py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-gray-50 py-12 relative">
+        <FinBungImage src={FinBung1} alt="FinBung 1" position="top-left" />
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
             AI 모델 정보
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {aiModels.map((model, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-sm p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <model.icon className="w-6 h-6 text-[#0A5C2B]" />
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {model.title}
-                  </h3>
-                </div>
-                <div className="space-y-4">
-                  {model.data.map((item, dataIndex) => (
-                    <div key={dataIndex}>
-                      <div className="text-sm text-gray-600">{item.label}</div>
-                      <div className="font-medium">{item.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <AIModelCard key={index} model={model} />
             ))}
           </div>
         </div>
       </div>
 
       {/* 시작하기 섹션 */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="bg-[#0A5C2B] rounded-xl p-8 text-center text-white">
+      <div className="container mx-auto px-4 py-12 relative">
+        <FinBungImage src={FinBung2} alt="FinBung 2" position="bottom-right" />
+        <div className="bg-[#0A5C2B] rounded-xl p-8 text-center text-white relative">
           <h2 className="text-2xl font-bold mb-4">
             지금 바로 BALLFiN과 함께 시작하세요
           </h2>
