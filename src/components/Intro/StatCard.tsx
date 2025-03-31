@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 
 interface StatCardProps {
   value: string;
   label: string;
+  index: number;
 }
 
-export const StatCard = ({ value, label }: StatCardProps) => {
+export const StatCard = ({ value, label, index }: StatCardProps) => {
   const [displayValue, setDisplayValue] = useState("0");
   const [isVisible, setIsVisible] = useState(false);
   const numberRef = useRef<HTMLDivElement>(null);
@@ -58,14 +60,30 @@ export const StatCard = ({ value, label }: StatCardProps) => {
   }, [isVisible, value]);
 
   return (
-    <div
+    <motion.div
       ref={numberRef}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ scale: 1.05 }}
       className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 w-full"
     >
-      <div className="text-3xl font-bold text-[#0A5C2B] mb-2 text-center">
+      <motion.div
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-3xl font-bold text-[#0A5C2B] mb-2 text-center"
+      >
         {displayValue}
-      </div>
-      <div className="text-base text-gray-600 text-center">{label}</div>
-    </div>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="text-base text-gray-600 text-center"
+      >
+        {label}
+      </motion.div>
+    </motion.div>
   );
 };
