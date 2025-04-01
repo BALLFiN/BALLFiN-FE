@@ -1,8 +1,4 @@
 import BALLFiNLogo from "../assets/BALLFiN.svg";
-import FinBung1 from "../assets/FinBung_1.svg";
-import FinBung2 from "../assets/FinBung_2.svg";
-import FinBung3 from "../assets/FinBung_3.svg";
-import FinBung4 from "../assets/FinBung_4.svg";
 import {
   TrendingUp,
   Brain,
@@ -15,7 +11,6 @@ import {
 import { StatCard } from "../components/Intro/StatCard";
 import { AIModelCard } from "../components/Intro/AIModelCard";
 import { FeatureCard } from "../components/Intro/FeatureCard";
-import { FinBungImage } from "../components/Intro/FinBungImage";
 import { motion } from "framer-motion";
 
 const features = [
@@ -98,18 +93,6 @@ export default function Intro() {
     <div className="min-h-screen bg-white">
       {/* 헤더 섹션 */}
       <div className="bg-gradient-to-b from-[#0A5C2B]/5 to-white py-24 relative overflow-hidden">
-        <FinBungImage
-          src={FinBung1}
-          alt="FinBung 1"
-          position="top-left"
-          opacity={20}
-        />
-        <FinBungImage
-          src={FinBung2}
-          alt="FinBung 2"
-          position="top-right"
-          opacity={20}
-        />
         <div className="container mx-auto px-4 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -152,13 +135,6 @@ export default function Intro() {
 
       {/* 통계 섹션 */}
       <div className="container mx-auto px-4 py-12 relative">
-        <FinBungImage
-          src={FinBung3}
-          alt="FinBung 3"
-          position="top-left"
-          width="w-1/4"
-          className="left-1/4"
-        />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -179,13 +155,6 @@ export default function Intro() {
 
       {/* 주요 기능 섹션 */}
       <div className="container mx-auto px-4 py-12 relative">
-        <FinBungImage
-          src={FinBung4}
-          alt="FinBung 4"
-          position="bottom-right"
-          width="w-1/4"
-          className="right-1/4"
-        />
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -210,7 +179,6 @@ export default function Intro() {
 
       {/* AI 모델 정보 섹션 */}
       <div className="bg-gray-50 py-12 relative">
-        <FinBungImage src={FinBung1} alt="FinBung 1" position="top-left" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -237,7 +205,6 @@ export default function Intro() {
 
       {/* 시작하기 섹션 */}
       <div className="container mx-auto px-4 py-12 relative">
-        <FinBungImage src={FinBung2} alt="FinBung 2" position="bottom-right" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
