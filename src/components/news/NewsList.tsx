@@ -48,10 +48,8 @@ export default function NewsList({
   // 날짜 범위로 필터링
   if (dateRange.start && dateRange.end) {
     filteredNews = filteredNews.filter((item) => {
-      const itemDate = new Date(item.date);
-      const startDate = new Date(dateRange.start);
-      const endDate = new Date(dateRange.end);
-      return itemDate >= startDate && itemDate <= endDate;
+      const itemDate = item.date; // 이미 YYYY-MM-DD 형식
+      return itemDate >= dateRange.start && itemDate <= dateRange.end;
     });
   }
 
@@ -70,7 +68,18 @@ export default function NewsList({
       case "oldest":
         return new Date(a.date).getTime() - new Date(b.date).getTime();
       default:
-        return 0; // 연관도순은 기본 정렬 유지
+        // 연관도순은 검색어와의 일치도로 정렬
+        if (searchTerm) {
+          const aMatch = a.title
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+          const bMatch = b.title
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+          if (aMatch && !bMatch) return -1;
+          if (!aMatch && bMatch) return 1;
+        }
+        return 0;
     }
   });
 

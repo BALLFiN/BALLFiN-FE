@@ -25,21 +25,24 @@ export default function NewsFilter({
 
   const handleDateRangeChange = (range: string) => {
     setDateRange(range);
+
+    // 한국 시간 기준으로 현재 날짜 설정
     const today = new Date();
-    let startDate = new Date();
-    let endDate = new Date();
+    const koreanTime = new Date(today.getTime() + 9 * 60 * 60 * 1000); // UTC+9
+    let startDate = new Date(koreanTime);
+    let endDate = new Date(koreanTime);
 
     switch (range) {
       case "today":
         break;
       case "week":
-        startDate.setDate(today.getDate() - 7);
+        startDate.setDate(koreanTime.getDate() - 7);
         break;
       case "month":
-        startDate.setMonth(today.getMonth() - 1);
+        startDate.setMonth(koreanTime.getMonth() - 1);
         break;
       case "year":
-        startDate.setFullYear(today.getFullYear() - 1);
+        startDate.setFullYear(koreanTime.getFullYear() - 1);
         break;
       case "custom":
         if (customStartDate && customEndDate) {
@@ -57,10 +60,38 @@ export default function NewsFilter({
         return;
     }
 
+    // 날짜를 YYYY-MM-DD 형식으로 변환
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
+
+    // 날짜 범위 변경 즉시 적용
     onDateRangeChange({
-      start: startDate.toISOString().split("T")[0],
-      end: endDate.toISOString().split("T")[0],
+      start: formattedStartDate,
+      end: formattedEndDate,
     });
+  };
+
+  // 커스텀 날짜 변경 시 즉시 적용
+  const handleCustomDateChange = (type: "start" | "end", value: string) => {
+    if (type === "start") {
+      setCustomStartDate(value);
+    } else {
+      setCustomEndDate(value);
+    }
+
+    if (customStartDate && customEndDate) {
+      onDateRangeChange({
+        start: customStartDate,
+        end: customEndDate,
+      });
+    }
   };
 
   const handleImpactChange = (impact: string) => {
@@ -113,22 +144,16 @@ export default function NewsFilter({
             <input
               type="date"
               value={customStartDate}
-              onChange={(e) => setCustomStartDate(e.target.value)}
+              onChange={(e) => handleCustomDateChange("start", e.target.value)}
               className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
             />
             <span>~</span>
             <input
               type="date"
               value={customEndDate}
-              onChange={(e) => setCustomEndDate(e.target.value)}
+              onChange={(e) => handleCustomDateChange("end", e.target.value)}
               className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
             />
-            <button
-              onClick={() => handleDateRangeChange("custom")}
-              className="px-3 py-1 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors"
-            >
-              적용
-            </button>
           </div>
         )}
       </div>
