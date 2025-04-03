@@ -8,6 +8,7 @@ import {
 import { NewsItem } from "../../mock/newsData";
 import { useState } from "react";
 import SearchBar from "../common/SearchBar";
+import NewsFilter from "./NewsFilter";
 
 interface NewsListProps {
   news: NewsItem[];
@@ -33,11 +34,45 @@ export default function NewsList({
 }: NewsListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("relevance");
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  const [selectedImpacts, setSelectedImpacts] = useState<string[]>([]);
   const itemsPerPage = 10;
 
-  const filteredNews = news.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  // 검색어로 필터링
+  let filteredNews = news.filter((item) =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // 날짜 범위로 필터링
+  if (dateRange.start && dateRange.end) {
+    filteredNews = filteredNews.filter((item) => {
+      const itemDate = new Date(item.date);
+      const startDate = new Date(dateRange.start);
+      const endDate = new Date(dateRange.end);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  }
+
+  // 영향으로 필터링
+  if (selectedImpacts.length > 0) {
+    filteredNews = filteredNews.filter((item) =>
+      selectedImpacts.includes(item.impact)
+    );
+  }
+
+  // 정렬
+  filteredNews.sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      case "oldest":
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      default:
+        return 0; // 연관도순은 기본 정렬 유지
+    }
+  });
 
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -62,6 +97,26 @@ export default function NewsList({
     }
   };
 
+  const handleSearch = () => {
+    setSearchTerm(searchQuery);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort);
+    setCurrentPage(1);
+  };
+
+  const handleDateRangeChange = (range: { start: string; end: string }) => {
+    setDateRange(range);
+    setCurrentPage(1);
+  };
+
+  const handleImpactFilterChange = (impacts: string[]) => {
+    setSelectedImpacts(impacts);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="p-6">
@@ -70,7 +125,16 @@ export default function NewsList({
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
+            onSearch={handleSearch}
             placeholder="뉴스 제목으로 검색"
+          />
+        </div>
+
+        <div className="mb-6">
+          <NewsFilter
+            onSortChange={handleSortChange}
+            onDateRangeChange={handleDateRangeChange}
+            onImpactFilterChange={handleImpactFilterChange}
           />
         </div>
 
