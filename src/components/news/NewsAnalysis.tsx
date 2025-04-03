@@ -1,63 +1,103 @@
-import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
-
-interface NewsItem {
-  id: number;
-  title: string;
-  source: string;
-  date: string;
-  impact: "positive" | "negative" | "neutral";
-  summary: string;
-  analysis: string;
-}
+import {
+  TrendingUp,
+  TrendingDown,
+  AlertCircle,
+  X,
+  PlayCircle,
+} from "lucide-react";
+import { NewsItem } from "../../mock/newsData";
+import { useState, useEffect } from "react";
+import Loading from "../common/Loading";
 
 interface NewsAnalysisProps {
   news: NewsItem | null;
+  onClose: () => void;
 }
 
-const getImpactIcon = (impact: NewsItem["impact"]) => {
-  switch (impact) {
-    case "positive":
-      return <TrendingUp className="w-5 h-5 text-green-500" />;
-    case "negative":
-      return <TrendingDown className="w-5 h-5 text-red-500" />;
-    default:
-      return <AlertCircle className="w-5 h-5 text-gray-500" />;
-  }
-};
+export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
+  const [isAnalyzing, setIsAnalyzing] = useState<{ [key: number]: boolean }>(
+    {}
+  );
+  const [isLoading, setIsLoading] = useState<{ [key: number]: boolean }>({});
 
-export default function NewsAnalysis({ news }: NewsAnalysisProps) {
+  useEffect(() => {
+    if (news && isLoading[news.id]) {
+      const timer = setTimeout(() => {
+        setIsLoading((prev) => ({ ...prev, [news.id]: false }));
+        setIsAnalyzing((prev) => ({ ...prev, [news.id]: true }));
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, news]);
+
   if (!news) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-500">
-        뉴스를 선택해주세요
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">뉴스를 선택해주세요</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 h-full overflow-y-auto">
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          {getImpactIcon(news.impact)}
-          <h2 className="text-xl font-bold text-gray-900">{news.title}</h2>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <span>{news.source}</span>
-          <span>•</span>
-          <span>{news.date}</span>
-        </div>
-
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-900 mb-2">뉴스 요약</h3>
-          <p className="text-gray-600">{news.summary}</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-900 mb-2">AI 분석</h3>
-          <p className="text-gray-600">{news.analysis}</p>
-        </div>
+    <div className="p-6 animate-slide-in">
+      <div className="flex justify-between items-start mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">{news.title}</h2>
+        <button
+          onClick={onClose}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X className="w-5 h-5 text-gray-500" />
+        </button>
       </div>
+      <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <span>{news.source}</span>
+        <span>•</span>
+        <span>{news.date}</span>
+      </div>
+
+      {isLoading[news.id] ? (
+        <div className="flex justify-center py-8">
+          <Loading />
+        </div>
+      ) : !isAnalyzing[news.id] ? (
+        <button
+          onClick={() => setIsLoading((prev) => ({ ...prev, [news.id]: true }))}
+          className="w-full py-3 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center justify-center gap-2"
+        >
+          <PlayCircle className="w-5 h-5" />
+          <span>분석 시작하기</span>
+        </button>
+      ) : (
+        <div className="space-y-6">
+          <div className="animate-fade-in">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">요약</h3>
+            <p className="text-gray-600">{news.summary}</p>
+          </div>
+
+          <div className="animate-fade-in">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              영향 분석
+            </h3>
+            <div className="flex items-center gap-2">
+              {news.impact === "positive" ? (
+                <TrendingUp className="w-5 h-5 text-green-500" />
+              ) : news.impact === "negative" ? (
+                <TrendingDown className="w-5 h-5 text-red-500" />
+              ) : (
+                <AlertCircle className="w-5 h-5 text-gray-500" />
+              )}
+              <span className="text-gray-600">{news.impact}</span>
+            </div>
+          </div>
+
+          <div className="animate-fade-in">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              상세 분석
+            </h3>
+            <p className="text-gray-600">{news.analysis}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
