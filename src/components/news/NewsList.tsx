@@ -1,10 +1,3 @@
-import {
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
 import { NewsItem } from "../../mock/newsData";
 import { useState } from "react";
 import SearchBar from "../common/SearchBar";
@@ -12,17 +5,6 @@ import NewsFilter from "./NewsFilter";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
 import { NewsListProps } from "./types";
-
-const getImpactIcon = (impact: NewsItem["impact"]) => {
-  switch (impact) {
-    case "positive":
-      return <TrendingUp className="w-5 h-5 text-green-500" />;
-    case "negative":
-      return <TrendingDown className="w-5 h-5 text-red-500" />;
-    default:
-      return <AlertCircle className="w-5 h-5 text-gray-500" />;
-  }
-};
 
 export default function NewsList({
   news,

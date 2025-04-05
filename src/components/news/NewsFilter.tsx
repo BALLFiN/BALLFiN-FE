@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Calendar, Filter } from "lucide-react";
 
 interface NewsFilterProps {
   onSortChange: (sort: string) => void;
