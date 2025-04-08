@@ -56,7 +56,7 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
       </div>
 
       {isLoading[news.id] ? (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center py-8 bg-white h-[50vh] p-6 rounded-2xl shadow-sm border border-gray-100">
           <Loading />
         </div>
       ) : !isAnalyzing[news.id] ? (
@@ -68,14 +68,14 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
           <span>분석 시작하기</span>
         </button>
       ) : (
-        <div className="space-y-6">
-          <div className="animate-fade-in">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">요약</h3>
-            <p className="text-gray-600">{news.summary}</p>
+        <div className="space-y-4">
+          <div className="animate-fade-in bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">요약</h3>
+            <p className="text-gray-600 leading-relaxed">{news.summary}</p>
           </div>
 
-          <div className="animate-fade-in">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="animate-fade-in bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
               영향 분석
             </h3>
             <div className="flex items-center gap-2">
@@ -86,15 +86,15 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
               ) : (
                 <AlertCircle className="w-5 h-5 text-gray-500" />
               )}
-              <span className="text-gray-600">{news.impact}</span>
+              <span className="text-gray-600 font-medium">{news.impact}</span>
             </div>
           </div>
 
-          <div className="animate-fade-in">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="animate-fade-in bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
               상세 분석
             </h3>
-            <p className="text-gray-600">{news.analysis}</p>
+            <p className="text-gray-600 leading-relaxed">{news.analysis}</p>
           </div>
         </div>
       )}
