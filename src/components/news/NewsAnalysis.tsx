@@ -39,62 +39,77 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
   }
 
   return (
-    <div className="p-6 animate-slide-in">
-      <div className="flex justify-between items-start mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">{news.title}</h2>
+    <div className="p-4 animate-slide-in">
+      <div className="flex justify-between items-start mb-4">
+        <h2 className="text-xl font-bold text-gray-900">{news.title}</h2>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <X className="w-5 h-5 text-gray-500" />
+          <X className="w-4 h-4 text-gray-500" />
         </button>
       </div>
-      <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+      <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
         <span>{news.source}</span>
         <span>•</span>
         <span>{news.date}</span>
+        <span>•</span>
+        <a
+          href={news.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#0A5C2B] hover:underline"
+        >
+          원문 보기
+        </a>
       </div>
 
       {isLoading[news.id] ? (
-        <div className="flex justify-center py-8 bg-white h-[50vh] p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="flex justify-center items-center bg-white h-[50vh] rounded-xl shadow-sm border border-gray-100">
           <Loading />
         </div>
       ) : !isAnalyzing[news.id] ? (
         <button
           onClick={() => setIsLoading((prev) => ({ ...prev, [news.id]: true }))}
-          className="w-full py-3 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center justify-center gap-2"
+          className="w-full py-2.5 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center justify-center gap-2"
         >
-          <PlayCircle className="w-5 h-5" />
+          <PlayCircle className="w-4 h-4" />
           <span>분석 시작하기</span>
         </button>
       ) : (
-        <div className="space-y-4">
-          <div className="animate-fade-in bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">요약</h3>
-            <p className="text-gray-600 leading-relaxed">{news.summary}</p>
+        <div className="space-y-3">
+          <div className="animate-fade-in bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">요약</h3>
+            <p className="text-gray-600 leading-relaxed text-sm">
+              {news.summary}
+            </p>
           </div>
 
-          <div className="animate-fade-in bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          <div className="animate-fade-in bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">
               영향 분석
             </h3>
             <div className="flex items-center gap-2">
               {news.impact === "positive" ? (
-                <TrendingUp className="w-5 h-5 text-green-500" />
+                <TrendingUp className="w-4 h-4 text-green-500" />
               ) : news.impact === "negative" ? (
-                <TrendingDown className="w-5 h-5 text-red-500" />
+                <TrendingDown className="w-4 h-4 text-red-500" />
               ) : (
-                <AlertCircle className="w-5 h-5 text-gray-500" />
+                <AlertCircle className="w-4 h-4 text-gray-500" />
               )}
-              <span className="text-gray-600 font-medium">{news.impact}</span>
+              <span className="text-gray-600 text-sm font-medium">
+                {news.impact}
+              </span>
             </div>
           </div>
 
-          <div className="animate-fade-in bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          <div className="animate-fade-in bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">
               상세 분석
             </h3>
-            <p className="text-gray-600 leading-relaxed">{news.analysis}</p>
+            <p className="text-gray-600 leading-relaxed text-sm">
+              {news.analysis}
+            </p>
           </div>
         </div>
       )}
