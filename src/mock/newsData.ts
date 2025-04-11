@@ -155,6 +155,8 @@ export const mockNews: NewsItem[] = [
       "현대차가 새로운 전기차 모델을 출시했으며, 초기 시장 반응이 매우 긍정적이다.",
     analysis:
       "이 뉴스는 현대차의 전기차 경쟁력 강화를 시사하는 긍정적인 신호입니다. 새로운 모델의 성공적인 출시는 전기차 시장에서의 시장점유율 확대와 수익성 개선을 기대할 수 있게 합니다. 특히 긍정적인 초기 반응은 향후 판매 실적 상승으로 이어질 가능성이 높습니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 12,
@@ -167,6 +169,8 @@ export const mockNews: NewsItem[] = [
       "카카오가 AI 챗봇 서비스를 출시했으며, 초기 사용자들의 반응이 매우 긍정적이다.",
     analysis:
       "카카오의 AI 챗봇 출시는 디지털 서비스 경쟁력 강화를 위한 중요한 전환점이 될 것으로 보입니다. 특히 카카오톡 플랫폼과의 연계를 통한 시너지 효과가 기대되며, AI 서비스 시장에서의 입지 강화가 예상됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 13,
@@ -179,6 +183,8 @@ export const mockNews: NewsItem[] = [
       "SK하이닉스의 중국 내 메모리 시장 점유율이 전년 대비 2.5% 하락했다.",
     analysis:
       "SK하이닉스의 중국 시장 점유율 하락은 단기적으로 실적에 부담 요인이 될 것으로 전망됩니다. 현지 경쟁업체들의 급속 성장과 가격 경쟁력이 주요 원인으로 분석되며, 중국 시장에서의 경쟁력 강화가 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 14,
@@ -190,6 +196,8 @@ export const mockNews: NewsItem[] = [
     summary: "LG에너지솔루션이 미국에 2차전지 신공장을 착공했다.",
     analysis:
       "LG에너지솔루션의 미국 신공장 착공은 글로벌 시장점유율 확대를 위한 중요한 전략적 진전입니다. 특히 미국 정부의 인플레이션 감축법(IRA) 혜택을 받을 수 있어 경쟁력 강화가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 15,
@@ -202,6 +210,8 @@ export const mockNews: NewsItem[] = [
     summary: "네이버클라우드의 AI 서비스 매출이 전년 대비 2배 이상 성장했다.",
     analysis:
       "네이버클라우드의 AI 서비스 매출 성장은 클라우드 시장에서의 경쟁력 강화를 시사합니다. 특히 AI 서비스에 대한 수요 증가가 지속되고 있어 향후 성장성이 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 16,
@@ -213,6 +223,8 @@ export const mockNews: NewsItem[] = [
     summary: "카카오뱅크의 1분기 순이익이 전년 대비 감소했다.",
     analysis:
       "카카오뱅크의 순이익 감소는 금리 상승에 따른 비용 증가가 주요 원인으로 분석됩니다. 금융 시장의 불확실성이 지속되는 가운데, 수익성 개선을 위한 전략 수립이 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 17,
@@ -225,6 +237,8 @@ export const mockNews: NewsItem[] = [
       "삼성바이오로직스가 글로벌 제약사와 신약 개발 파트너십을 확대했다.",
     analysis:
       "삼성바이오로직스의 파트너십 확대는 신약 개발 역량 강화를 위한 긍정적인 신호입니다. 특히 글로벌 제약사와의 협력을 통해 R&D 경쟁력이 향상될 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 18,
@@ -236,6 +250,8 @@ export const mockNews: NewsItem[] = [
     summary: "현대중공업의 1분기 조선 수주가 전년 대비 감소했다.",
     analysis:
       "현대중공업의 수주 감소는 중국 조선업체들의 가격 경쟁력 강화가 주요 원인으로 분석됩니다. 조선업의 경쟁 환경이 더욱 치열해지는 가운데, 기술력 강화를 통한 경쟁력 확보가 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 19,
@@ -248,6 +264,8 @@ export const mockNews: NewsItem[] = [
       "KT가 5G 네트워크를 전국적으로 확장하며 통신 시장 점유율이 상승했다.",
     analysis:
       "KT의 5G 네트워크 확장은 통신 시장에서의 경쟁력 강화를 시사합니다. 특히 5G 서비스의 안정성과 커버리지 개선이 사용자 만족도 향상으로 이어질 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 20,
@@ -259,6 +277,8 @@ export const mockNews: NewsItem[] = [
     summary: "롯데케미칼의 1분기 실적이 원자재 가격 상승으로 인해 부진했다.",
     analysis:
       "롯데케미칼의 실적 부진은 원자재 가격 상승이 주요 원인으로 분석됩니다. 글로벌 공급망 불안정성이 지속되는 가운데, 원가 관리와 가격 전략 수립이 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 21,
@@ -271,6 +291,8 @@ export const mockNews: NewsItem[] = [
       "네이버파이낸셜이 새로운 금융 서비스를 출시하며 시장 진출을 본격화했다.",
     analysis:
       "네이버파이낸셜의 금융 서비스 확대는 핀테크 시장에서의 경쟁력 강화를 시사합니다. 특히 네이버 플랫폼과의 연계를 통한 시너지 효과가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 22,
@@ -283,6 +305,8 @@ export const mockNews: NewsItem[] = [
       "삼성SDI의 2차전지 수출이 중국 경쟁사들의 가격 경쟁으로 인해 감소했다.",
     analysis:
       "삼성SDI의 수출 감소는 중국 기업들의 가격 경쟁력 강화가 주요 원인으로 분석됩니다. 기술력 강화와 원가 경쟁력 확보를 위한 전략 수립이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 23,
@@ -295,6 +319,8 @@ export const mockNews: NewsItem[] = [
       "카카오게임즈가 새로운 모바일 게임을 출시했으며, 초기 반응이 매우 긍정적이다.",
     analysis:
       "카카오게임즈의 신작 출시는 게임 시장에서의 경쟁력 강화를 시사합니다. 특히 긍정적인 초기 반응은 향후 매출 성장으로 이어질 가능성이 높습니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 24,
@@ -306,6 +332,8 @@ export const mockNews: NewsItem[] = [
     summary: "SK텔레콤의 통신 시장 점유율이 5G 경쟁 심화로 인해 하락했다.",
     analysis:
       "SK텔레콤의 시장점유율 하락은 통신 시장의 경쟁 심화가 주요 원인으로 분석됩니다. 서비스 품질 개선과 차별화된 전략 수립이 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 25,
@@ -317,6 +345,8 @@ export const mockNews: NewsItem[] = [
     summary: "LG화학이 새로운 소재 개발에 성공하며 미래 성장동력을 확보했다.",
     analysis:
       "LG화학의 신소재 개발은 미래 성장동력 확보를 위한 중요한 진전입니다. 특히 친환경 소재 개발을 통해 지속가능한 성장 기반을 마련했습니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 26,
@@ -328,6 +358,8 @@ export const mockNews: NewsItem[] = [
     summary: "현대모비스의 자율주행 부문 실적이 예상보다 부진했다.",
     analysis:
       "현대모비스의 자율주행 부문 실적 부진은 기술 개발과 투자 확대가 필요한 시점임을 시사합니다. 미래 모빌리티 시장에서의 경쟁력 확보를 위해 R&D 투자를 강화해야 합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 27,
@@ -339,6 +371,8 @@ export const mockNews: NewsItem[] = [
     summary: "삼성생명이 디지털 보험 서비스를 확대하며 고객 만족도가 상승했다.",
     analysis:
       "삼성생명의 디지털 서비스 확대는 보험 시장의 디지털 전환을 가속화할 것으로 보입니다. 특히 젊은 고객층의 만족도 향상이 새로운 성장 동력이 될 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 28,
@@ -350,6 +384,8 @@ export const mockNews: NewsItem[] = [
     summary: "네이버웹툰의 해외 시장 진출이 예상보다 지연되고 있다.",
     analysis:
       "네이버웹툰의 해외 진출 지연은 현지화 전략의 재검토가 필요한 시점임을 시사합니다. 특히 각 지역별 특성을 고려한 맞춤형 전략 수립이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 29,
@@ -361,6 +397,8 @@ export const mockNews: NewsItem[] = [
     summary: "SK바이오팜이 새로운 항암제 개발에 성공했다.",
     analysis:
       "SK바이오팜의 신약 개발 성공은 글로벌 제약 시장에서의 경쟁력 강화를 시사합니다. 특히 임상 시험 결과가 긍정적이어서 시장 진출이 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 30,
@@ -372,6 +410,8 @@ export const mockNews: NewsItem[] = [
     summary: "카카오스타일의 패션 플랫폼 실적이 경쟁 심화로 인해 부진했다.",
     analysis:
       "카카오스타일의 실적 부진은 패션 플랫폼 시장의 경쟁 심화가 주요 원인으로 분석됩니다. 차별화된 서비스와 브랜드 가치 강화가 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 31,
@@ -383,6 +423,8 @@ export const mockNews: NewsItem[] = [
     summary: "LG전자의 가전 시장 점유율이 프리미엄 전략으로 상승했다.",
     analysis:
       "LG전자의 시장점유율 상승은 프리미엄 전략의 성공을 보여줍니다. 특히 고급 가전 시장에서의 경쟁력 강화가 수익성 개선으로 이어질 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 32,
@@ -394,6 +436,8 @@ export const mockNews: NewsItem[] = [
     summary: "현대건설의 건설 수주가 부동산 시장 침체로 인해 감소했다.",
     analysis:
       "현대건설의 수주 감소는 부동산 시장의 침체가 주요 원인으로 분석됩니다. 해외 시장 진출과 신규 사업 다각화를 통한 위험 분산이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 33,
@@ -405,6 +449,8 @@ export const mockNews: NewsItem[] = [
     summary: "삼성카드가 디지털 결제 서비스를 확대하며 시장점유율이 상승했다.",
     analysis:
       "삼성카드의 디지털 서비스 확대는 결제 시장에서의 경쟁력 강화를 시사합니다. 특히 모바일 결제 시장에서의 입지 강화가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 34,
@@ -416,6 +462,8 @@ export const mockNews: NewsItem[] = [
     summary: "네이버파이낸셜의 금융 서비스 실적이 규제 강화로 인해 부진했다.",
     analysis:
       "네이버파이낸셜의 실적 부진은 금융 규제 강화가 주요 원인으로 분석됩니다. 규제 대응과 서비스 혁신을 통한 경쟁력 강화가 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 35,
@@ -427,6 +475,8 @@ export const mockNews: NewsItem[] = [
     summary: "SK이노베이션이 친환경 사업을 확대하며 미래 성장동력을 확보했다.",
     analysis:
       "SK이노베이션의 친환경 사업 확대는 지속가능한 성장을 위한 중요한 전략입니다. 특히 탄소중립 시대에 대비한 비즈니스 모델 전환이 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 36,
@@ -438,6 +488,8 @@ export const mockNews: NewsItem[] = [
     summary: "카카오뱅크의 금융 서비스 실적이 경쟁 심화로 인해 부진했다.",
     analysis:
       "카카오뱅크의 실적 부진은 금융 시장의 경쟁 심화가 주요 원인으로 분석됩니다. 차별화된 서비스와 고객 경험 개선이 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 37,
@@ -450,6 +502,8 @@ export const mockNews: NewsItem[] = [
       "LG생활건강이 뷰티 시장 진출에 성공하며 글로벌 브랜드화를 달성했다.",
     analysis:
       "LG생활건강의 뷰티 시장 진출 성공은 글로벌 브랜드 가치 상승을 시사합니다. 특히 K-뷰티 트렌드를 활용한 시장 확대가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 30,
@@ -462,6 +516,8 @@ export const mockNews: NewsItem[] = [
       "현대오일뱅크의 정유 사업 실적이 원유 가격 변동성으로 인해 부진했다.",
     analysis:
       "현대오일뱅크의 실적 부진은 원유 가격 변동성이 주요 원인으로 분석됩니다. 원가 관리와 수익성 개선을 위한 전략 수립이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 31,
@@ -473,6 +529,8 @@ export const mockNews: NewsItem[] = [
     summary: "삼성물산의 건설 수주가 해외 시장 진출 성공으로 증가했다.",
     analysis:
       "삼성물산의 수주 증가는 해외 시장에서의 경쟁력 강화를 시사합니다. 특히 대형 프로젝트 수주를 통해 글로벌 입지가 강화될 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 32,
@@ -484,6 +542,8 @@ export const mockNews: NewsItem[] = [
     summary: "네이버웹툰의 콘텐츠 제작 실적이 예상보다 부진했다.",
     analysis:
       "네이버웹툰의 실적 부진은 콘텐츠 제작 투자 확대가 필요한 시점임을 시사합니다. 특히 독창적인 콘텐츠 개발을 통한 경쟁력 강화가 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 33,
@@ -495,6 +555,8 @@ export const mockNews: NewsItem[] = [
     summary: "SK텔레콤이 5G 서비스를 확대하며 시장점유율이 상승했다.",
     analysis:
       "SK텔레콤의 5G 서비스 확대는 통신 시장에서의 경쟁력 강화를 시사합니다. 특히 5G 네트워크의 안정성과 커버리지 개선이 사용자 만족도 향상으로 이어질 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 34,
@@ -506,6 +568,8 @@ export const mockNews: NewsItem[] = [
     summary: "카카오스타일의 패션 플랫폼 실적이 경쟁 심화로 인해 부진했다.",
     analysis:
       "카카오스타일의 실적 부진은 패션 플랫폼 시장의 경쟁 심화가 주요 원인으로 분석됩니다. 차별화된 서비스와 브랜드 가치 강화가 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 35,
@@ -517,6 +581,8 @@ export const mockNews: NewsItem[] = [
     summary: "LG전자의 가전 시장 점유율이 프리미엄 전략으로 상승했다.",
     analysis:
       "LG전자의 시장점유율 상승은 프리미엄 전략의 성공을 보여줍니다. 특히 고급 가전 시장에서의 경쟁력 강화가 수익성 개선으로 이어질 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 36,
@@ -528,6 +594,8 @@ export const mockNews: NewsItem[] = [
     summary: "현대건설의 건설 수주가 부동산 시장 침체로 인해 감소했다.",
     analysis:
       "현대건설의 수주 감소는 부동산 시장의 침체가 주요 원인으로 분석됩니다. 해외 시장 진출과 신규 사업 다각화를 통한 위험 분산이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 37,
@@ -539,6 +607,8 @@ export const mockNews: NewsItem[] = [
     summary: "삼성카드가 디지털 결제 서비스를 확대하며 시장점유율이 상승했다.",
     analysis:
       "삼성카드의 디지털 서비스 확대는 결제 시장에서의 경쟁력 강화를 시사합니다. 특히 모바일 결제 시장에서의 입지 강화가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 38,
@@ -550,6 +620,8 @@ export const mockNews: NewsItem[] = [
     summary: "네이버파이낸셜의 금융 서비스 실적이 규제 강화로 인해 부진했다.",
     analysis:
       "네이버파이낸셜의 실적 부진은 금융 규제 강화가 주요 원인으로 분석됩니다. 규제 대응과 서비스 혁신을 통한 경쟁력 강화가 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 39,
@@ -561,6 +633,8 @@ export const mockNews: NewsItem[] = [
     summary: "SK이노베이션이 친환경 사업을 확대하며 미래 성장동력을 확보했다.",
     analysis:
       "SK이노베이션의 친환경 사업 확대는 지속가능한 성장을 위한 중요한 전략입니다. 특히 탄소중립 시대에 대비한 비즈니스 모델 전환이 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 40,
@@ -572,6 +646,8 @@ export const mockNews: NewsItem[] = [
     summary: "카카오뱅크의 금융 서비스 실적이 경쟁 심화로 인해 부진했다.",
     analysis:
       "카카오뱅크의 실적 부진은 금융 시장의 경쟁 심화가 주요 원인으로 분석됩니다. 차별화된 서비스와 고객 경험 개선이 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 41,
@@ -584,6 +660,8 @@ export const mockNews: NewsItem[] = [
       "LG생활건강이 뷰티 시장 진출에 성공하며 글로벌 브랜드화를 달성했다.",
     analysis:
       "LG생활건강의 뷰티 시장 진출 성공은 글로벌 브랜드 가치 상승을 시사합니다. 특히 K-뷰티 트렌드를 활용한 시장 확대가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 42,
@@ -596,6 +674,8 @@ export const mockNews: NewsItem[] = [
       "현대오일뱅크의 정유 사업 실적이 원유 가격 변동성으로 인해 부진했다.",
     analysis:
       "현대오일뱅크의 실적 부진은 원유 가격 변동성이 주요 원인으로 분석됩니다. 원가 관리와 수익성 개선을 위한 전략 수립이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 43,
@@ -607,6 +687,8 @@ export const mockNews: NewsItem[] = [
     summary: "삼성물산의 건설 수주가 해외 시장 진출 성공으로 증가했다.",
     analysis:
       "삼성물산의 수주 증가는 해외 시장에서의 경쟁력 강화를 시사합니다. 특히 대형 프로젝트 수주를 통해 글로벌 입지가 강화될 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 44,
@@ -618,6 +700,8 @@ export const mockNews: NewsItem[] = [
     summary: "네이버웹툰의 콘텐츠 제작 실적이 예상보다 부진했다.",
     analysis:
       "네이버웹툰의 실적 부진은 콘텐츠 제작 투자 확대가 필요한 시점임을 시사합니다. 특히 독창적인 콘텐츠 개발을 통한 경쟁력 강화가 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 45,
@@ -629,6 +713,8 @@ export const mockNews: NewsItem[] = [
     summary: "SK텔레콤이 5G 서비스를 확대하며 시장점유율이 상승했다.",
     analysis:
       "SK텔레콤의 5G 서비스 확대는 통신 시장에서의 경쟁력 강화를 시사합니다. 특히 5G 네트워크의 안정성과 커버리지 개선이 사용자 만족도 향상으로 이어질 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 46,
@@ -640,6 +726,8 @@ export const mockNews: NewsItem[] = [
     summary: "카카오스타일의 패션 플랫폼 실적이 경쟁 심화로 인해 부진했다.",
     analysis:
       "카카오스타일의 실적 부진은 패션 플랫폼 시장의 경쟁 심화가 주요 원인으로 분석됩니다. 차별화된 서비스와 브랜드 가치 강화가 필요한 시점입니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 47,
@@ -651,6 +739,8 @@ export const mockNews: NewsItem[] = [
     summary: "LG전자의 가전 시장 점유율이 프리미엄 전략으로 상승했다.",
     analysis:
       "LG전자의 시장점유율 상승은 프리미엄 전략의 성공을 보여줍니다. 특히 고급 가전 시장에서의 경쟁력 강화가 수익성 개선으로 이어질 것으로 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 48,
@@ -662,6 +752,8 @@ export const mockNews: NewsItem[] = [
     summary: "현대건설의 건설 수주가 부동산 시장 침체로 인해 감소했다.",
     analysis:
       "현대건설의 수주 감소는 부동산 시장의 침체가 주요 원인으로 분석됩니다. 해외 시장 진출과 신규 사업 다각화를 통한 위험 분산이 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 49,
@@ -673,6 +765,8 @@ export const mockNews: NewsItem[] = [
     summary: "삼성카드가 디지털 결제 서비스를 확대하며 시장점유율이 상승했다.",
     analysis:
       "삼성카드의 디지털 서비스 확대는 결제 시장에서의 경쟁력 강화를 시사합니다. 특히 모바일 결제 시장에서의 입지 강화가 기대됩니다.",
+    content: "",
+    sentiment: "positive",
   },
   {
     id: 50,
@@ -684,5 +778,7 @@ export const mockNews: NewsItem[] = [
     summary: "네이버파이낸셜의 금융 서비스 실적이 규제 강화로 인해 부진했다.",
     analysis:
       "네이버파이낸셜의 실적 부진은 금융 규제 강화가 주요 원인으로 분석됩니다. 규제 대응과 서비스 혁신을 통한 경쟁력 강화가 필요합니다.",
+    content: "",
+    sentiment: "positive",
   },
 ];
