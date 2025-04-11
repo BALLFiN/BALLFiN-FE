@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Search,
-  Filter,
-  ArrowUpDown,
-  TrendingUp,
-  TrendingDown,
-} from "lucide-react";
+import { Search, ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StockItem {
   id: number;

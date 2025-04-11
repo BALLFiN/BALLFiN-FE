@@ -107,7 +107,6 @@ export default function NewsList({
   return (
     <div className="h-full flex flex-col">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">최신 뉴스</h1>
         <div className="mb-6">
           <SearchBar
             value={searchQuery}
