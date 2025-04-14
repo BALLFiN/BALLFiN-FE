@@ -3,11 +3,11 @@ import NewsList from "../../components/news/NewsList";
 import NewsAnalysis from "../../components/news/NewsAnalysis";
 import { mockNews, NewsItem } from "../../mock/newsData";
 import { Clock } from "lucide-react";
+import NewsTimeline from "../../components/news/NewsTimeline";
+import PersonalizedFeed from "../../components/news/PersonalizedFeed";
 
 export default function NewsPage() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-
-  // 임시 데이터
 
   const handleNewsClick = (news: NewsItem) => {
     if (selectedNews?.id === news.id) {
@@ -81,6 +81,31 @@ export default function NewsPage() {
               onNewsClick={handleNewsClick}
             />
           </div>
+
+          {/* 뉴스 타임라인과 맞춤형 뉴스 피드 */}
+          <div className="container mx-auto px-4 py-8 border-t border-gray-100">
+            <div className="max-w-[90rem] mx-auto grid grid-cols-2 gap-8">
+              {/* 뉴스 타임라인 */}
+              <div className="h-[720px] overflow-y-auto">
+                <NewsTimeline
+                  events={mockNews.slice(0, 7).map((news) => ({
+                    time: news.date,
+                    title: news.title,
+                    description: news.summary,
+                    source: news.source,
+                  }))}
+                />
+              </div>
+
+              {/* 맞춤형 뉴스 피드 */}
+              <div className="h-[720px] overflow-y-auto">
+                <PersonalizedFeed
+                  news={mockNews.slice(0, 5)}
+                  interests={["주식", "부동산", "경제"]}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -88,7 +113,7 @@ export default function NewsPage() {
       <div
         className={`p-4 fixed top-0 right-0 h-auto bg-white w-1/3 transition-all duration-500 ease-in-out transform rounded-lg shadow-lg ${
           selectedNews
-            ? "translate-x-0 mt-20 mr-20 border border-gray-200"
+            ? "translate-x-0 mt-30 mr-10 border border-gray-200"
             : "translate-x-full"
         }`}
       >
