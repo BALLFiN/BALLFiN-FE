@@ -7,6 +7,7 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
+import NewsAlarm from "@/components/auth/myPage/NewsAlarm";
 
 export default function MyPage() {
   const favoriteStocks = [
@@ -71,6 +72,11 @@ export default function MyPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* 뉴스 알림 설정 */}
+        <section className="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <NewsAlarm />
         </section>
 
         {/* 메뉴 섹션 */}
