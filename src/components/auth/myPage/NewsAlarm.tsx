@@ -45,22 +45,44 @@ export default function NewsAlerts() {
   };
 
   const handleRemoveAlert = (id: string) => {
+    const removedAlert = alerts.find((alert) => alert.id === id);
     setAlerts(alerts.filter((alert) => alert.id !== id));
+    setToast({
+      show: true,
+      message: `${removedAlert?.keyword} 알림이 삭제되었습니다.`,
+      type: "error",
+    });
   };
 
   const handleToggleAlert = (id: string) => {
     setAlerts(
-      alerts.map((alert) =>
-        alert.id === id ? { ...alert, isActive: !alert.isActive } : alert
-      )
+      alerts.map((alert) => {
+        if (alert.id === id) {
+          setToast({
+            show: true,
+            message: `${alert.keyword} 알림이 ${!alert.isActive ? "활성화" : "비활성화"}되었습니다.`,
+            type: "success",
+          });
+          return { ...alert, isActive: !alert.isActive };
+        }
+        return alert;
+      })
     );
   };
 
   const handleTypeChange = (id: string, type: "push" | "email") => {
     setAlerts(
-      alerts.map((alert) =>
-        alert.id === id ? { ...alert, notificationType: type } : alert
-      )
+      alerts.map((alert) => {
+        if (alert.id === id) {
+          setToast({
+            show: true,
+            message: `${alert.keyword} 알림이 ${type === "push" ? "푸시" : "이메일"} 알림으로 변경되었습니다.`,
+            type: "success",
+          });
+          return { ...alert, notificationType: type };
+        }
+        return alert;
+      })
     );
   };
 
