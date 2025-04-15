@@ -1,90 +1,21 @@
 import { Bell, Plus, X, Check } from "lucide-react";
-import { useState } from "react";
 import Toast from "@/components/common/Toast";
+import { useNewsAlarm } from "@/features/newsAlarm/hooks/useNewsAlarm";
 
-interface NewsAlert {
-  id: string;
-  keyword: string;
-  isActive: boolean;
-  notificationType: "push" | "email";
-}
-
-export default function NewsAlerts() {
-  const [alerts, setAlerts] = useState<NewsAlert[]>([
-    { id: "1", keyword: "주식", isActive: true, notificationType: "push" },
-    { id: "2", keyword: "부동산", isActive: true, notificationType: "email" },
-  ]);
-  const [newKeyword, setNewKeyword] = useState("");
-  const [selectedType, setSelectedType] = useState<"push" | "email">("push");
-  const [toast, setToast] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({ show: false, message: "", type: "success" });
-
-  const handleAddAlert = () => {
-    if (newKeyword.trim()) {
-      setAlerts([
-        ...alerts,
-        {
-          id: Date.now().toString(),
-          keyword: newKeyword.trim(),
-          isActive: true,
-          notificationType: selectedType,
-        },
-      ]);
-      setNewKeyword("");
-      setToast({
-        show: true,
-        message: `${newKeyword.trim()}에 대한 ${
-          selectedType === "push" ? "푸시" : "이메일"
-        } 알림 설정이 완료되었습니다.`,
-        type: "success",
-      });
-    }
-  };
-
-  const handleRemoveAlert = (id: string) => {
-    const removedAlert = alerts.find((alert) => alert.id === id);
-    setAlerts(alerts.filter((alert) => alert.id !== id));
-    setToast({
-      show: true,
-      message: `${removedAlert?.keyword} 알림이 삭제되었습니다.`,
-      type: "error",
-    });
-  };
-
-  const handleToggleAlert = (id: string) => {
-    setAlerts(
-      alerts.map((alert) => {
-        if (alert.id === id) {
-          setToast({
-            show: true,
-            message: `${alert.keyword} 알림이 ${!alert.isActive ? "활성화" : "비활성화"}되었습니다.`,
-            type: "success",
-          });
-          return { ...alert, isActive: !alert.isActive };
-        }
-        return alert;
-      })
-    );
-  };
-
-  const handleTypeChange = (id: string, type: "push" | "email") => {
-    setAlerts(
-      alerts.map((alert) => {
-        if (alert.id === id) {
-          setToast({
-            show: true,
-            message: `${alert.keyword} 알림이 ${type === "push" ? "푸시" : "이메일"} 알림으로 변경되었습니다.`,
-            type: "success",
-          });
-          return { ...alert, notificationType: type };
-        }
-        return alert;
-      })
-    );
-  };
+export default function NewsAlarm() {
+  const {
+    alarms,
+    newKeyword,
+    selectedType,
+    toast,
+    setNewKeyword,
+    setSelectedType,
+    setToast,
+    handleAddAlarm,
+    handleRemoveAlarm,
+    handleToggleAlarm,
+    handleTypeChange,
+  } = useNewsAlarm();
 
   return (
     <div className="p-6">
@@ -120,7 +51,7 @@ export default function NewsAlerts() {
               <option value="email">이메일</option>
             </select>
             <button
-              onClick={handleAddAlert}
+              onClick={handleAddAlarm}
               className="p-2 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors"
             >
               <Plus className="w-5 h-5" />
@@ -134,27 +65,27 @@ export default function NewsAlerts() {
             설정된 알림 목록
           </h3>
           <div className="space-y-4">
-            {alerts.map((alert) => (
+            {alarms.map((alarm) => (
               <div
-                key={alert.id}
+                key={alarm.id}
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <Bell
                     className={`w-5 h-5 ${
-                      alert.isActive ? "text-[#0A5C2B]" : "text-gray-400"
+                      alarm.isActive ? "text-[#0A5C2B]" : "text-gray-400"
                     }`}
                   />
                   <span className="font-medium text-gray-900">
-                    {alert.keyword}
+                    {alarm.keyword}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <select
-                    value={alert.notificationType}
+                    value={alarm.notificationType}
                     onChange={(e) =>
                       handleTypeChange(
-                        alert.id,
+                        alarm.id,
                         e.target.value as "push" | "email"
                       )
                     }
@@ -164,21 +95,21 @@ export default function NewsAlerts() {
                     <option value="email">이메일</option>
                   </select>
                   <button
-                    onClick={() => handleToggleAlert(alert.id)}
+                    onClick={() => handleToggleAlarm(alarm.id)}
                     className={`p-1.5 rounded-lg ${
-                      alert.isActive
+                      alarm.isActive
                         ? "bg-[#0A5C2B]/10 text-[#0A5C2B]"
                         : "bg-gray-200 text-gray-600"
                     }`}
                   >
-                    {alert.isActive ? (
+                    {alarm.isActive ? (
                       <Check className="w-4 h-4" />
                     ) : (
                       <X className="w-4 h-4" />
                     )}
                   </button>
                   <button
-                    onClick={() => handleRemoveAlert(alert.id)}
+                    onClick={() => handleRemoveAlarm(alarm.id)}
                     className="p-1.5 text-gray-400 hover:text-gray-600"
                   >
                     <X className="w-4 h-4" />

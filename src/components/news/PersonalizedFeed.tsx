@@ -1,4 +1,3 @@
-import { Star } from "lucide-react";
 import { NewsItem } from "../../mock/newsData";
 
 interface PersonalizedFeedProps {
