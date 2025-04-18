@@ -51,14 +51,3 @@ BALLFiN은 AI 기반 뉴스 분석, 스마트 주식 분석, 맞춤형 투자 �
 
 ---
 
-## 🚀 프로젝트 실행 방법  
-
-### 1️⃣ **필수 환경 설정**  
-```bash
-# Python 가상 환경 설정 (선택 사항)
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate     # Windows
-
-# 필수 패키지 설치
-pip install -r requirements.txt
