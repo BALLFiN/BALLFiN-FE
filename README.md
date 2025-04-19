@@ -42,12 +42,10 @@ BALLFiN은 AI 기반 뉴스 분석, 스마트 주식 분석, 맞춤형 투자 �
 
 | 분야        | 사용 기술 |
 |------------|--------------|
-| **프론트엔드**  | React, Next.js, TypeScript |
+| **프론트엔드**  | React, TypeScript |
 | **백엔드**      | FastAPI, Python |
 | **AI 모델**     | Transformers (Hugging Face), Scikit-learn, TensorFlow |
 | **데이터베이스** | PostgreSQL, Redis |
-| **클라우드**     | AWS (EC2, S3, Lambda), GCP |
-| **보안**        | OAuth 2.0, JWT, SSL/TLS, 금융보안원 인증 |
 
 ---
 
