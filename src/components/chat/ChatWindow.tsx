@@ -2,9 +2,10 @@ import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 import ChatMenu from './ChatMenu';
 import ChatHistoryList from './ChatHistoryList';
-import { useChatManager } from '@/features/chatbot/hook/useChatManager';
+
 import { X } from 'lucide-react';
-import { ChatWindowProps } from '@/features/chatbot/types';
+import { ChatWindowProps } from '@/features/chat/types';
+import { useChatManager } from '@/features/chat/hooks/useChatManager';
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const {
@@ -27,6 +28,7 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
     showHistory,
     setShowHistory,
     handleSubmit,
+    createChatSession,
   } = useChatManager();
 
   if (!isOpen) return null;
@@ -43,6 +45,10 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
         <ChatMenu
           onClickHistory={() => {
             setShowHistory(!showHistory);
+            setShowMenu(false);
+          }}
+          onCreateNewChat={() => {
+            createChatSession();
             setShowMenu(false);
           }}
         />
