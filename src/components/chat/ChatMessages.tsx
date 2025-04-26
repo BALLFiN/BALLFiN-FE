@@ -1,4 +1,4 @@
-import { Message } from '@/features/chatbot/types';
+import { Message } from '@/features/chat/types';
 import { Bot, User } from 'lucide-react';
 
 interface ChatMessagesProps {
