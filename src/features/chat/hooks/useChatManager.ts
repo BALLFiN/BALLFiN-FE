@@ -107,6 +107,20 @@ export const useChatManager = () => {
       saveChat(finalMessages);
     }, 1000);
   };
+  const createChatSession = () => {
+    const newHistory: ChatHistory = {
+      id: Date.now().toString(),
+      title: '새로운 채팅',
+      messages: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    const updated = [...chatHistories, newHistory];
+    setChatHistories(updated);
+    setCurrentChatId(newHistory.id);
+    setMessages([]);
+    localStorage.setItem('chatHistories', JSON.stringify(updated));
+  };
 
   return {
     messages,
@@ -133,5 +147,6 @@ export const useChatManager = () => {
     showHistory,
     setShowHistory,
     handleSubmit,
+    createChatSession,
   };
 };

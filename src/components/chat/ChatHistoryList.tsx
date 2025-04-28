@@ -1,4 +1,4 @@
-import { ChatHistory } from '@/features/chatbot/types';
+import { ChatHistory } from '@/features/chat/types';
 import { Edit2, Trash2, Check, X } from 'lucide-react';
 
 interface Props {
