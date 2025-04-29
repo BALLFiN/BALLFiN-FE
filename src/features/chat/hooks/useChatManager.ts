@@ -13,8 +13,21 @@ export const useChatManager = () => {
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('chatHistories');
-    if (saved) setChatHistories(JSON.parse(saved));
+    const savedHistories = localStorage.getItem('chatHistories');
+    const savedCurrentId = localStorage.getItem('currentChatId');
+
+    if (savedHistories) {
+      const histories = JSON.parse(savedHistories);
+      setChatHistories(histories);
+
+      if (savedCurrentId) {
+        const found = histories.find((h: ChatHistory) => h.id === savedCurrentId);
+        if (found) {
+          setCurrentChatId(found.id);
+          setMessages(found.messages);
+        }
+      }
+    }
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -55,6 +68,7 @@ export const useChatManager = () => {
     setMessages(history.messages);
     setCurrentChatId(history.id);
     setShowHistory(false);
+    localStorage.setItem('currentChatId', history.id);
   };
 
   const deleteChat = (id: string) => {
@@ -120,6 +134,7 @@ export const useChatManager = () => {
     setCurrentChatId(newHistory.id);
     setMessages([]);
     localStorage.setItem('chatHistories', JSON.stringify(updated));
+    localStorage.setItem('currentChatId', newHistory.id);
   };
 
   return {
