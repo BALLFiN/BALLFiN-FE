@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { register } from "../../api/auth/authApi";
+import { register } from "../../api/auth/signUpApi";
 import Toast from "@/components/common/Toast";
 
 export default function SignUpPage() {
