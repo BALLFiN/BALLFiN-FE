@@ -33,10 +33,8 @@ export default function LoginPage() {
         type: "success",
       });
       // 로그인 성공 후 홈페이지로 이동
-      setTimeout(() => {
-        navigate("/");
-        window.location.reload();
-      }, 1500);
+      navigate("/");
+      window.location.reload();
     } catch (error) {
       console.error("로그인 페이지 에러:", error);
       let errorMessage = "로그인에 실패했습니다.";
