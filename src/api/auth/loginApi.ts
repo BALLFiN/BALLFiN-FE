@@ -5,14 +5,19 @@ interface LoginRequest {
 
 interface LoginResponse {
   access_token: string;
-  name: string;
 }
 
-interface VerifyResponse {
-  message: string;
+interface ValidationError {
+  loc: [string, number];
+  msg: string;
+  type: string;
 }
 
-export const login = async (data: LoginRequest): Promise<LoginResponse> => {
+interface ErrorResponse {
+  detail: ValidationError[];
+}
+
+export const login = async (data: LoginRequest): Promise<string> => {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
       method: "POST",
@@ -23,23 +28,36 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
+      let errorMessage = "로그인에 실패했습니다.";
+      try {
+        const errorData = await response.json();
+        if (errorData.detail) {
+          errorMessage = errorData.detail;
+        }
+      } catch (e) {
+        // 에러 응답 파싱 실패 시 기본 메시지 사용
       }
+
       if (response.status === 422) {
-        throw new Error("입력값이 올바르지 않습니다.");
+        const errorData: ErrorResponse = await response.json();
+        throw new Error(
+          errorData.detail[0]?.msg || "입력값이 올바르지 않습니다."
+        );
       }
-      throw new Error("로그인에 실패했습니다.");
+
+      throw new Error(errorMessage);
     }
 
-    return response.json();
+    const responseData: LoginResponse = await response.json();
+    return responseData.access_token.startsWith("Bearer ")
+      ? responseData.access_token
+      : `Bearer ${responseData.access_token}`;
   } catch (error) {
-    console.error("로그인 에러:", error);
     throw error;
   }
 };
 
-export const verifyAuth = async (): Promise<VerifyResponse> => {
+export const verifyAuth = async (): Promise<{ message: string }> => {
   try {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -49,14 +67,13 @@ export const verifyAuth = async (): Promise<VerifyResponse> => {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/check`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token,
       },
     });
 
     if (!response.ok) {
       if (response.status === 401) {
         localStorage.removeItem("access_token");
-        localStorage.removeItem("user_name");
         throw new Error("로그인이 만료되었습니다. 다시 로그인해주세요.");
       }
       throw new Error("인증 확인에 실패했습니다.");
@@ -64,7 +81,6 @@ export const verifyAuth = async (): Promise<VerifyResponse> => {
 
     return response.json();
   } catch (error) {
-    console.error("인증 확인 에러:", error);
     throw error;
   }
 };

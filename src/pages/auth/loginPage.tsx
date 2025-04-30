@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { login } from "../../api/auth/loginApi";
+import Toast from "@/components/common/Toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -10,16 +12,54 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({ show: false, message: "", type: "success" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 로그인 로직 구현
-    console.log("로그인 시도:", formData);
+
+    try {
+      const token = await login(formData);
+
+      // 토큰을 로컬 스토리지에 저장
+      localStorage.setItem("access_token", token);
+
+      setToast({
+        show: true,
+        message: "로그인에 성공했습니다.",
+        type: "success",
+      });
+      // 로그인 성공 후 홈페이지로 이동
+      setTimeout(() => {
+        navigate("/");
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      console.error("로그인 페이지 에러:", error);
+      let errorMessage = "로그인에 실패했습니다.";
+
+      if (error instanceof Error) {
+        if (error.message === "이메일 또는 비밀번호 오류") {
+          errorMessage = "이메일 또는 비밀번호가 올바르지 않습니다.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      setToast({
+        show: true,
+        message: errorMessage,
+        type: "error",
+      });
+    }
   };
 
   const handleGoogleLogin = () => {
+    console.log("구글 로그인 시도");
     // 구글 로그인 로직 구현
-    console.log("구글 로그인");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,6 +206,14 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </div>
   );
 }
