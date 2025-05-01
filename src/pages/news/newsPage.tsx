@@ -18,101 +18,103 @@ export default function NewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* 뉴스 목록 */}
       <div
-        className={`pt-16 bg-white transition-all duration-500 ease-in-out ${
+        className={`pt-16 fixed top-0 left-0 w-full h-full bg-white transition-all duration-500 ease-in-out ${
           selectedNews ? "w-1/2" : "w-full"
         }`}
       >
-        {/* 상단 섹션 */}
-        <div className="border-b border-gray-100">
-          <div className="container mx-auto px-4 py-8">
-            {/* 실시간 인기 뉴스 */}
-            <div className="max-w-[90rem] mx-auto">
-              <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-5 h-5 text-[#0A5C2B]" />
-                <h2 className="text-lg font-semibold">실시간 인기 뉴스</h2>
-              </div>
-              <div className="relative">
-                <div className="w-full">
-                  <div className="grid grid-cols-5 gap-4">
-                    {mockNews.slice(0, 5).map((news, index) => (
-                      <div
-                        key={news.id}
-                        className="rounded-lg border border-gray-100 hover:border-[#0A5C2B]/20 cursor-pointer transition-all duration-300 overflow-hidden relative"
-                        onClick={() => handleNewsClick(news)}
-                      >
-                        {/* 순위 배지 */}
+        <div className="h-full overflow-y-auto">
+          {/* 상단 섹션 */}
+          <div className="border-b border-gray-100">
+            <div className="container mx-auto px-4 py-8">
+              {/* 실시간 인기 뉴스 */}
+              <div className="max-w-[90rem] mx-auto">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock className="w-5 h-5 text-[#0A5C2B]" />
+                  <h2 className="text-lg font-semibold">실시간 인기 뉴스</h2>
+                </div>
+                <div className="relative">
+                  <div className="w-full">
+                    <div className="grid grid-cols-5 gap-4">
+                      {mockNews.slice(0, 5).map((news, index) => (
                         <div
-                          className={`absolute top-2 left-2 w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm z-10 ${
-                            index === 0
-                              ? "bg-yellow-500"
-                              : index === 1
-                                ? "bg-gray-400"
-                                : index === 2
-                                  ? "bg-amber-700"
-                                  : "bg-black"
-                          }`}
+                          key={news.id}
+                          className="rounded-lg border border-gray-100 hover:border-[#0A5C2B]/20 cursor-pointer transition-all duration-300 overflow-hidden relative"
+                          onClick={() => handleNewsClick(news)}
                         >
-                          {index + 1}
-                        </div>
-                        <div className="aspect-video relative overflow-hidden">
-                          <img
-                            src={
-                              news.imageUrl ||
-                              "https://via.placeholder.com/400x225"
-                            }
-                            alt={news.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <div className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
-                            {news.title}
+                          {/* 순위 배지 */}
+                          <div
+                            className={`absolute top-2 left-2 w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm z-10 ${
+                              index === 0
+                                ? "bg-yellow-500"
+                                : index === 1
+                                  ? "bg-gray-400"
+                                  : index === 2
+                                    ? "bg-amber-700"
+                                    : "bg-black"
+                            }`}
+                          >
+                            {index + 1}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>{news.source}</span>
-                            <span>•</span>
-                            <span>{news.date}</span>
+                          <div className="aspect-video relative overflow-hidden">
+                            <img
+                              src={
+                                news.imageUrl ||
+                                "https://via.placeholder.com/400x225"
+                              }
+                              alt={news.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <div className="p-4">
+                            <div className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
+                              {news.title}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <span>{news.source}</span>
+                              <span>•</span>
+                              <span>{news.date}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        {/* 메인 뉴스 목록 */}
-        <div className="container mx-auto px-4 py-8">
-          <NewsList
-            news={mockNews}
-            selectedNews={selectedNews}
-            onNewsClick={handleNewsClick}
-          />
-        </div>
-        {/* 뉴스 타임라인과 맞춤형 뉴스 피드 */}
-        <div className="container mx-auto px-4 py-8 border-t border-gray-100">
-          <div className="max-w-[90rem] mx-auto grid grid-cols-2 gap-8">
-            {/* 뉴스 타임라인 */}
-            <div className="h-[720px] overflow-y-auto">
-              <NewsTimeline
-                events={mockNews.slice(0, 7).map((news) => ({
-                  time: news.date,
-                  title: news.title,
-                  description: news.summary,
-                  source: news.source,
-                }))}
-              />
-            </div>
-            {/* 맞춤형 뉴스 피드 */}
-            <div className="h-[720px] overflow-y-auto">
-              <PersonalizedFeed
-                news={mockNews.slice(0, 5)}
-                interests={["주식", "부동산", "경제"]}
-              />
+          {/* 메인 뉴스 목록 */}
+          <div className="container mx-auto px-4 py-8">
+            <NewsList
+              news={mockNews}
+              selectedNews={selectedNews}
+              onNewsClick={handleNewsClick}
+            />
+          </div>
+          {/* 뉴스 타임라인과 맞춤형 뉴스 피드 */}
+          <div className="container mx-auto px-4 py-8 border-t border-gray-100">
+            <div className="max-w-[90rem] mx-auto grid grid-cols-2 gap-8">
+              {/* 뉴스 타임라인 */}
+              <div className="h-[720px] overflow-y-auto">
+                <NewsTimeline
+                  events={mockNews.slice(0, 7).map((news) => ({
+                    time: news.date,
+                    title: news.title,
+                    description: news.summary,
+                    source: news.source,
+                  }))}
+                />
+              </div>
+              {/* 맞춤형 뉴스 피드 */}
+              <div className="h-[720px] overflow-y-auto">
+                <PersonalizedFeed
+                  news={mockNews.slice(0, 5)}
+                  interests={["주식", "부동산", "경제"]}
+                />
+              </div>
             </div>
           </div>
         </div>
