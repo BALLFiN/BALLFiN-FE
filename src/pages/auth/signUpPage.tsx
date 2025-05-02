@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { register } from "../../api/auth/signUpApi";
+import Toast from "@/components/common/Toast";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -13,11 +15,48 @@ export default function SignUpPage() {
     confirmPassword: "",
     name: "",
   });
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({ show: false, message: "", type: "success" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 회원가입 로직 구현
-    console.log("회원가입 시도:", formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      setToast({
+        show: true,
+        message: "비밀번호가 일치하지 않습니다.",
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+      });
+
+      setToast({
+        show: true,
+        message: "회원가입이 완료되었습니다.",
+        type: "success",
+      });
+
+      // 회원가입 성공 후 로그인 페이지로 이동
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (error) {
+      setToast({
+        show: true,
+        message: "회원가입에 실패했습니다.",
+        type: "error",
+      });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,6 +237,14 @@ export default function SignUpPage() {
           </p>
         </div>
       </div>
+
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </div>
   );
 }
