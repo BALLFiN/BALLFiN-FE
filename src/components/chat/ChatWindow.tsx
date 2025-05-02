@@ -48,6 +48,10 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
             setShowMenu(false);
           }}
           onCreateNewChat={() => {
+            if (chatHistories.length >= 10) {
+              alert('채팅방은 최대 10개까지 생성할 수 있습니다.');
+              return;
+            }
             createChatSession();
             setShowMenu(false);
           }}

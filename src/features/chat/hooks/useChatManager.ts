@@ -105,7 +105,18 @@ export const useChatManager = () => {
       timestamp: new Date().toISOString(),
     };
 
-    const updatedMessages = [...messages, newMessage];
+    let updatedMessages = [...messages, newMessage];
+
+    if (updatedMessages.length > 50) {
+      updatedMessages = updatedMessages.slice(-50);
+      updatedMessages.unshift({
+        id: 'notice',
+        content: '이전 메시지 일부는 오래되어 삭제되었습니다.',
+        isUser: false,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     setMessages(updatedMessages);
     setMessage('');
 
