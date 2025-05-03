@@ -45,7 +45,7 @@ export default function NewsPage() {
                       >
                         {/* 순위 배지 */}
                         <div
-                          className={`absolute top-2 left-2 w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm z-10 ${
+                          className={`absolute top-2 left-2 w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm z-2 ${
                             index === 0
                               ? "bg-yellow-500"
                               : index === 1
@@ -125,9 +125,9 @@ export default function NewsPage() {
       </div>
       {/* 뉴스 상세 */}
       <div
-        className={`p-4 fixed top-0 right-0 h-screen bg-white w-1/3 transition-all duration-500 ease-in-out transform rounded-lg shadow-lg ${
+        className={`z-10 p-2 fixed top-0 right-0 bg-white w-1/3 transition-all duration-500 ease-in-out transform rounded-lg shadow-lg ${
           selectedNews
-            ? "translate-x-0 mt-16 mr-10 border border-gray-200"
+            ? "translate-x-0 mt-20 mr-10 border border-gray-200"
             : "translate-x-full"
         }`}
       >
