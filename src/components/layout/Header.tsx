@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { logout } from "../../api/auth/logoutApi";
 import Toast from "@/components/common/Toast";
@@ -26,7 +26,6 @@ interface AuthButtonItem {
 type AuthItem = AuthLinkItem | AuthButtonItem;
 
 const Header = () => {
-  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,8 +38,20 @@ const Header = () => {
 
   useEffect(() => {
     // 로그인 상태 확인
-    const token = localStorage.getItem("access_token");
-    setIsLoggedIn(!!token);
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("access_token");
+      setIsLoggedIn(!!token);
+    };
+
+    // 초기 로그인 상태 확인
+    checkLoginStatus();
+
+    // 로그인 상태 변경 이벤트 리스너 추가
+    window.addEventListener("storage", checkLoginStatus);
+
+    return () => {
+      window.removeEventListener("storage", checkLoginStatus);
+    };
   }, []);
 
   useEffect(() => {
