@@ -20,7 +20,7 @@ interface AuthButtonItem {
   label: string;
   onClick: () => void;
   isPrimary: boolean;
-  icon: JSX.Element;
+  icon: React.ReactElement;
 }
 
 type AuthItem = AuthLinkItem | AuthButtonItem;
