@@ -39,7 +39,13 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
   }
 
   return (
-    <div className="p-4 animate-slide-in max-w-2xl mx-auto">
+    <div
+      className={`p-4 animate-slide-in max-w-2xl mx-auto transition-all duration-500 ease-in-out ${
+        !isAnalyzing[news.id] && !isLoading[news.id]
+          ? "h-[200px]"
+          : "min-h-[200px]"
+      }`}
+    >
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-bold text-gray-900">{news.title}</h2>
         <button
@@ -65,7 +71,7 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
       </div>
 
       {isLoading[news.id] ? (
-        <div className="flex justify-center items-center h-[40vh]  ">
+        <div className="flex justify-center items-center min-h-[40vh]">
           <Loading />
         </div>
       ) : !isAnalyzing[news.id] ? (
