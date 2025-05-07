@@ -1,14 +1,14 @@
-import { ChatHistory } from '@/features/chat/types';
+import { ChatListItem } from '@/features/chat/types';
 import { Edit2, Trash2, Check, X } from 'lucide-react';
 
 interface Props {
-  histories: ChatHistory[];
+  histories: ChatListItem[];
   currentId: string | null;
   editingId: string | null;
   editTitle: string;
-  onLoad: (history: ChatHistory) => void;
+  onLoad: (history: ChatListItem) => void;
   onDelete: (id: string) => void;
-  onEditStart: (history: ChatHistory) => void;
+  onEditStart: (history: ChatListItem) => void;
   onEditChange: (val: string) => void;
   onEditSave: (id: string) => void;
   onEditCancel: () => void;

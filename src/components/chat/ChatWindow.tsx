@@ -6,8 +6,10 @@ import ChatHistoryList from './ChatHistoryList';
 import { X } from 'lucide-react';
 import { ChatWindowProps } from '@/features/chat/types';
 import { useChatManager } from '@/features/chat/hooks/useChatManager';
+import { useChatList } from '@/features/chat/hooks/useChatList';
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
+  const { data: chatList = [] } = useChatList();
   const {
     messages,
     message,
@@ -32,6 +34,7 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   } = useChatManager();
 
   if (!isOpen) return null;
+
   return (
     <div className="fixed bottom-24 right-8 w-[30vw] h-[600px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -61,13 +64,13 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
       {showHistory ? (
         <div className="flex-1 overflow-y-auto">
           <ChatHistoryList
-            histories={chatHistories}
+            histories={chatList}
             currentId={currentChatId}
             editingId={editingId}
             editTitle={editTitle}
-            onLoad={loadChat}
+            onLoad={loadChat as any} // api 완료후 변경예정
             onDelete={deleteChat}
-            onEditStart={startEditing}
+            onEditStart={startEditing as any} // api 완료후 변경예정
             onEditChange={setEditTitle}
             onEditSave={saveEdit}
             onEditCancel={cancelEdit}
