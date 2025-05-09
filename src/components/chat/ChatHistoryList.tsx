@@ -1,3 +1,4 @@
+import { useUpdateChatTitle } from '@/features/chat/hooks/useUpdateChatTilte';
 import { ChatListItem } from '@/features/chat/types';
 import { Edit2, Trash2, Check, X } from 'lucide-react';
 
@@ -27,6 +28,8 @@ export default function ChatHistoryList({
   onEditCancel,
   formatDate,
 }: Props) {
+  const { mutate: updateTitle } = useUpdateChatTitle();
+
   return (
     <div className="flex-1 overflow-y-auto p-4">
       <h4 className="text-lg font-semibold mb-4">채팅 기록</h4>
@@ -46,7 +49,13 @@ export default function ChatHistoryList({
                     className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent font-shrikhand"
                     autoFocus
                   />
-                  <button onClick={() => onEditSave(history.id)} className="text-green-600 hover:text-green-700 p-1">
+                  <button
+                    onClick={() => {
+                      updateTitle({ chatId: history.id, title: editTitle });
+                      onEditSave(history.id);
+                    }}
+                    className="text-green-600 hover:text-green-700 p-1"
+                  >
                     <Check size={16} />
                   </button>
                   <button onClick={onEditCancel} className="text-gray-500 hover:text-gray-700 p-1">
