@@ -56,6 +56,7 @@ export const useChatManager = () => {
         title: messages[0].content.slice(0, 20) + '...',
         messages,
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       setCurrentChatId(newHistory.id);
       const updated = [...chatHistories, newHistory];
@@ -138,6 +139,7 @@ export const useChatManager = () => {
       title: '새로운 채팅',
       messages: [],
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     const updated = [...chatHistories, newHistory];

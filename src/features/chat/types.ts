@@ -5,11 +5,16 @@ export interface Message {
   timestamp: string;
 }
 
-export interface ChatHistory {
+export interface ChatListItem {
   id: string;
   title: string;
-  messages: Message[];
   createdAt: string;
+  updatedAt: string;
+}
+
+// 기존 ChatHistory는 messages 포함한 전체형
+export interface ChatHistory extends ChatListItem {
+  messages: Message[];
 }
 
 export interface ChatWindowProps {
