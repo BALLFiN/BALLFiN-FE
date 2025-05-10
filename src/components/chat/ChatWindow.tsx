@@ -7,9 +7,16 @@ import { X } from 'lucide-react';
 import { ChatWindowProps } from '@/features/chat/types';
 import { useChatManager } from '@/features/chat/hooks/useChatManager';
 import { useChatList } from '@/features/chat/hooks/chatList/useChatList';
+import { useCreateChat } from '@/features/chat/hooks/chatList/useChatMutation';
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const { data: chatList = [] } = useChatList();
+  const { mutate: createChat } = useCreateChat();
+
+  const generateKoreanTimestamp = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} {now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+  }; //일단 채팅방 base Title
   const {
     messages,
     message,
@@ -51,11 +58,12 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
             setShowMenu(false);
           }}
           onCreateNewChat={() => {
-            if (chatHistories.length >= 10) {
+            if (chatHistories.length >= 12) {
               alert('채팅방은 최대 10개까지 생성할 수 있습니다.');
               return;
             }
-            createChatSession();
+            const title = generateKoreanTimestamp();
+            createChat(title);
             setShowMenu(false);
           }}
         />
