@@ -1,4 +1,4 @@
-import { useUpdateChatTitle } from '@/features/chat/hooks/useUpdateChatTilte';
+import { useDeleteChat, useUpdateChatTitle } from '@/features/chat/hooks/chatList/useChatMutation';
 import { ChatListItem } from '@/features/chat/types';
 import { Edit2, Trash2, Check, X } from 'lucide-react';
 
@@ -21,7 +21,6 @@ export default function ChatHistoryList({
   editingId,
   editTitle,
   onLoad,
-  onDelete,
   onEditStart,
   onEditChange,
   onEditSave,
@@ -29,7 +28,7 @@ export default function ChatHistoryList({
   formatDate,
 }: Props) {
   const { mutate: updateTitle } = useUpdateChatTitle();
-
+  const { mutate: deleteChatMutate } = useDeleteChat();
   return (
     <div className="flex-1 overflow-y-auto p-4">
       <h4 className="text-lg font-semibold mb-4">채팅 기록</h4>
@@ -81,7 +80,7 @@ export default function ChatHistoryList({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(history.id);
+                deleteChatMutate({ chatId: history.id });
               }}
               className="text-red-500 hover:text-red-700 p-2"
             >

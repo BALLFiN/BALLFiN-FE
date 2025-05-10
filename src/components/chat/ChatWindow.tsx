@@ -6,7 +6,7 @@ import ChatHistoryList from './ChatHistoryList';
 import { X } from 'lucide-react';
 import { ChatWindowProps } from '@/features/chat/types';
 import { useChatManager } from '@/features/chat/hooks/useChatManager';
-import { useChatList } from '@/features/chat/hooks/useChatList';
+import { useChatList } from '@/features/chat/hooks/chatList/useChatList';
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const { data: chatList = [] } = useChatList();
