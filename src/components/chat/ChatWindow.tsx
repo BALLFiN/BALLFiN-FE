@@ -6,8 +6,17 @@ import ChatHistoryList from './ChatHistoryList';
 import { X } from 'lucide-react';
 import { ChatWindowProps } from '@/features/chat/types';
 import { useChatManager } from '@/features/chat/hooks/useChatManager';
+import { useChatList } from '@/features/chat/hooks/chatList/useChatList';
+import { useCreateChat } from '@/features/chat/hooks/chatList/useChatMutation';
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
+  const { data: chatList = [] } = useChatList();
+  const { mutate: createChat } = useCreateChat();
+
+  const generateKoreanTimestamp = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} {now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+  }; //일단 채팅방 base Title
   const {
     messages,
     message,
@@ -32,6 +41,7 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   } = useChatManager();
 
   if (!isOpen) return null;
+
   return (
     <div className="fixed bottom-24 right-8 w-[30vw] h-[600px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -48,11 +58,12 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
             setShowMenu(false);
           }}
           onCreateNewChat={() => {
-            if (chatHistories.length >= 10) {
+            if (chatHistories.length >= 12) {
               alert('채팅방은 최대 10개까지 생성할 수 있습니다.');
               return;
             }
-            createChatSession();
+            const title = generateKoreanTimestamp();
+            createChat(title);
             setShowMenu(false);
           }}
         />
@@ -61,13 +72,13 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
       {showHistory ? (
         <div className="flex-1 overflow-y-auto">
           <ChatHistoryList
-            histories={chatHistories}
+            histories={chatList}
             currentId={currentChatId}
             editingId={editingId}
             editTitle={editTitle}
-            onLoad={loadChat}
+            onLoad={loadChat as any} // api 완료후 변경예정
             onDelete={deleteChat}
-            onEditStart={startEditing}
+            onEditStart={startEditing as any} // api 완료후 변경예정
             onEditChange={setEditTitle}
             onEditSave={saveEdit}
             onEditCancel={cancelEdit}
