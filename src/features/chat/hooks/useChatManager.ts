@@ -4,7 +4,7 @@ import { ChatHistory, Message } from '../types';
 
 export const useChatManager = () => {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+
   const [chatHistories, setChatHistories] = useState<ChatHistory[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -24,7 +24,6 @@ export const useChatManager = () => {
         const found = histories.find((h: ChatHistory) => h.id === savedCurrentId);
         if (found) {
           setCurrentChatId(found.id);
-          setMessages(found.messages);
         }
       }
     }
@@ -66,7 +65,6 @@ export const useChatManager = () => {
   };
 
   const loadChat = (history: ChatHistory) => {
-    setMessages(history.messages);
     setCurrentChatId(history.id);
     setShowHistory(false);
     localStorage.setItem('currentChatId', history.id);
@@ -78,7 +76,6 @@ export const useChatManager = () => {
     localStorage.setItem('chatHistories', JSON.stringify(updated));
     if (currentChatId === id) {
       setCurrentChatId(null);
-      setMessages([]);
     }
   };
 
@@ -106,7 +103,7 @@ export const useChatManager = () => {
       timestamp: new Date().toISOString(),
     };
 
-    let updatedMessages = [...messages, newMessage];
+    let updatedMessages = [newMessage];
 
     if (updatedMessages.length > 50) {
       updatedMessages = updatedMessages.slice(-50);
@@ -118,7 +115,6 @@ export const useChatManager = () => {
       });
     }
 
-    setMessages(updatedMessages);
     setMessage('');
 
     setTimeout(() => {
@@ -129,7 +125,7 @@ export const useChatManager = () => {
         timestamp: new Date().toISOString(),
       };
       const finalMessages = [...updatedMessages, botResponse];
-      setMessages(finalMessages);
+
       saveChat(finalMessages);
     }, 1000);
   };
@@ -145,14 +141,12 @@ export const useChatManager = () => {
     const updated = [...chatHistories, newHistory];
     setChatHistories(updated);
     setCurrentChatId(newHistory.id);
-    setMessages([]);
+
     localStorage.setItem('chatHistories', JSON.stringify(updated));
     localStorage.setItem('currentChatId', newHistory.id);
   };
 
   return {
-    messages,
-    setMessages,
     message,
     setMessage,
     chatHistories,
