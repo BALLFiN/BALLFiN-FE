@@ -1,40 +1,93 @@
 import { Clock } from "lucide-react";
+import { useState } from "react";
 
 interface TimelineEvent {
   time: string;
   title: string;
   description: string;
   source: string;
+  sentiment: "neutral" | "positive" | "negative";
 }
 
 interface NewsTimelineProps {
   events: TimelineEvent[];
+  onEventClick?: (event: TimelineEvent) => void;
 }
 
-export default function NewsTimeline({ events }: NewsTimelineProps) {
+export default function NewsTimeline({
+  events,
+  onEventClick,
+}: NewsTimelineProps) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm h-full">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Time Line</h3>
-      <div className="space-y-6">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-lg h-full">
+      <div className="flex items-center gap-2 mb-6">
+        <div className="bg-gradient-to-r from-[#0A5C2B] to-[#0A5C2B]/80 p-2 rounded-lg shadow-md">
+          <Clock className="w-5 h-5 text-white" />
+        </div>
+        <h3 className="text-xl font-bold bg-gradient-to-r from-[#0A5C2B] to-[#0A5C2B]/80 bg-clip-text text-transparent">
+          실시간 타임라인
+        </h3>
+      </div>
+      <div className="space-y-4">
         {events.map((event, index) => (
-          <div key={index} className="flex gap-4">
+          <div
+            key={index}
+            className={`flex gap-4 p-3 rounded-lg cursor-pointer will-change-transform ${
+              hoveredIndex === index
+                ? "bg-gray-50 scale-[1.02]"
+                : "hover:bg-gray-50"
+            } ${
+              event.sentiment === "positive"
+                ? "hover:border-l-4 hover:border-l-red-500"
+                : event.sentiment === "negative"
+                  ? "hover:border-l-4 hover:border-l-blue-500"
+                  : "hover:border-l-4 hover:border-l-[#0A5C2B]"
+            } transition-all duration-200 ease-out`}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            onClick={() => onEventClick?.(event)}
+          >
             <div className="flex flex-col items-center">
-              <div className="w-2 h-2 bg-[#0A5C2B] rounded-full" />
+              <div
+                className={`w-3 h-3 rounded-full shadow-md transition-transform duration-200 ${
+                  hoveredIndex === index ? "scale-125" : ""
+                } ${
+                  event.sentiment === "positive"
+                    ? "bg-gradient-to-br from-red-400 to-red-600"
+                    : event.sentiment === "negative"
+                      ? "bg-gradient-to-br from-blue-400 to-blue-600"
+                      : "bg-gradient-to-br from-[#0A5C2B] to-[#0A5C2B]/80"
+                }`}
+              />
               {index !== events.length - 1 && (
-                <div className="w-0.5 h-full bg-gray-200" />
+                <div
+                  className={`w-0.5 h-[calc(100%+1rem)] transition-colors duration-200 ${
+                    event.sentiment === "positive"
+                      ? "bg-blue-200"
+                      : event.sentiment === "negative"
+                        ? "bg-red-200"
+                        : "bg-[#0A5C2B]/20"
+                  }`}
+                />
               )}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-                <Clock className="w-4 h-4" />
-                <span>{event.time}</span>
+              <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                <span className="font-medium">{event.time}</span>
                 <span>•</span>
-                <span>{event.source}</span>
+                <span className="text-[#0A5C2B] font-medium">
+                  {event.source}
+                </span>
               </div>
-              <h4 className="text-sm font-medium text-gray-900 mb-1">
+              <h4
+                className={`text-base font-semibold transition-colors duration-200 ${
+                  hoveredIndex === index ? "text-[#0A5C2B]" : "text-gray-900"
+                }`}
+              >
                 {event.title}
               </h4>
-              <p className="text-sm text-gray-600">{event.description}</p>
             </div>
           </div>
         ))}
