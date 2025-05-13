@@ -1,4 +1,3 @@
-import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 import ChatMenu from './ChatMenu';
 import ChatHistoryList from './ChatHistoryList';
@@ -9,6 +8,7 @@ import { useChatManager } from '@/features/chat/hooks/useChatManager';
 import { useChatList } from '@/features/chat/hooks/chatList/useChatList';
 import { useCreateChat } from '@/features/chat/hooks/chatList/useChatMutation';
 import { useChatMessages, useSendMessage } from '@/features/chat/hooks/chatList/useChatMessage';
+import { ChatMessages } from './ChatMessages';
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const { data: chatList = [] } = useChatList();
