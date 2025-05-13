@@ -4,12 +4,16 @@ interface NewsFilterProps {
   onSortChange: (sort: string) => void;
   onDateRangeChange: (range: { start: string; end: string }) => void;
   onImpactFilterChange: (impacts: string[]) => void;
+  showOnlyFavorites?: boolean;
+  onShowOnlyFavoritesChange?: (show: boolean) => void;
 }
 
 export default function NewsFilter({
   onSortChange,
   onDateRangeChange,
   onImpactFilterChange,
+  showOnlyFavorites,
+  onShowOnlyFavoritesChange,
 }: NewsFilterProps) {
   const [sortBy, setSortBy] = useState("relevance");
   const [dateRange, setDateRange] = useState("all");
@@ -119,6 +123,25 @@ export default function NewsFilter({
           <option value="oldest">오래된순</option>
         </select>
       </div>
+
+      {/* 관심기업만 보기 (드롭다운) */}
+      {typeof showOnlyFavorites === "boolean" && onShowOnlyFavoritesChange && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+            관심기업
+          </span>
+          <select
+            value={showOnlyFavorites ? "favorites" : "all"}
+            onChange={(e) =>
+              onShowOnlyFavoritesChange(e.target.value === "favorites")
+            }
+            className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
+          >
+            <option value="all">전체</option>
+            <option value="favorites">관심기업만</option>
+          </select>
+        </div>
+      )}
 
       {/* 날짜 필터 */}
       <div className="flex items-center gap-2">
