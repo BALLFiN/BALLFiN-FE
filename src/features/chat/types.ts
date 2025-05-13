@@ -4,7 +4,12 @@ export interface Message {
   isUser: boolean;
   timestamp: string;
 }
-
+export interface NewMessagePT {
+  msg_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  ts: string;
+}
 export interface ChatListItem {
   id: string;
   title: string;
