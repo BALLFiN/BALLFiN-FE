@@ -6,7 +6,7 @@ interface ChatMessagesProps {
   messages: NewMessagePT[];
 }
 
-const ChatMessages = ({ messages }: ChatMessagesProps) => {
+export const ChatMessages = ({ messages }: ChatMessagesProps) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -43,5 +43,3 @@ const ChatMessages = ({ messages }: ChatMessagesProps) => {
     </div>
   );
 };
-
-export default ChatMessages;
