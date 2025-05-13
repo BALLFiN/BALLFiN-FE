@@ -5,7 +5,6 @@ import NewsFilter from "./NewsFilter";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
 import { NewsListProps } from "./types";
-import { Star } from "lucide-react";
 
 export default function NewsList({
   news,
@@ -18,18 +17,9 @@ export default function NewsList({
   const [sortBy, setSortBy] = useState("relevance");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [selectedImpacts, setSelectedImpacts] = useState<string[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favorites] = useState<string[]>([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const itemsPerPage = 10;
-
-  // 즐겨찾기 토글 함수
-  const toggleFavorite = (newsId: string) => {
-    setFavorites((prev) =>
-      prev.includes(newsId)
-        ? prev.filter((id) => id !== newsId)
-        : [...prev, newsId]
-    );
-  };
 
   // 검색어로 필터링
   let filteredNews = news.filter((item) =>
@@ -38,7 +28,9 @@ export default function NewsList({
 
   // 즐겨찾기 필터링
   if (showOnlyFavorites) {
-    filteredNews = filteredNews.filter((item) => favorites.includes(item.id));
+    filteredNews = filteredNews.filter((item) =>
+      favorites.includes(String(item.id))
+    );
   }
 
   // 날짜 범위로 필터링

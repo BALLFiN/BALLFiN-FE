@@ -4,7 +4,6 @@ import NewsAnalysis from "../../components/news/NewsAnalysis";
 import { mockNews, NewsItem } from "../../mock/newsData";
 import { Clock } from "lucide-react";
 import NewsTimeline from "../../components/news/NewsTimeline";
-import PersonalizedFeed from "../../components/news/PersonalizedFeed";
 
 export default function NewsPage() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
@@ -21,7 +20,7 @@ export default function NewsPage() {
     <div className="flex min-h-screen bg-gray-50">
       {/* 뉴스 목록 */}
       <div
-        className={`pt-16 w-full h-screen bg-white transition-all duration-500 ease-in-out ${
+        className={`pt-4 w-full h-screen bg-white transition-all duration-500 ease-in-out ${
           selectedNews ? "w-1/2" : "w-full"
         }`}
       >
@@ -123,13 +122,6 @@ export default function NewsPage() {
                     handleNewsClick(newsItem);
                   }
                 }}
-              />
-            </div>
-            {/* 맞춤형 뉴스 피드 */}
-            <div>
-              <PersonalizedFeed
-                news={mockNews.slice(0, 5)}
-                interests={["주식", "부동산", "경제"]}
               />
             </div>
           </div>
