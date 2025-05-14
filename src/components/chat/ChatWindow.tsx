@@ -83,9 +83,9 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
             currentId={currentChatId}
             editingId={editingId}
             editTitle={editTitle}
-            onLoad={loadChat as any} // api 완료후 변경예정
+            onLoad={loadChat as any}
             onDelete={deleteChat}
-            onEditStart={startEditing as any} // api 완료후 변경예정
+            onEditStart={startEditing as any}
             onEditChange={setEditTitle}
             onEditSave={saveEdit}
             onEditCancel={cancelEdit}
