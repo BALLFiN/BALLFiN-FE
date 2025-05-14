@@ -41,11 +41,9 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
     showHistory,
     setShowHistory,
   } = useChatManager();
-  const {
-    data: messages = [],
-    isLoading,
-    refetch,
-  } = useChatMessages(currentChatId ?? "");
+  const { data: messages = [], isLoading } = useChatMessages(
+    currentChatId ?? ""
+  );
   const { mutate: sendMessage } = useSendMessage();
 
   const handleSubmit = () => {
