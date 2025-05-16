@@ -17,12 +17,21 @@ export default function NewsList({
   const [sortBy, setSortBy] = useState("relevance");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [selectedImpacts, setSelectedImpacts] = useState<string[]>([]);
+  const [favorites] = useState<string[]>([]);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const itemsPerPage = 10;
 
   // 검색어로 필터링
   let filteredNews = news.filter((item) =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // 즐겨찾기 필터링
+  if (showOnlyFavorites) {
+    filteredNews = filteredNews.filter((item) =>
+      favorites.includes(String(item.id))
+    );
+  }
 
   // 날짜 범위로 필터링
   if (dateRange.start && dateRange.end) {
@@ -121,6 +130,8 @@ export default function NewsList({
             onSortChange={handleSortChange}
             onDateRangeChange={handleDateRangeChange}
             onImpactFilterChange={handleImpactFilterChange}
+            showOnlyFavorites={showOnlyFavorites}
+            onShowOnlyFavoritesChange={setShowOnlyFavorites}
           />
         </div>
 
