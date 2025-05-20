@@ -1,27 +1,11 @@
-import {
-  User,
-  Star,
-  Settings,
-  ChevronRight,
-  Bell,
-  HelpCircle,
-  LogOut,
-} from "lucide-react";
-import NewsAlarm from "@/components/auth/myPage/NewsAlarm";
+import { User, Star, Settings, ChevronRight, Bell, HelpCircle, LogOut } from 'lucide-react';
+import NewsAlarm from '@/components/auth/myPage/NewsAlarm';
 
 export default function MyPage() {
   const favoriteStocks = [
-    { name: "삼성전자", code: "005930", change: "+2.5%" },
-    { name: "SK하이닉스", code: "000660", change: "+1.8%" },
-    { name: "NAVER", code: "035420", change: "-0.5%" },
-  ];
-
-  const menuItems = [
-    { icon: User, label: "내 정보", color: "text-gray-600" },
-    { icon: Settings, label: "내 정보 수정", color: "text-gray-600" },
-    { icon: Bell, label: "알림 설정", color: "text-gray-600" },
-    { icon: HelpCircle, label: "고객센터", color: "text-gray-600" },
-    { icon: LogOut, label: "로그아웃", color: "text-red-600", isLogout: true },
+    { name: '삼성전자', code: '005930', change: '+2.5%' },
+    { name: 'SK하이닉스', code: '000660', change: '+1.8%' },
+    { name: 'NAVER', code: '035420', change: '-0.5%' },
   ];
 
   return (
@@ -50,9 +34,7 @@ export default function MyPage() {
               <Star className="text-yellow-400" size={20} />
               즐겨찾기 종목
             </h2>
-            <button className="text-sm text-[#0A5C2B] hover:underline">
-              전체보기
-            </button>
+            <button className="text-sm text-[#0A5C2B] hover:underline">전체보기</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {favoriteStocks.map((stock, index) => (
@@ -62,9 +44,7 @@ export default function MyPage() {
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-medium">{stock.name}</span>
-                  <span
-                    className={`text-sm ${stock.change.startsWith("+") ? "text-red-500" : "text-blue-500"}`}
-                  >
+                  <span className={`text-sm ${stock.change.startsWith('+') ? 'text-red-500' : 'text-blue-500'}`}>
                     {stock.change}
                   </span>
                 </div>
@@ -80,31 +60,6 @@ export default function MyPage() {
         </section>
 
         {/* 메뉴 섹션 */}
-        <section className="bg-white rounded-xl shadow-sm">
-          <div className="divide-y divide-gray-100">
-            {menuItems.map((item, index) => (
-              <button
-                key={index}
-                className={`w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${
-                  item.isLogout ? "text-red-600" : ""
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon size={20} className={item.color} />
-                  <span
-                    className={item.isLogout ? "text-red-600" : "text-gray-900"}
-                  >
-                    {item.label}
-                  </span>
-                </div>
-                <ChevronRight
-                  size={20}
-                  className={item.isLogout ? "text-red-600" : "text-gray-400"}
-                />
-              </button>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );
