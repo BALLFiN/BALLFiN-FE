@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
-import HomePage from './pages/HomePage';
+import HomePage from './pages/homePage';
 import IntroPage from './pages/introPage';
 import NewsPage from '@/pages/news/newsPage';
 import StockPage from '@/pages/stock/stockPage';
 import LoginPage from '@/pages/auth/loginPage';
 import SignUpPage from '@/pages/auth/signUpPage';
-import MyPage from '@/pages/auth/myPage';
+import MyPage from '@/pages/myPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 const queryClient = new QueryClient();
 function App() {
   return (

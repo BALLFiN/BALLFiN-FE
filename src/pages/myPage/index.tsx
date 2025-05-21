@@ -1,5 +1,6 @@
-import { User, Star, Settings, ChevronRight, Bell, HelpCircle, LogOut } from 'lucide-react';
+import { User, Star } from 'lucide-react';
 import NewsAlarm from '@/components/auth/myPage/NewsAlarm';
+import ProfileSettings from '@/components/auth/myPage/ProfileSettings';
 
 export default function MyPage() {
   const favoriteStocks = [
@@ -60,6 +61,7 @@ export default function MyPage() {
         </section>
 
         {/* 메뉴 섹션 */}
+        <ProfileSettings />
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import { User, Settings, ChevronRight, Bell, HelpCircle, LogOut } from 'lucide-react';
+
 export default function ProfileSettings() {
   const menuItems = [
     { icon: User, label: '내 정보', color: 'text-gray-600' },
