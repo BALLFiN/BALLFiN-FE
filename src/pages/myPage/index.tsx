@@ -1,4 +1,4 @@
-import { User, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import NewsAlarm from '@/components/auth/myPage/NewsAlarm';
 import ProfileSettings from '@/components/auth/myPage/ProfileSettings';
 
@@ -12,19 +12,6 @@ export default function MyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 프로필 섹션 */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-              <User size={32} className="text-gray-600" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">홍길동</h1>
-              <p className="text-gray-600">hong@example.com</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* 메인 컨텐츠 */}
       <div className="max-w-4xl mx-auto px-4 py-6">
