@@ -10,6 +10,9 @@ import MyPage from '@/pages/myPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MyPageLayout from './components/layout/myPageLayout';
 
+import AramPage from './pages/myPage/Aram';
+import SettingsPage from './pages/myPage/Settings';
+
 const queryClient = new QueryClient();
 function App() {
   return (
@@ -27,8 +30,8 @@ function App() {
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/mypage" element={<MyPageLayout />}>
                 <Route index element={<MyPage />} />
-                {/* <Route path="/aram" element={<Aram />} />
-                <Route path="/settings" element={<Settings />} /> */}
+                <Route path="aram" element={<AramPage />} />
+                <Route path="settings" element={<SettingsPage />} />
               </Route>
             </Routes>
           </main>
