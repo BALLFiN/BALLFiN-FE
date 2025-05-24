@@ -1,7 +1,6 @@
-import { NewsItem } from "../../mock/newsData";
+import { NewsItem } from "../../api/news";
 
 export interface NewsListProps {
-  news: NewsItem[];
   selectedNews: NewsItem | null;
   onNewsClick: (news: NewsItem) => void;
 }
@@ -10,6 +9,8 @@ export interface NewsFilterProps {
   onSortChange: (sort: string) => void;
   onDateRangeChange: (range: { start: string; end: string }) => void;
   onImpactFilterChange: (impacts: string[]) => void;
+  showOnlyFavorites: boolean;
+  onShowOnlyFavoritesChange: (show: boolean) => void;
 }
 
 export interface NewsCardProps {

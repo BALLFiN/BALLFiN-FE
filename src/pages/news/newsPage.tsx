@@ -90,11 +90,7 @@ export default function NewsPage() {
         </div>
         {/* 메인 뉴스 목록 */}
         <div className="container mx-auto px-4 py-8">
-          <NewsList
-            news={mockNews}
-            selectedNews={selectedNews}
-            onNewsClick={handleNewsClick}
-          />
+          <NewsList selectedNews={selectedNews} onNewsClick={handleNewsClick} />
         </div>
         {/* 뉴스 타임라인과 맞춤형 뉴스 피드 */}
         <div className="container mx-auto px-4 py-8 border-t border-gray-100">
