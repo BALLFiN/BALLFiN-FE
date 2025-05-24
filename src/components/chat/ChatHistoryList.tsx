@@ -8,7 +8,6 @@ interface Props {
   editingId: string | null;
   editTitle: string;
   onLoad: (history: ChatListItem) => void;
-  onDelete: (id: string) => void;
   onEditStart: (history: ChatListItem) => void;
   onEditChange: (val: string) => void;
   onEditSave: (id: string) => void;
