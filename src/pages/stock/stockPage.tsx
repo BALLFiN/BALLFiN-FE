@@ -411,6 +411,12 @@ export default function StockPage() {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => handleViewDetail(stock.code)}
+                      className="px-2 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    >
+                      조회
+                    </button>
+                    <button
                       onClick={() => toggleFavorite(stock.id)}
                       className={`p-1 rounded-full hover:bg-gray-100 ${
                         favoriteStocks.includes(stock.id)
@@ -419,12 +425,6 @@ export default function StockPage() {
                       }`}
                     >
                       <Star size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleViewDetail(stock.code)}
-                      className="p-1 rounded-full hover:bg-gray-100 text-gray-600"
-                    >
-                      <Eye size={18} />
                     </button>
                   </div>
                 </td>
