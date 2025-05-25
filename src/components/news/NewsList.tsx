@@ -133,43 +133,57 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
           />
         </div>
 
-        {/* 로딩 상태 표시 */}
-        {isLoading ? (
-          <div className="flex justify-center items-center h-40">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          </div>
-        ) : (
-          <>
-            {/* 뉴스 카드 그리드 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {news && news.length > 0 ? (
-                news.map((item) => (
-                  <NewsCard
-                    key={item.id}
-                    item={item}
-                    isSelected={selectedNews?.id === item.id}
-                    onClick={handleCardClick}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500 col-span-2">
-                  검색 결과가 없습니다.
+        {/* 뉴스 카드 그리드 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {isLoading ? (
+            // 스켈레톤 UI
+            Array.from({ length: 10 }).map((_, index) => (
+              <div
+                key={index}
+                className="p-4 rounded-lg border border-gray-200 animate-pulse h-[88px]"
+              >
+                <div className="flex flex-col h-full">
+                  <div className="flex items-start gap-3">
+                    {/* 영향도 아이콘 스켈레톤 */}
+                    <div className="w-5 h-5 bg-gray-200 rounded-full flex-shrink-0"></div>
+                    <div className="flex-1 min-w-0">
+                      {/* 제목 스켈레톤 */}
+                      <div className="h-5 bg-gray-200 rounded w-full mb-1"></div>
+                      <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      {/* 메타 정보 스켈레톤 */}
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-
-            {/* 페이지네이션 */}
-            {totalPages > 1 && (
-              <div className="mt-4 flex justify-center">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
               </div>
-            )}
-          </>
-        )}
+            ))
+          ) : news && news.length > 0 ? (
+            news.map((item) => (
+              <NewsCard
+                key={item.id}
+                item={item}
+                isSelected={selectedNews?.id === item.id}
+                onClick={handleCardClick}
+              />
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500 col-span-2">
+              검색 결과가 없습니다.
+            </div>
+          )}
+        </div>
+
+        {/* 페이지네이션 */}
+        <div className="mt-4 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
       </div>
     </div>
   );
