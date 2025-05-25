@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NewsList from "../../components/news/NewsList";
 import NewsAnalysis from "../../components/news/NewsAnalysis";
-import { mockNews, NewsItem } from "../../mock/newsData";
+import { NewsItem, searchNews } from "../../api/news";
 import { Clock } from "lucide-react";
 import NewsTimeline from "../../components/news/NewsTimeline";
 
 export default function NewsPage() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [topNews, setTopNews] = useState<NewsItem[]>([]);
+
+  useEffect(() => {
+    const fetchTopNews = async () => {
+      try {
+        const response = await searchNews({ limit: 5, sort_by: "views" });
+        setTopNews(response.results);
+      } catch (error) {
+        console.error("인기 뉴스 로딩 중 오류 발생:", error);
+      }
+    };
+    fetchTopNews();
+  }, []);
 
   const handleNewsClick = (news: NewsItem) => {
     if (selectedNews?.id === news.id) {
@@ -40,7 +53,7 @@ export default function NewsPage() {
               <div className="relative">
                 <div className="w-full">
                   <div className="grid grid-cols-5 gap-6">
-                    {mockNews.slice(0, 5).map((news, index) => (
+                    {topNews.map((news, index) => (
                       <div
                         key={news.id}
                         className="rounded-xl border border-gray-100 hover:border-[#0A5C2B]/20 cursor-pointer transition-all duration-300 overflow-hidden relative bg-white shadow-md hover:shadow-xl transform hover:-translate-y-1"
@@ -63,7 +76,7 @@ export default function NewsPage() {
                         <div className="aspect-video relative overflow-hidden">
                           <img
                             src={
-                              news.imageUrl ||
+                              news.image_url ||
                               "https://via.placeholder.com/400x225"
                             }
                             alt={news.title}
@@ -75,9 +88,11 @@ export default function NewsPage() {
                             {news.title}
                           </div>
                           <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>{news.source}</span>
+                            <span>{news.press}</span>
                             <span>•</span>
-                            <span>{news.date}</span>
+                            <span>
+                              {new Date(news.published_at).toLocaleDateString()}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -98,20 +113,15 @@ export default function NewsPage() {
             {/* 뉴스 타임라인 */}
             <div>
               <NewsTimeline
-                events={mockNews.slice(0, 7).map((news, index) => ({
-                  time: news.date,
+                events={topNews.map((news) => ({
+                  time: news.published_at,
                   title: news.title,
                   description: news.summary,
-                  source: news.source,
-                  sentiment:
-                    index % 3 === 0
-                      ? "positive"
-                      : index % 3 === 1
-                        ? "negative"
-                        : "neutral",
+                  source: news.press,
+                  sentiment: news.impact,
                 }))}
                 onEventClick={(event) => {
-                  const newsItem = mockNews.find(
+                  const newsItem = topNews.find(
                     (news) => news.title === event.title
                   );
                   if (newsItem) {

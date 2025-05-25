@@ -5,7 +5,7 @@ import {
   X,
   PlayCircle,
 } from "lucide-react";
-import { NewsItem } from "../../mock/newsData";
+import { NewsItem } from "../../api/news";
 import { useState, useEffect } from "react";
 import Loading from "../common/Loading";
 
@@ -15,10 +15,10 @@ interface NewsAnalysisProps {
 }
 
 export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
-  const [isAnalyzing, setIsAnalyzing] = useState<{ [key: number]: boolean }>(
+  const [isAnalyzing, setIsAnalyzing] = useState<{ [key: string]: boolean }>(
     {}
   );
-  const [isLoading, setIsLoading] = useState<{ [key: number]: boolean }>({});
+  const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     if (news && isLoading[news.id]) {
@@ -56,12 +56,12 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
         </button>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <span>{news.source}</span>
+        <span>{news.press}</span>
         <span>•</span>
-        <span>{news.date}</span>
+        <span>{new Date(news.published_at).toLocaleDateString()}</span>
         <span>•</span>
         <a
-          href={news.url}
+          href={news.link}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[#0A5C2B] hover:underline"

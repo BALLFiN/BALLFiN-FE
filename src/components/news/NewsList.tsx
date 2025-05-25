@@ -14,7 +14,6 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
     useState<NewsSearchParams["sort_by"]>("relevance");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [selectedImpacts, setSelectedImpacts] = useState<string[]>([]);
-  const [favorites] = useState<string[]>([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [totalPages, setTotalPages] = useState(1);
