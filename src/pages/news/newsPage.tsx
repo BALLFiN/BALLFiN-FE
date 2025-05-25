@@ -12,8 +12,13 @@ export default function NewsPage() {
   useEffect(() => {
     const fetchTopNews = async () => {
       try {
-        const response = await searchNews({ limit: 5, sort_by: "views" });
-        setTopNews(response.results);
+        // 인기 뉴스를 가져옵니다
+        const response = await searchNews({
+          sort_by: "views",
+          offset: 0,
+        });
+        // 조회수 기준으로 상위 5개만 선택
+        setTopNews(response.results.slice(0, 5));
       } catch (error) {
         console.error("인기 뉴스 로딩 중 오류 발생:", error);
       }

@@ -38,8 +38,19 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
 
       const response = await searchNews(params);
       console.log("API 응답:", response);
+      console.log("전체 뉴스 수:", response.total);
+      console.log("현재 페이지:", currentPage);
+      console.log("페이지당 아이템 수:", itemsPerPage);
+
       setNews(response.results || []);
-      setTotalPages(Math.ceil((response.total || 0) / itemsPerPage));
+
+      // 전체 뉴스 수를 기반으로 페이지 수 계산
+      const totalItems = response.total || 0;
+      const calculatedTotalPages = Math.ceil(totalItems / itemsPerPage);
+      console.log("계산된 전체 페이지 수:", calculatedTotalPages);
+
+      // 페이지 수가 1보다 크면 페이지네이션 표시
+      setTotalPages(calculatedTotalPages > 1 ? calculatedTotalPages : 1);
     } catch (error) {
       console.error("뉴스 검색 중 오류 발생:", error);
       setNews([]);
@@ -62,6 +73,7 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
   }, [searchTerm, sortBy, dateRange, selectedImpacts, currentPage]);
 
   const handlePageChange = (page: number) => {
+    console.log("페이지 변경:", page);
     setCurrentPage(page);
   };
 
@@ -148,11 +160,13 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
 
             {/* 페이지네이션 */}
             {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
+              <div className="mt-4 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
             )}
           </>
         )}
