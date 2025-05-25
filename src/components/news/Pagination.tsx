@@ -1,4 +1,9 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { PaginationProps } from "./types";
 
 export default function Pagination({
@@ -35,6 +40,21 @@ export default function Pagination({
 
   return (
     <div className="flex items-center justify-center gap-2 py-4">
+      {/* 맨 앞 페이지 버튼 */}
+      <button
+        onClick={() => onPageChange(1)}
+        disabled={currentPage === 1}
+        className={`p-2 rounded-lg transition-colors ${
+          currentPage === 1
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-gray-600 hover:bg-gray-100"
+        }`}
+        aria-label="맨 앞 페이지"
+      >
+        <ChevronsLeft className="w-5 h-5" />
+      </button>
+
+      {/* 이전 페이지 버튼 */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -62,6 +82,7 @@ export default function Pagination({
         </button>
       ))}
 
+      {/* 다음 페이지 버튼 */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
@@ -73,6 +94,20 @@ export default function Pagination({
         aria-label="다음 페이지"
       >
         <ChevronRight className="w-5 h-5" />
+      </button>
+
+      {/* 맨 뒤 페이지 버튼 */}
+      <button
+        onClick={() => onPageChange(totalPages)}
+        disabled={currentPage === totalPages}
+        className={`p-2 rounded-lg transition-colors ${
+          currentPage === totalPages
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-gray-600 hover:bg-gray-100"
+        }`}
+        aria-label="맨 뒤 페이지"
+      >
+        <ChevronsRight className="w-5 h-5" />
       </button>
     </div>
   );
