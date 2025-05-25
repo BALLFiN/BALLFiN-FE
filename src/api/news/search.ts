@@ -1,34 +1,5 @@
 import axios from "axios";
-
-export interface NewsItem {
-  id: string;
-  link: string;
-  press: string;
-  published_at: string;
-  title: string;
-  image_url: string;
-  related_companies: string[];
-  views: number;
-  summary: string;
-  impact: "positive" | "negative" | "neutral";
-  analysis: string;
-  content: string;
-}
-
-export interface NewsSearchParams {
-  keyword?: string;
-  sort_by?: "relevance" | "date" | "views";
-  start_date?: string;
-  end_date?: string;
-  impact?: "positive" | "negative";
-  limit?: number;
-  offset?: number;
-}
-
-export interface NewsSearchResponse {
-  results: NewsItem[];
-  total: number;
-}
+import { NewsSearchParams, NewsSearchResponse } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -82,12 +53,4 @@ export const searchNews = async (
     console.error("뉴스 검색 중 오류 발생:", error);
     throw error;
   }
-};
-
-export const getNewsDetail = async (newsId: string): Promise<NewsItem> => {
-  const response = await fetch(`${API_URL}/news/${newsId}`);
-  if (!response.ok) {
-    throw new Error("뉴스 상세 정보를 불러오는데 실패했습니다.");
-  }
-  return response.json();
 };

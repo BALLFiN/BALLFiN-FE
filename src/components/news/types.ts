@@ -1,4 +1,4 @@
-import { NewsItem } from "../../api/news";
+import { NewsItem } from "../../api/news/index";
 
 export interface NewsListProps {
   selectedNews: NewsItem | null;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import NewsList from "../../components/news/NewsList";
 import NewsAnalysis from "../../components/news/NewsAnalysis";
-import { NewsItem, searchNews } from "../../api/news";
+import { NewsItem, searchNews } from "../../api/news/index";
 import { Clock } from "lucide-react";
 import NewsTimeline from "../../components/news/NewsTimeline";
 

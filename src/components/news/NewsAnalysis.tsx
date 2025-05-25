@@ -5,7 +5,7 @@ import {
   X,
   PlayCircle,
 } from "lucide-react";
-import { NewsItem, getNewsDetail } from "../../api/news";
+import { NewsItem, getNewsDetail } from "../../api/news/index";
 import { useState, useEffect } from "react";
 import Loading from "../common/Loading";
 
@@ -25,8 +25,10 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
     const fetchNewsDetail = async () => {
       if (news) {
         try {
+          console.log("뉴스 상세 정보 요청 시작:", news.id);
           setIsLoading((prev) => ({ ...prev, [news.id]: true }));
           const detail = await getNewsDetail(news.id);
+          console.log("뉴스 상세 정보 응답:", detail);
           setNewsDetail(detail);
         } catch (error) {
           console.error("뉴스 상세 정보 요청 실패:", error);

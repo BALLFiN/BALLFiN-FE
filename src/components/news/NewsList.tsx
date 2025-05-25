@@ -4,7 +4,7 @@ import NewsFilter from "./NewsFilter";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
 import { NewsListProps } from "./types";
-import { searchNews, NewsSearchParams, NewsItem } from "../../api/news";
+import { searchNews, NewsSearchParams, NewsItem } from "../../api/news/index";
 
 export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
   const [currentPage, setCurrentPage] = useState(1);
