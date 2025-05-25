@@ -83,3 +83,11 @@ export const searchNews = async (
     throw error;
   }
 };
+
+export const getNewsDetail = async (newsId: string): Promise<NewsItem> => {
+  const response = await fetch(`${API_URL}/news/${newsId}`);
+  if (!response.ok) {
+    throw new Error("뉴스 상세 정보를 불러오는데 실패했습니다.");
+  }
+  return response.json();
+};
