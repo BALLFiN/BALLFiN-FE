@@ -9,9 +9,9 @@ import SignUpPage from '@/pages/auth/signUpPage';
 import MyPage from '@/pages/myPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MyPageLayout from './components/layout/myPageLayout';
-
 import AramPage from './pages/myPage/Aram';
 import SettingsPage from './pages/myPage/Settings';
+import StockDetailPage from '@/pages/stock/StockDetailPage';
 
 const queryClient = new QueryClient();
 function App() {
@@ -26,6 +26,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/stock" element={<StockPage />} />
+              <Route path="/stock/:code" element={<StockDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/mypage" element={<MyPageLayout />}>

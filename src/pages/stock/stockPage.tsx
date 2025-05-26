@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Search, ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Search,
+  ArrowUpDown,
+  TrendingUp,
+  TrendingDown,
+  Star,
+  Eye,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface StockItem {
   id: number;
@@ -15,13 +23,18 @@ interface StockItem {
     confidence: number;
     recommendation: "buy" | "sell" | "hold";
   };
+  isFavorite?: boolean;
 }
 
 export default function StockPage() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"score" | "price" | "change">("score");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [filter, setFilter] = useState<"all" | "positive" | "negative">("all");
+  const [filter, setFilter] = useState<
+    "all" | "positive" | "negative" | "favorite"
+  >("all");
+  const [favoriteStocks, setFavoriteStocks] = useState<number[]>([]);
 
   // 임시 데이터
   const allStocks: StockItem[] = [
@@ -87,6 +100,22 @@ export default function StockPage() {
     },
   ];
 
+  // 즐겨찾기 토글 함수
+  const toggleFavorite = (stockId: number) => {
+    setFavoriteStocks((prev) => {
+      if (prev.includes(stockId)) {
+        return prev.filter((id) => id !== stockId);
+      } else {
+        return [...prev, stockId];
+      }
+    });
+  };
+
+  // 상세 페이지로 이동
+  const handleViewDetail = (stockCode: string) => {
+    navigate(`/stock/${stockCode}`);
+  };
+
   // 필터링 및 정렬된 데이터 계산
   const filteredAndSortedStocks = allStocks
     .filter((stock) => {
@@ -97,7 +126,12 @@ export default function StockPage() {
         : true;
 
       // 감성 필터링
-      const matchesFilter = filter === "all" || stock.sentiment === filter;
+      const matchesFilter =
+        filter === "all"
+          ? true
+          : filter === "favorite"
+            ? favoriteStocks.includes(stock.id)
+            : stock.sentiment === filter;
 
       return matchesSearch && matchesFilter;
     })
@@ -172,6 +206,16 @@ export default function StockPage() {
               }`}
             >
               악재
+            </button>
+            <button
+              onClick={() => setFilter("favorite")}
+              className={`px-4 py-2 rounded-lg ${
+                filter === "favorite"
+                  ? "bg-[#0A5C2B] text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              즐겨찾기
             </button>
           </div>
         </div>
@@ -307,6 +351,9 @@ export default function StockPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 추천
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                액션
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -360,6 +407,26 @@ export default function StockPage() {
                         ? "매도"
                         : "관망"}
                   </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleViewDetail(stock.code)}
+                      className="px-2 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    >
+                      조회
+                    </button>
+                    <button
+                      onClick={() => toggleFavorite(stock.id)}
+                      className={`p-1 rounded-full hover:bg-gray-100 ${
+                        favoriteStocks.includes(stock.id)
+                          ? "text-yellow-500"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      <Star size={18} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
