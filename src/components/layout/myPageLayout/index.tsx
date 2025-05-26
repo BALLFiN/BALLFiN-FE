@@ -3,9 +3,9 @@ import MyPageSidebar from './sideBar';
 
 export default function MyPageLayout() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex ">
       <MyPageSidebar />
-      <main>
+      <main className=" w-full ">
         <Outlet />
       </main>
     </div>
