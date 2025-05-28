@@ -4,16 +4,11 @@ import { NewsSearchParams, NewsSearchResponse } from "./types";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // 전체 뉴스 수를 추정하는 함수
-const estimateTotalNews = async (params: NewsSearchParams): Promise<number> => {
+const estimateTotalNews = async (
+  _params: NewsSearchParams
+): Promise<number> => {
   try {
     // 검색 파라미터를 그대로 전달하면서 큰 offset으로 요청
-    const response = await axios.get(`${API_URL}/news/search`, {
-      params: {
-        ...params,
-        limit: 1,
-        offset: 1000, // 충분히 큰 값
-      },
-    });
 
     // offset + 1이 전체 뉴스 수의 최소값
     return 1000 + 1;
