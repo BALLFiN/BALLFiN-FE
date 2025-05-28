@@ -1,81 +1,79 @@
-import { NewsItem } from "../../mock/newsData";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "../common/SearchBar";
 import NewsFilter from "./NewsFilter";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
 import { NewsListProps } from "./types";
+import { searchNews, NewsSearchParams, NewsItem } from "../../api/news/index";
 
-export default function NewsList({
-  news,
-  selectedNews,
-  onNewsClick,
-}: NewsListProps) {
+export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("relevance");
+  const [sortBy, setSortBy] =
+    useState<NewsSearchParams["sort_by"]>("relevance");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [selectedImpacts, setSelectedImpacts] = useState<string[]>([]);
-  const [favorites] = useState<string[]>([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 10;
 
-  // 검색어로 필터링
-  let filteredNews = news.filter((item) =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const fetchNews = async () => {
+    setIsLoading(true);
+    try {
+      const params: NewsSearchParams = {
+        keyword: searchTerm || undefined,
+        sort_by: sortBy,
+        start_date: dateRange.start || undefined,
+        end_date: dateRange.end || undefined,
+        limit: itemsPerPage,
+        offset: (currentPage - 1) * itemsPerPage,
+      };
 
-  // 즐겨찾기 필터링
-  if (showOnlyFavorites) {
-    filteredNews = filteredNews.filter((item) =>
-      favorites.includes(String(item.id))
-    );
-  }
+      if (selectedImpacts.length === 1) {
+        params.impact = selectedImpacts[0] as "positive" | "negative";
+      }
 
-  // 날짜 범위로 필터링
-  if (dateRange.start && dateRange.end) {
-    filteredNews = filteredNews.filter((item) => {
-      const itemDate = item.date;
-      return itemDate >= dateRange.start && itemDate <= dateRange.end;
-    });
-  }
+      const response = await searchNews(params);
+      console.log("API 응답:", response);
+      console.log("전체 뉴스 수:", response.total);
+      console.log("현재 페이지:", currentPage);
+      console.log("페이지당 아이템 수:", itemsPerPage);
 
-  // 영향으로 필터링
-  if (selectedImpacts.length > 0) {
-    filteredNews = filteredNews.filter((item) =>
-      selectedImpacts.includes(item.impact)
-    );
-  }
+      setNews(response.results || []);
 
-  // 정렬
-  filteredNews.sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      case "oldest":
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      default:
-        if (searchTerm) {
-          const aMatch = a.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-          const bMatch = b.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-          if (aMatch && !bMatch) return -1;
-          if (!aMatch && bMatch) return 1;
-        }
-        return 0;
+      // 전체 뉴스 수를 기반으로 페이지 수 계산
+      const totalItems = response.total || 0;
+      const calculatedTotalPages = Math.ceil(totalItems / itemsPerPage);
+      console.log("계산된 전체 페이지 수:", calculatedTotalPages);
+
+      // 페이지 수가 1보다 크면 페이지네이션 표시
+      setTotalPages(calculatedTotalPages > 1 ? calculatedTotalPages : 1);
+    } catch (error) {
+      console.error("뉴스 검색 중 오류 발생:", error);
+      setNews([]);
+      setTotalPages(1);
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
 
-  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentNews = filteredNews.slice(startIndex, endIndex);
+  // 초기 데이터 로딩
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  // 검색 조건 변경 시 데이터 로딩
+  useEffect(() => {
+    if (!isLoading) {
+      fetchNews();
+    }
+  }, [searchTerm, sortBy, dateRange, selectedImpacts, currentPage]);
 
   const handlePageChange = (page: number) => {
+    console.log("페이지 변경:", page);
     setCurrentPage(page);
   };
 
@@ -99,7 +97,7 @@ export default function NewsList({
   };
 
   const handleSortChange = (sort: string) => {
-    setSortBy(sort);
+    setSortBy(sort as NewsSearchParams["sort_by"]);
     setCurrentPage(1);
   };
 
@@ -137,22 +135,55 @@ export default function NewsList({
 
         {/* 뉴스 카드 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {currentNews.map((item) => (
-            <NewsCard
-              key={item.id}
-              item={item}
-              isSelected={selectedNews?.id === item.id}
-              onClick={handleCardClick}
-            />
-          ))}
+          {isLoading ? (
+            // 스켈레톤 UI
+            Array.from({ length: 10 }).map((_, index) => (
+              <div
+                key={index}
+                className="p-4 rounded-lg border border-gray-200 animate-pulse h-[88px]"
+              >
+                <div className="flex flex-col h-full">
+                  <div className="flex items-start gap-3">
+                    {/* 영향도 아이콘 스켈레톤 */}
+                    <div className="w-5 h-5 bg-gray-200 rounded-full flex-shrink-0"></div>
+                    <div className="flex-1 min-w-0">
+                      {/* 제목 스켈레톤 */}
+                      <div className="h-5 bg-gray-200 rounded w-full mb-1"></div>
+                      <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      {/* 메타 정보 스켈레톤 */}
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : news && news.length > 0 ? (
+            news.map((item) => (
+              <NewsCard
+                key={item.id}
+                item={item}
+                isSelected={selectedNews?.id === item.id}
+                onClick={handleCardClick}
+              />
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500 col-span-2">
+              검색 결과가 없습니다.
+            </div>
+          )}
         </div>
 
         {/* 페이지네이션 */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <div className="mt-4 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
       </div>
     </div>
   );

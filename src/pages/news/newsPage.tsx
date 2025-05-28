@@ -1,12 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NewsList from "../../components/news/NewsList";
 import NewsAnalysis from "../../components/news/NewsAnalysis";
-import { mockNews, NewsItem } from "../../mock/newsData";
+import { NewsItem, searchNews, getMyFeed } from "../../api/news/index";
 import { Clock } from "lucide-react";
 import NewsTimeline from "../../components/news/NewsTimeline";
 
 export default function NewsPage() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [topNews, setTopNews] = useState<NewsItem[]>([]);
+  const [myFeedNews, setMyFeedNews] = useState<NewsItem[]>([]);
+
+  const fetchTopNews = async () => {
+    try {
+      // 인기 뉴스를 가져옵니다
+      const response = await searchNews({
+        sort_by: "views",
+        offset: 0,
+      });
+      // 조회수 기준으로 상위 5개만 선택
+      setTopNews(response.results.slice(0, 5));
+    } catch (error) {
+      console.error("인기 뉴스 로딩 중 오류 발생:", error);
+    }
+  };
+
+  const fetchMyFeed = async () => {
+    try {
+      // TODO: 실제 사용자 이메일을 가져오는 로직으로 대체
+      const userEmail =
+        localStorage.getItem("user_email") || "user@example.com";
+      const feed = await getMyFeed({ user_email: userEmail });
+      setMyFeedNews(feed);
+    } catch (error) {
+      console.error("맞춤형 뉴스 피드 로딩 중 오류 발생:", error);
+      // API가 아직 구현되지 않은 경우를 위한 임시 데이터
+      if (error instanceof Error) {
+        if (error.message.includes("즐겨찾기한 종목이 없습니다")) {
+          // 즐겨찾기 없는 경우 최신 뉴스 표시
+          try {
+            const response = await searchNews({
+              sort_by: "date",
+              limit: 20,
+              offset: 0,
+            });
+            console.log("최신 뉴스 데이터:", response);
+            setMyFeedNews(response.results);
+          } catch (searchError) {
+            console.error("최신 뉴스 로딩 실패:", searchError);
+            setMyFeedNews([]);
+          }
+        } else if (error.message.includes("아직 구현되지 않았습니다")) {
+          // API 미구현 시 최신 뉴스 표시
+          try {
+            const response = await searchNews({
+              sort_by: "date",
+              limit: 20,
+              offset: 0,
+            });
+            console.log("임시 뉴스 피드 데이터:", response);
+            setMyFeedNews(response.results);
+          } catch (searchError) {
+            console.error("임시 뉴스 피드 로딩 실패:", searchError);
+            setMyFeedNews([]);
+          }
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([fetchTopNews(), fetchMyFeed()]);
+      } catch (error) {
+        console.error("데이터 로딩 중 오류 발생:", error);
+      }
+    };
+    void loadData();
+  }, []);
 
   const handleNewsClick = (news: NewsItem) => {
     if (selectedNews?.id === news.id) {
@@ -40,7 +111,7 @@ export default function NewsPage() {
               <div className="relative">
                 <div className="w-full">
                   <div className="grid grid-cols-5 gap-6">
-                    {mockNews.slice(0, 5).map((news, index) => (
+                    {topNews.map((news, index) => (
                       <div
                         key={news.id}
                         className="rounded-xl border border-gray-100 hover:border-[#0A5C2B]/20 cursor-pointer transition-all duration-300 overflow-hidden relative bg-white shadow-md hover:shadow-xl transform hover:-translate-y-1"
@@ -63,7 +134,7 @@ export default function NewsPage() {
                         <div className="aspect-video relative overflow-hidden">
                           <img
                             src={
-                              news.imageUrl ||
+                              news.image_url ||
                               "https://via.placeholder.com/400x225"
                             }
                             alt={news.title}
@@ -75,9 +146,11 @@ export default function NewsPage() {
                             {news.title}
                           </div>
                           <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>{news.source}</span>
+                            <span>{news.press}</span>
                             <span>•</span>
-                            <span>{news.date}</span>
+                            <span>
+                              {new Date(news.published_at).toLocaleDateString()}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -90,39 +163,53 @@ export default function NewsPage() {
         </div>
         {/* 메인 뉴스 목록 */}
         <div className="container mx-auto px-4 py-8">
-          <NewsList
-            news={mockNews}
-            selectedNews={selectedNews}
-            onNewsClick={handleNewsClick}
-          />
+          <NewsList selectedNews={selectedNews} onNewsClick={handleNewsClick} />
         </div>
         {/* 뉴스 타임라인과 맞춤형 뉴스 피드 */}
         <div className="container mx-auto px-4 py-8 border-t border-gray-100">
           <div className="max-w-[90rem] mx-auto grid gap-8">
             {/* 뉴스 타임라인 */}
             <div>
-              <NewsTimeline
-                events={mockNews.slice(0, 7).map((news, index) => ({
-                  time: news.date,
-                  title: news.title,
-                  description: news.summary,
-                  source: news.source,
-                  sentiment:
-                    index % 3 === 0
-                      ? "positive"
-                      : index % 3 === 1
-                        ? "negative"
-                        : "neutral",
-                }))}
-                onEventClick={(event) => {
-                  const newsItem = mockNews.find(
-                    (news) => news.title === event.title
-                  );
-                  if (newsItem) {
-                    handleNewsClick(newsItem);
-                  }
-                }}
-              />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gradient-to-r from-[#0A5C2B] to-[#0A5C2B]/80 p-2 rounded-lg shadow-md">
+                    <Clock className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-[#0A5C2B] to-[#0A5C2B]/80 bg-clip-text text-transparent">
+                    {myFeedNews.length > 0 ? "맞춤형 뉴스 피드" : "최신 뉴스"}
+                  </h3>
+                </div>
+              </div>
+              {myFeedNews.length === 0 ? (
+                <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-lg text-center">
+                  <div className="text-gray-500 mb-4">
+                    즐겨찾기한 종목이 없습니다.
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    관심 있는 종목을 즐겨찾기에 추가하면
+                    <br />
+                    관련 뉴스를 맞춤형으로 받아볼 수 있습니다.
+                  </div>
+                </div>
+              ) : (
+                <NewsTimeline
+                  events={myFeedNews.map((news) => ({
+                    time: news.published_at,
+                    title: news.title,
+                    description: news.summary,
+                    source: news.press,
+                    sentiment: news.impact,
+                  }))}
+                  onEventClick={(event) => {
+                    const newsItem = myFeedNews.find(
+                      (news) => news.title === event.title
+                    );
+                    if (newsItem) {
+                      handleNewsClick(newsItem);
+                    }
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

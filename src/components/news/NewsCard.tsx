@@ -30,10 +30,10 @@ export default function NewsCard({ item, isSelected, onClick }: NewsCardProps) {
             <h2 className="font-medium mb-1 line-clamp-2">{item.title}</h2>
             <div className="flex items-center gap-2 text-sm">
               <span className={isSelected ? "text-white/80" : "text-gray-500"}>
-                {item.source}
+                {item.press}
               </span>
               <span className={isSelected ? "text-white/80" : "text-gray-500"}>
-                {item.date}
+                {new Date(item.published_at).toLocaleDateString()}
               </span>
             </div>
           </div>
