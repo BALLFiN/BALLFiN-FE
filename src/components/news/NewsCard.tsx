@@ -19,7 +19,7 @@ export default function NewsCard({ item, isSelected, onClick }: NewsCardProps) {
       onClick={() => onClick(item)}
       className={`p-4 rounded-lg transition-all duration-300 border ${
         isSelected
-          ? "border-[#0A5C2B] bg-[#0A5C2B] text-white scale-105 shadow-lg"
+          ? "border-[#0A5C2B] shadow-md"
           : "border-gray-200 hover:border-[#0A5C2B] hover:shadow-md cursor-pointer"
       }`}
     >

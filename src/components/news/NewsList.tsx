@@ -78,17 +78,7 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
   };
 
   const handleCardClick = (item: NewsItem) => {
-    if (selectedNews?.id === item.id) {
-      const card = document.getElementById(`news-card-${item.id}`);
-      if (card) {
-        card.classList.add("animate-close");
-        setTimeout(() => {
-          onNewsClick(item);
-        }, 300);
-      }
-    } else {
-      onNewsClick(item);
-    }
+    onNewsClick(item);
   };
 
   const handleSearch = () => {
