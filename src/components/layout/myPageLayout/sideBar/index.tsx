@@ -55,16 +55,47 @@ export default function MyPageSidebar() {
           </ul>
         </div>
         <hr className="text-gray-200 border my-3" />
-        <div className="space-y-1 pt-4 ">
-          <NavLink
-            to="settings"
-            className={({ isActive }) =>
-              `flex px-4 py-2 rounded transition-colors gap-3
-            ${isActive ? 'bg-gray-100 text-gray-900 font-semibold border-l-4 border-green-600' : 'text-gray-700 hover:bg-gray-50'}`
-            }
-          >
-            <Settings className="items-center" /> <p>설정</p>
-          </NavLink>
+        <div className="space-y-2">
+          {/* 섹션 헤더 (non-clickable) */}
+          <div className=" text-sm font-medium text-gray-500 uppercase flex px-2 py-2 rounded transition-colors gap-3 ">
+            <Settings className="items-center" />
+            <p>설정</p>
+          </div>
+
+          {/* 클릭 가능한 서브 항목들 */}
+          <ul className="space-y-1">
+            <li>
+              <NavLink
+                to="settings"
+                end
+                className={({ isActive }) =>
+                  `block px-8 py-2 rounded-l-lg transition-colors
+                ${
+                  isActive
+                    ? 'bg-gray-100 text-gray-900 font-semibold border-l-4 border-green-600'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`
+                }
+              >
+                내 정보
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="news"
+                className={({ isActive }) =>
+                  `block px-8 py-2 rounded-l-lg transition-colors
+                ${
+                  isActive
+                    ? 'bg-gray-100 text-gray-900 font-semibold border-l-4 border-green-600'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`
+                }
+              >
+                알람 설정
+              </NavLink>
+            </li>
+          </ul>
         </div>
       </div>
       <div className="pb-4 w-full flex justify-end "></div>
