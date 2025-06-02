@@ -82,7 +82,7 @@ export default function MyPageSidebar() {
             </li>
             <li>
               <NavLink
-                to="news"
+                to="aramSettings"
                 className={({ isActive }) =>
                   `block px-8 py-2 rounded-l-lg transition-colors
                 ${
