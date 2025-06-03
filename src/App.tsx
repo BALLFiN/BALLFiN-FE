@@ -1,14 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./components/layout/Header";
-import HomePage from "./pages/HomePage";
-import IntroPage from "./pages/introPage";
-import NewsPage from "@/pages/news/newsPage";
-import StockPage from "@/pages/stock/stockPage";
-import StockDetailPage from "@/pages/stock/StockDetailPage";
-import LoginPage from "@/pages/auth/loginPage";
-import SignUpPage from "@/pages/auth/signUpPage";
-import MyPage from "@/pages/auth/myPage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/layout/Header';
+import HomePage from './pages/homePage';
+import IntroPage from './pages/introPage';
+import NewsPage from '@/pages/news/newsPage';
+import StockPage from '@/pages/stock/stockPage';
+import LoginPage from '@/pages/auth/loginPage';
+import SignUpPage from '@/pages/auth/signUpPage';
+import MyPage from '@/pages/myPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import MyPageLayout from './components/layout/myPageLayout';
+import SettingsPage from './pages/myPage/Settings';
+import StockDetailPage from '@/pages/stock/StockDetailPage';
+
+import MyPageChart from './pages/myPage/chart';
+import MyPageNews from './pages/myPage/news';
+
 const queryClient = new QueryClient();
 function App() {
   return (
@@ -25,7 +31,12 @@ function App() {
               <Route path="/stock/:code" element={<StockDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/mypage" element={<MyPageLayout />}>
+                <Route index element={<MyPage />} />
+                <Route path="chart" element={<MyPageChart />} />
+                <Route path="news" element={<MyPageNews />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
             </Routes>
           </main>
         </div>
