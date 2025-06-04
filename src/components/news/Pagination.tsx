@@ -16,23 +16,14 @@ export default function Pagination({
     const pages = [];
     const maxVisiblePages = 5;
 
-    if (totalPages <= maxVisiblePages) {
-      // 전체 페이지가 5개 이하면 모두 표시
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // 현재 페이지 주변의 페이지 번호만 표시
-      let start = Math.max(1, currentPage - 2);
-      let end = Math.min(totalPages, start + maxVisiblePages - 1);
+    // 현재 페이지가 속한 그룹의 시작 페이지 계산
+    const currentGroup = Math.ceil(currentPage / maxVisiblePages);
+    const startPage = (currentGroup - 1) * maxVisiblePages + 1;
+    const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
 
-      if (end - start + 1 < maxVisiblePages) {
-        start = Math.max(1, end - maxVisiblePages + 1);
-      }
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
+    // 현재 그룹의 페이지 번호들 추가
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
     }
 
     return pages;

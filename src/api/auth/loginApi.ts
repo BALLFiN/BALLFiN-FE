@@ -59,9 +59,13 @@ export const login = async (data: LoginRequest): Promise<string> => {
 
 export const verifyAuth = async (): Promise<{ message: string }> => {
   try {
-    const token = localStorage.getItem("access_token");
+    let token = localStorage.getItem("access_token");
     if (!token) {
       throw new Error("로그인이 필요합니다.");
+    }
+    // Bearer 접두사 보장
+    if (!token.startsWith("Bearer ")) {
+      token = `Bearer ${token}`;
     }
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/check`, {

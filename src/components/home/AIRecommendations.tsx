@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Stock {
   name: string;
@@ -69,23 +70,31 @@ const filterTabs = ["전체", "대형주", "성장주", "가치주", "배당주"
 
 export default function AIRecommendations() {
   const [activeTab, setActiveTab] = useState("전체");
+  const navigate = useNavigate();
 
   const getPredictionColor = (prediction: Stock["prediction"]) => {
     switch (prediction) {
       case "buy":
-        return "bg-green-100 text-green-800";
+        return "bg-green-50 text-green-700 border border-green-200";
       case "hold":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-50 text-yellow-700 border border-yellow-200";
       case "sell":
-        return "bg-red-100 text-red-800";
+        return "bg-red-50 text-red-700 border border-red-200";
     }
   };
 
+  const handleMoreStocksClick = () => {
+    navigate("/stock");
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-900">AI 추천 종목</h2>
-        <button className="text-sm text-[#0A5C2B] hover:text-[#0A5C2B]/80">
+        <button
+          onClick={handleMoreStocksClick}
+          className="text-sm text-[#0A5C2B] hover:text-[#0A5C2B]/80 hover:font-bold font-medium transition-all duration-200"
+        >
           더 많은 종목 보기 →
         </button>
       </div>
@@ -95,10 +104,10 @@ export default function AIRecommendations() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
               activeTab === tab
-                ? "bg-[#0A5C2B] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-[#0A5C2B] text-white shadow-sm"
+                : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"
             }`}
           >
             {tab}
@@ -110,17 +119,17 @@ export default function AIRecommendations() {
         {stocks.map((stock, index) => (
           <div
             key={index}
-            className="border rounded-lg p-4 hover:border-[#0A5C2B] transition-colors"
+            className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 hover:shadow-md transition-all duration-300 border border-gray-100"
           >
-            <div className="flex justify-between items-start mb-2">
+            <div className="flex justify-between items-start mb-3">
               <div>
-                <div className="font-medium text-gray-900">{stock.name}</div>
+                <div className="font-semibold text-gray-900">{stock.name}</div>
                 <div className="text-sm text-gray-500">{stock.code}</div>
               </div>
               <div className="text-right">
-                <div className="font-medium text-gray-900">{stock.price}</div>
+                <div className="font-semibold text-gray-900">{stock.price}</div>
                 <div
-                  className={`flex items-center gap-1 text-sm ${
+                  className={`flex items-center gap-1.5 text-sm ${
                     stock.change.isPositive ? "text-green-600" : "text-red-600"
                   }`}
                 >
@@ -129,7 +138,7 @@ export default function AIRecommendations() {
                   ) : (
                     <TrendingDown className="w-4 h-4" />
                   )}
-                  <span>
+                  <span className="font-medium">
                     {stock.change.percentage} ({stock.change.value})
                   </span>
                 </div>
@@ -139,7 +148,7 @@ export default function AIRecommendations() {
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-500">{stock.category}</div>
               <div
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getPredictionColor(
+                className={`px-3 py-1.5 rounded-full text-xs font-medium ${getPredictionColor(
                   stock.prediction
                 )}`}
               >

@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Clock, Star, TrendingUp, TrendingDown, MoveRight } from "lucide-react";
+import { Listbox } from "@headlessui/react";
+import { Fragment } from "react";
 
 interface NewsFilterProps {
   onSortChange: (sort: string) => void;
@@ -106,94 +109,180 @@ export default function NewsFilter({
     }
   };
 
+  const dateOptions = [
+    { value: "all", label: "전체" },
+    { value: "today", label: "오늘" },
+    { value: "week", label: "지난 1주" },
+    { value: "month", label: "지난 1달" },
+    { value: "year", label: "올해" },
+    { value: "custom", label: "직접 설정" },
+  ];
+
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      {/* 정렬 */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-          정렬
-        </span>
-        <select
-          value={sortBy}
-          onChange={(e) => handleSortChange(e.target.value)}
-          className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
-        >
-          <option value="relevance">연관도순</option>
-          <option value="newest">최신순</option>
-          <option value="oldest">오래된순</option>
-        </select>
+    <div className="flex flex-wrap items-center gap-6">
+      {/* 정렬 버튼 그룹 */}
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-medium text-gray-700">정렬</span>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleSortChange("relevance")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              sortBy === "relevance"
+                ? "bg-[#0A5C2B] text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            연관도순
+          </button>
+          <button
+            onClick={() => handleSortChange("newest")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              sortBy === "newest"
+                ? "bg-[#0A5C2B] text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            최신순
+          </button>
+          <button
+            onClick={() => handleSortChange("oldest")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              sortBy === "oldest"
+                ? "bg-[#0A5C2B] text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <Clock className="w-4 h-4 rotate-180" />
+            오래된순
+          </button>
+        </div>
       </div>
 
-      {/* 관심기업만 보기 (드롭다운) */}
+      {/* 관심기업 토글 버튼 */}
       {typeof showOnlyFavorites === "boolean" && onShowOnlyFavoritesChange && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-            관심기업
-          </span>
-          <select
-            value={showOnlyFavorites ? "favorites" : "all"}
-            onChange={(e) =>
-              onShowOnlyFavoritesChange(e.target.value === "favorites")
-            }
-            className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-gray-700">관심기업</span>
+          <button
+            onClick={() => onShowOnlyFavoritesChange(!showOnlyFavorites)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              showOnlyFavorites
+                ? "bg-[#0A5C2B] text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
           >
-            <option value="all">전체</option>
-            <option value="favorites">관심기업만</option>
-          </select>
+            <Star className="w-4 h-4" />
+            {showOnlyFavorites ? "관심기업만" : "전체 보기"}
+          </button>
         </div>
       )}
 
-      {/* 날짜 필터 */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-          기간
-        </span>
-        <select
-          value={dateRange}
-          onChange={(e) => handleDateRangeChange(e.target.value)}
-          className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
-        >
-          <option value="all">전체</option>
-          <option value="today">오늘</option>
-          <option value="week">지난 1주</option>
-          <option value="month">지난 1달</option>
-          <option value="year">올해</option>
-          <option value="custom">직접 설정</option>
-        </select>
-
-        {dateRange === "custom" && (
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              value={customStartDate}
-              onChange={(e) => handleCustomDateChange("start", e.target.value)}
-              className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
-            />
-            <span>~</span>
-            <input
-              type="date"
-              value={customEndDate}
-              onChange={(e) => handleCustomDateChange("end", e.target.value)}
-              className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
-            />
-          </div>
-        )}
+      {/* 영향 필터 버튼 그룹 */}
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-medium text-gray-700">영향</span>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleImpactChange("all")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              selectedImpact === "all"
+                ? "bg-[#0A5C2B] text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            전체
+          </button>
+          <button
+            onClick={() => handleImpactChange("positive")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              selectedImpact === "positive"
+                ? "bg-red-500 text-white shadow-md hover:bg-red-600"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            호재
+          </button>
+          <button
+            onClick={() => handleImpactChange("neutral")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              selectedImpact === "neutral"
+                ? "bg-gray-500 text-white shadow-md hover:bg-gray-600"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <MoveRight className="w-4 h-4" />
+            중립
+          </button>
+          <button
+            onClick={() => handleImpactChange("negative")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              selectedImpact === "negative"
+                ? "bg-blue-500 text-white shadow-md hover:bg-blue-600"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <TrendingDown className="w-4 h-4" />
+            악재
+          </button>
+        </div>
       </div>
-
-      {/* 영향 필터 */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-          영향
-        </span>
-        <select
-          value={selectedImpact}
-          onChange={(e) => handleImpactChange(e.target.value)}
-          className="px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
-        >
-          <option value="all">전체</option>
-          <option value="positive">호재</option>
-          <option value="negative">악재</option>
-        </select>
+      {/* 날짜 필터 */}
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-medium text-gray-700">기간</span>
+        <div className="flex items-center gap-2 min-w-[140px]">
+          <div className="relative w-full">
+            <Listbox value={dateRange} onChange={handleDateRangeChange}>
+              <Listbox.Button className="pl-4 pr-10 py-2 rounded-lg text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] bg-white text-gray-700 hover:bg-gray-50 transition-all duration-200 cursor-pointer w-full text-left">
+                {dateOptions.find((opt) => opt.value === dateRange)?.label}
+              </Listbox.Button>
+              <Listbox.Options className="absolute right-0 mt-2 w-full bg-white shadow-lg rounded-lg z-50 border border-gray-200 focus:outline-none focus:ring-0">
+                {dateOptions.map((option) => (
+                  <Listbox.Option
+                    key={option.value}
+                    value={option.value}
+                    as={Fragment}
+                  >
+                    {({
+                      active,
+                      selected,
+                    }: {
+                      active: boolean;
+                      selected: boolean;
+                    }) => (
+                      <li
+                        className={`list-none px-4 py-2 cursor-pointer ${
+                          active ? "bg-gray-100" : ""
+                        } ${selected ? "font-bold text-[#0A5C2B]" : ""}`}
+                      >
+                        {option.label}
+                      </li>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Listbox>
+          </div>
+          {dateRange === "custom" && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={customStartDate}
+                onChange={(e) =>
+                  handleCustomDateChange("start", e.target.value)
+                }
+                className="px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent bg-white text-gray-700 hover:bg-gray-50 transition-all duration-200"
+              />
+              <span className="text-gray-500">~</span>
+              <input
+                type="date"
+                value={customEndDate}
+                onChange={(e) => handleCustomDateChange("end", e.target.value)}
+                className="px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent bg-white text-gray-700 hover:bg-gray-50 transition-all duration-200"
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

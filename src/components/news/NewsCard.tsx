@@ -1,14 +1,16 @@
-import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, MoveRight } from "lucide-react";
 import { NewsCardProps } from "./types";
 
 const getImpactIcon = (impact: "positive" | "negative" | "neutral") => {
   switch (impact) {
     case "positive":
-      return <TrendingUp className="w-5 h-5 text-green-500" />;
+      return <TrendingUp className="w-5 h-5 text-red-500" />;
     case "negative":
-      return <TrendingDown className="w-5 h-5 text-red-500" />;
+      return <TrendingDown className="w-5 h-5 text-blue-500" />;
+    case "neutral":
+      return <MoveRight className="w-5 h-5 text-gray-500" />;
     default:
-      return <AlertCircle className="w-5 h-5 text-gray-500" />;
+      return <MoveRight className="w-5 h-5 text-gray-500" />;
   }
 };
 
@@ -19,7 +21,7 @@ export default function NewsCard({ item, isSelected, onClick }: NewsCardProps) {
       onClick={() => onClick(item)}
       className={`p-4 rounded-lg transition-all duration-300 border ${
         isSelected
-          ? "border-[#0A5C2B] bg-[#0A5C2B] text-white scale-105 shadow-lg"
+          ? "border-[#0A5C2B] shadow-md"
           : "border-gray-200 hover:border-[#0A5C2B] hover:shadow-md cursor-pointer"
       }`}
     >
