@@ -33,11 +33,9 @@ export default function NewsPage() {
       // TODO: 실제 사용자 이메일을 가져오는 로직으로 대체
       const userEmail =
         localStorage.getItem("user_email") || "user@example.com";
-      const feed = await getMyFeed({ user_email: userEmail });
+      const feed = await getMyFeed({ email: userEmail });
       setMyFeedNews(feed);
     } catch (error) {
-      console.error("맞춤형 뉴스 피드 로딩 중 오류 발생:", error);
-      // API가 아직 구현되지 않은 경우를 위한 임시 데이터
       if (error instanceof Error) {
         if (error.message.includes("즐겨찾기한 종목이 없습니다")) {
           // 즐겨찾기 없는 경우 최신 뉴스 표시
@@ -118,16 +116,7 @@ export default function NewsPage() {
           <div className="max-w-[90rem] mx-auto grid gap-8">
             {/* 뉴스 타임라인 */}
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="bg-gradient-to-r from-[#0A5C2B] to-[#0A5C2B]/80 p-2 rounded-lg shadow-md">
-                    <Clock className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-[#0A5C2B] to-[#0A5C2B]/80 bg-clip-text text-transparent">
-                    {myFeedNews.length > 0 ? "맞춤형 뉴스 피드" : "최신 뉴스"}
-                  </h3>
-                </div>
-              </div>
+              <div className="flex items-center justify-between mb-6"></div>
               {myFeedNews.length === 0 ? (
                 <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-lg text-center">
                   <div className="text-gray-500 mb-4">
