@@ -88,12 +88,12 @@ export default function AIRecommendations() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-900">AI 추천 종목</h2>
         <button
           onClick={handleMoreStocksClick}
-          className="text-sm text-[#0A5C2B] hover:text-[#0A5C2B]/80 font-medium"
+          className="text-sm text-[#0A5C2B] hover:text-[#0A5C2B]/80 hover:font-bold font-medium transition-all duration-200"
         >
           더 많은 종목 보기 →
         </button>
