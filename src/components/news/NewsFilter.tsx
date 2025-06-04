@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clock, Star, TrendingUp, TrendingDown } from "lucide-react";
+import { Clock, Star, TrendingUp, TrendingDown, MoveRight } from "lucide-react";
 import { Listbox } from "@headlessui/react";
 import { Fragment } from "react";
 
@@ -202,6 +202,17 @@ export default function NewsFilter({
           >
             <TrendingUp className="w-4 h-4" />
             호재
+          </button>
+          <button
+            onClick={() => handleImpactChange("neutral")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              selectedImpact === "neutral"
+                ? "bg-gray-500 text-white shadow-md hover:bg-gray-600"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            <MoveRight className="w-4 h-4" />
+            중립
           </button>
           <button
             onClick={() => handleImpactChange("negative")}

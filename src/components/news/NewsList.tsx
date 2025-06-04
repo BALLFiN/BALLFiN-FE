@@ -32,8 +32,16 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
         offset: (currentPage - 1) * itemsPerPage,
       };
 
+      // 선택된 영향도가 있으면 해당 영향도로 필터링
       if (selectedImpacts.length === 1) {
-        params.impact = selectedImpacts[0] as "positive" | "negative";
+        const impact = selectedImpacts[0];
+        if (
+          impact === "positive" ||
+          impact === "negative" ||
+          impact === "neutral"
+        ) {
+          params.impact = impact;
+        }
       }
 
       const response = await searchNews(params);
@@ -151,7 +159,10 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
               </div>
             ))
           ) : news && news.length > 0 ? (
-            news.map((item) => (
+            (selectedImpacts[0] === "neutral"
+              ? news.filter((item) => item.impact === "neutral")
+              : news
+            ).map((item) => (
               <NewsCard
                 key={item.id}
                 item={item}
