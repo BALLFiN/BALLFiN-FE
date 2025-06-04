@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import NewsList from "../../components/news/NewsList";
 import NewsAnalysis from "../../components/news/NewsAnalysis";
 import { NewsItem, searchNews, getMyFeed } from "../../api/news/index";
-import { Clock } from "lucide-react";
 import NewsTimeline from "../../components/news/NewsTimeline";
 import TopNewsSection from "../../components/news/TopNewsSection";
 
@@ -30,10 +29,8 @@ export default function NewsPage() {
 
   const fetchMyFeed = async () => {
     try {
-      // TODO: 실제 사용자 이메일을 가져오는 로직으로 대체
-      const userEmail =
-        localStorage.getItem("user_email") || "user@example.com";
-      const feed = await getMyFeed({ email: userEmail });
+      // email 파라미터 제거, limit만 넘기거나 파라미터 없이 호출
+      const feed = await getMyFeed({ limit: 20 });
       setMyFeedNews(feed);
     } catch (error) {
       if (error instanceof Error) {
