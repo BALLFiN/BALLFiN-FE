@@ -1,4 +1,6 @@
 import { Search } from "lucide-react";
+import { Combobox } from "@headlessui/react";
+import { useState } from "react";
 
 interface SearchBarProps {
   value: string;
@@ -13,26 +15,33 @@ export default function SearchBar({
   onSearch,
   placeholder = "검색",
 }: SearchBarProps) {
+  const [query, setQuery] = useState("");
+
   return (
     <div className="flex items-center gap-2">
-      <div className="relative w-[50vh]">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-        <input
-          type="text"
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && onSearch) {
-              onSearch();
-            }
-          }}
-          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent"
-        />
+      <div className="relative w-[70vh]">
+        <Combobox value={value} onChange={onChange}>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Combobox.Input
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent transition-all duration-200"
+              placeholder={placeholder}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                onChange(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && onSearch) {
+                  onSearch();
+                }
+              }}
+            />
+          </div>
+        </Combobox>
       </div>
       <button
         onClick={onSearch}
-        className="p-2 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors"
+        className="p-2.5 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors"
       >
         <Search className="w-5 h-5" />
       </button>

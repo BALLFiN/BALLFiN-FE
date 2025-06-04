@@ -233,10 +233,10 @@ export default function NewsFilter({
         <div className="flex items-center gap-2 min-w-[140px]">
           <div className="relative w-full">
             <Listbox value={dateRange} onChange={handleDateRangeChange}>
-              <Listbox.Button className="pl-4 pr-10 py-2 rounded-lg text-sm font-medium border border-[#0A5C2B] focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] bg-white text-gray-700 hover:bg-gray-50 transition-all duration-200 cursor-pointer w-full text-left">
+              <Listbox.Button className="pl-4 pr-10 py-2 rounded-lg text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] bg-white text-gray-700 hover:bg-gray-50 transition-all duration-200 cursor-pointer w-full text-left">
                 {dateOptions.find((opt) => opt.value === dateRange)?.label}
               </Listbox.Button>
-              <Listbox.Options className="absolute right-0 mt-2 w-full bg-white shadow-lg rounded-lg z-50 border-[#0A5C2B] border-2">
+              <Listbox.Options className="absolute right-0 mt-2 w-full bg-white shadow-lg rounded-lg z-50 border border-gray-200 focus:outline-none focus:ring-0">
                 {dateOptions.map((option) => (
                   <Listbox.Option
                     key={option.value}
