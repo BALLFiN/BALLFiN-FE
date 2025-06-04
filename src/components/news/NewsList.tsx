@@ -16,11 +16,15 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
   const [selectedImpacts, setSelectedImpacts] = useState<string[]>([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [allNews, setAllNews] = useState<NewsItem[] | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const itemsPerPage = 10;
 
-  const fetchNews = async () => {
+  const limit = 10;
+  const initialLoadCount = 50;
+
+  // 최초 50개만 빠르게 불러오기
+  const fetchInitialNews = async () => {
     setIsLoading(true);
     try {
       const params: NewsSearchParams = {
@@ -28,11 +32,9 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
         sort_by: sortBy,
         start_date: dateRange.start || undefined,
         end_date: dateRange.end || undefined,
-        limit: itemsPerPage,
-        offset: (currentPage - 1) * itemsPerPage,
+        page: 1,
+        limit: initialLoadCount,
       };
-
-      // 선택된 영향도가 있으면 해당 영향도로 필터링
       if (selectedImpacts.length === 1) {
         const impact = selectedImpacts[0];
         if (
@@ -43,24 +45,10 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
           params.impact = impact;
         }
       }
-
       const response = await searchNews(params);
-      console.log("API 응답:", response);
-      console.log("전체 뉴스 수:", response.total);
-      console.log("현재 페이지:", currentPage);
-      console.log("페이지당 아이템 수:", itemsPerPage);
-
-      setNews(response.results || []);
-
-      // 전체 뉴스 수를 기반으로 페이지 수 계산
-      const totalItems = response.total || 0;
-      const calculatedTotalPages = Math.ceil(totalItems / itemsPerPage);
-      console.log("계산된 전체 페이지 수:", calculatedTotalPages);
-
-      // 페이지 수가 1보다 크면 페이지네이션 표시
-      setTotalPages(calculatedTotalPages > 1 ? calculatedTotalPages : 1);
+      setNews(response.results);
+      setTotalPages(Math.ceil(response.results.length / limit));
     } catch (error) {
-      console.error("뉴스 검색 중 오류 발생:", error);
       setNews([]);
       setTotalPages(1);
     } finally {
@@ -68,20 +56,63 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
     }
   };
 
-  // 초기 데이터 로딩
-  useEffect(() => {
-    fetchNews();
-  }, []);
-
-  // 검색 조건 변경 시 데이터 로딩
-  useEffect(() => {
-    if (!isLoading) {
-      fetchNews();
+  // 전체 데이터 백그라운드 로딩
+  const fetchAllNews = async () => {
+    try {
+      let allResults: NewsItem[] = [];
+      let page = 1;
+      const limit = 100;
+      while (true) {
+        const params: NewsSearchParams = {
+          keyword: searchTerm || undefined,
+          sort_by: sortBy,
+          start_date: dateRange.start || undefined,
+          end_date: dateRange.end || undefined,
+          page,
+          limit,
+        };
+        if (selectedImpacts.length === 1) {
+          const impact = selectedImpacts[0];
+          if (
+            impact === "positive" ||
+            impact === "negative" ||
+            impact === "neutral"
+          ) {
+            params.impact = impact;
+          }
+        }
+        const response = await searchNews(params);
+        if (!response.results || response.results.length === 0) break;
+        allResults = allResults.concat(response.results);
+        if (response.results.length < limit) break; // 마지막 페이지
+        page += 1;
+      }
+      setAllNews(allResults);
+      setTotalPages(Math.ceil(allResults.length / 10));
+    } catch (error) {
+      setAllNews(null);
     }
-  }, [searchTerm, sortBy, dateRange, selectedImpacts, currentPage]);
+  };
+
+  // 최초 마운트 시 50개만 빠르게 불러오기
+  useEffect(() => {
+    fetchInitialNews();
+  }, [searchTerm, sortBy, dateRange, selectedImpacts]);
+
+  // 50개 불러온 후 전체 데이터 백그라운드 로딩
+  useEffect(() => {
+    if (news.length > 0 && allNews === null) {
+      fetchAllNews();
+    }
+  }, [news, allNews]);
+
+  // 페이지네이션에 사용할 데이터 결정
+  const pagedNews = (allNews || news).slice(
+    (currentPage - 1) * limit,
+    currentPage * limit
+  );
 
   const handlePageChange = (page: number) => {
-    console.log("페이지 변경:", page);
     setCurrentPage(page);
   };
 
@@ -158,10 +189,10 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
                 </div>
               </div>
             ))
-          ) : news && news.length > 0 ? (
+          ) : pagedNews && pagedNews.length > 0 ? (
             (selectedImpacts[0] === "neutral"
-              ? news.filter((item) => item.impact === "neutral")
-              : news
+              ? pagedNews.filter((item) => item.impact === "neutral")
+              : pagedNews
             ).map((item) => (
               <NewsCard
                 key={item.id}

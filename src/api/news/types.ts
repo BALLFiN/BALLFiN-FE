@@ -21,6 +21,7 @@ export interface NewsSearchParams {
   impact?: "positive" | "negative" | "neutral";
   limit?: number;
   offset?: number;
+  page?: number;
 }
 
 export interface NewsSearchResponse {
