@@ -90,12 +90,14 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
             <h3 className="font-medium text-gray-900 mb-2">요약</h3>
             <p className="text-gray-600">{displayNews?.summary}</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="font-medium text-gray-900 mb-2">시장 영향</h3>
-            <p className="text-gray-600">{displayNews?.analysis}</p>
+          <div className="bg-gray-50 rounded-lg p-4" overflow-auto>
+            <h3 className="font-medium text-gray-900 mb-2">상세 분석</h3>
+            <p className="text-gray-600 max-h-[200px] overflow-y-auto">
+              {displayNews?.analysis}
+            </p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="font-medium text-gray-900 mb-2">관련 종목</h3>
+          {/* <div className="bg-gray-50 rounded-lg p-4">
+             <h3 className="font-medium text-gray-900 mb-2">관련 종목</h3>
             <div className="flex flex-wrap gap-2">
               {(displayNews?.related_companies || []).map((company, index) => (
                 <span
@@ -106,7 +108,7 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
                 </span>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       )}
     </div>
