@@ -17,7 +17,7 @@ export const logout = async (): Promise<LogoutResponse> => {
           "Content-Type": "application/json",
           Authorization: token,
         },
-      }
+      },
     );
 
     if (!response.ok) {

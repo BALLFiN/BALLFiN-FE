@@ -11,7 +11,7 @@ interface NewsAnalysisProps {
 
 export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
   const [isAnalyzing, setIsAnalyzing] = useState<{ [key: string]: boolean }>(
-    {}
+    {},
   );
   const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({});
   const [displayNews, setDisplayNews] = useState<NewsItem | null>(null);
@@ -77,7 +77,7 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
           <span>•</span>
           <span>
             {new Date(
-              displayNews?.published_at || news.published_at
+              displayNews?.published_at || news.published_at,
             ).toLocaleDateString()}
           </span>
           <span>•</span>

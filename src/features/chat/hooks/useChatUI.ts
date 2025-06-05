@@ -37,7 +37,7 @@ export const useChatManager = () => {
 
   const saveEdit = (id: string) => {
     const updated = chatList.map((history) =>
-      history.id === id ? { ...history, title: editTitle } : history
+      history.id === id ? { ...history, title: editTitle } : history,
     );
     localStorage.setItem("chatHistories", JSON.stringify(updated));
     setEditingId(null);

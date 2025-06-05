@@ -1,4 +1,4 @@
-import { History, Plus } from 'lucide-react';
+import { History, Plus } from "lucide-react";
 
 interface Props {
   onClickHistory: () => void;
@@ -7,8 +7,16 @@ interface Props {
 
 export default function ChatMenu({ onClickHistory, onCreateNewChat }: Props) {
   const menuList = [
-    { text: ' 채팅 기록', icon: <History size={16} />, onClick: onClickHistory },
-    { text: '새로운 채팅방 만들기', icon: <Plus size={16} />, onClick: onCreateNewChat },
+    {
+      text: " 채팅 기록",
+      icon: <History size={16} />,
+      onClick: onClickHistory,
+    },
+    {
+      text: "새로운 채팅방 만들기",
+      icon: <Plus size={16} />,
+      onClick: onCreateNewChat,
+    },
   ];
   return (
     <div className="absolute bottom-20 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-10">

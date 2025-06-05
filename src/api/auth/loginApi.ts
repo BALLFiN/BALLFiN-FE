@@ -41,7 +41,7 @@ export const login = async (data: LoginRequest): Promise<string> => {
       if (response.status === 422) {
         const errorData: ErrorResponse = await response.json();
         throw new Error(
-          errorData.detail[0]?.msg || "입력값이 올바르지 않습니다."
+          errorData.detail[0]?.msg || "입력값이 올바르지 않습니다.",
         );
       }
 

@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteChat } from '../../api/chats/deleteChat';
-import { CHAT_KEYS } from '../../constants/queryKeys';
-import { updateChatTitle } from '../../api/chats/updateChatTitle';
-import { createChat } from '../../api/chats/createChat';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteChat } from "../../api/chats/deleteChat";
+import { CHAT_KEYS } from "../../constants/queryKeys";
+import { updateChatTitle } from "../../api/chats/updateChatTitle";
+import { createChat } from "../../api/chats/createChat";
 
 export const useCreateChat = () => {
   const queryClient = useQueryClient();

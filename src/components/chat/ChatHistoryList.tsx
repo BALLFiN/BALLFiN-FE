@@ -1,6 +1,9 @@
-import { useDeleteChat, useUpdateChatTitle } from '@/features/chat/hooks/chatList/useChatMutation';
-import { ChatListItem } from '@/features/chat/types';
-import { Edit2, Trash2, Check, X } from 'lucide-react';
+import {
+  useDeleteChat,
+  useUpdateChatTitle,
+} from "@/features/chat/hooks/chatList/useChatMutation";
+import { ChatListItem } from "@/features/chat/types";
+import { Edit2, Trash2, Check, X } from "lucide-react";
 
 interface Props {
   histories: ChatListItem[];
@@ -37,7 +40,10 @@ export default function ChatHistoryList({
             key={history.id}
             className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100"
           >
-            <div className="flex-1 cursor-pointer" onClick={() => onLoad(history)}>
+            <div
+              className="flex-1 cursor-pointer"
+              onClick={() => onLoad(history)}
+            >
               {editingId === history.id ? (
                 <div className="flex items-center gap-2">
                   <input
@@ -56,13 +62,18 @@ export default function ChatHistoryList({
                   >
                     <Check size={16} />
                   </button>
-                  <button onClick={onEditCancel} className="text-gray-500 hover:text-gray-700 p-1">
+                  <button
+                    onClick={onEditCancel}
+                    className="text-gray-500 hover:text-gray-700 p-1"
+                  >
                     <X size={16} />
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h5 className="font-medium font-shrikhand text-lg">{history.title}</h5>
+                  <h5 className="font-medium font-shrikhand text-lg">
+                    {history.title}
+                  </h5>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -74,7 +85,9 @@ export default function ChatHistoryList({
                   </button>
                 </div>
               )}
-              <p className="text-sm text-gray-500">{formatDate(history.createdAt)}</p>
+              <p className="text-sm text-gray-500">
+                {formatDate(history.createdAt)}
+              </p>
             </div>
             <button
               onClick={(e) => {

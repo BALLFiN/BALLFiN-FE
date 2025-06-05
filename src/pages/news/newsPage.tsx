@@ -136,7 +136,7 @@ export default function NewsPage() {
                   }))}
                   onEventClick={(event) => {
                     const newsItem = myFeedNews.find(
-                      (news) => news.title === event.title
+                      (news) => news.title === event.title,
                     );
                     if (newsItem) {
                       handleNewsClick(newsItem);

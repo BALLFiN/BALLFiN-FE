@@ -86,7 +86,7 @@ export default function NewsAlarm() {
                     onChange={(e) =>
                       handleTypeChange(
                         alarm.id,
-                        e.target.value as "push" | "email"
+                        e.target.value as "push" | "email",
                       )
                     }
                     className="px-3 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20"
