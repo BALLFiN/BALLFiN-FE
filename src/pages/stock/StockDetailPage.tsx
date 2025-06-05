@@ -47,7 +47,7 @@ export default function StockDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showMA, setShowMA] = useState(true);
   const [timeRange, setTimeRange] = useState<"1d" | "1w" | "1m" | "3m" | "1y">(
-    "1m"
+    "1m",
   );
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -83,7 +83,7 @@ export default function StockDetailPage() {
         volume: Math.floor(Math.random() * 1000000),
         ma5: 72000 + Math.random() * 5000,
         ma20: 71000 + Math.random() * 3000,
-      })
+      }),
     );
 
     const mockNews: NewsItem[] = Array.from({ length: 5 }, (_, i) => ({

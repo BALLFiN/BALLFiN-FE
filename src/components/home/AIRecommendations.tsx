@@ -149,7 +149,7 @@ export default function AIRecommendations() {
               <div className="text-sm text-gray-500">{stock.category}</div>
               <div
                 className={`px-3 py-1.5 rounded-full text-xs font-medium ${getPredictionColor(
-                  stock.prediction
+                  stock.prediction,
                 )}`}
               >
                 AI 분석:{" "}

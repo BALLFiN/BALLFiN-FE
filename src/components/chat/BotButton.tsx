@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Bot } from 'lucide-react';
-import ChatWindow from './ChatWindow';
+import { useState } from "react";
+import { Bot } from "lucide-react";
+import ChatWindow from "./ChatWindow";
 
 const BotButton = () => {
   const [isOpen, setIsOpen] = useState(false);

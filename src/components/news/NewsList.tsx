@@ -109,7 +109,7 @@ export default function NewsList({ selectedNews, onNewsClick }: NewsListProps) {
   // 페이지네이션에 사용할 데이터 결정
   const pagedNews = (allNews || news).slice(
     (currentPage - 1) * limit,
-    currentPage * limit
+    currentPage * limit,
   );
 
   const handlePageChange = (page: number) => {

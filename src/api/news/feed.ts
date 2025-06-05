@@ -13,7 +13,7 @@ interface MyFeedResponse {
 }
 
 export const getMyFeed = async (
-  params: MyFeedParams = {}
+  params: MyFeedParams = {},
 ): Promise<NewsItem[]> => {
   try {
     const requestUrl = `${API_URL}/news/my-feed`;
@@ -88,7 +88,7 @@ export const getMyFeed = async (
       // 서버 에러 응답이 있는 경우
       if (error.response?.data) {
         throw new Error(
-          error.response.data.message || "뉴스 피드를 불러오는데 실패했습니다."
+          error.response.data.message || "뉴스 피드를 불러오는데 실패했습니다.",
         );
       }
     }

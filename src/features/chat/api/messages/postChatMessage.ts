@@ -1,14 +1,17 @@
-import { axiosInstance } from '@/lib/axiosInstance';
+import { axiosInstance } from "@/lib/axiosInstance";
 
 interface SendMessageParams {
   chatId: string;
   message: string;
 }
 
-export const postChatMessage = async ({ chatId, message }: SendMessageParams) => {
+export const postChatMessage = async ({
+  chatId,
+  message,
+}: SendMessageParams) => {
   const res = await axiosInstance.post(`/chat/chats/${chatId}/messages`, {
     content: message,
-    model: 'gpt',
+    model: "gpt",
   });
 
   return res.data;

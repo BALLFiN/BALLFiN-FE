@@ -1,4 +1,4 @@
-import { Send, Menu } from 'lucide-react';
+import { Send, Menu } from "lucide-react";
 
 interface ChatInputProps {
   message: string;
@@ -7,7 +7,12 @@ interface ChatInputProps {
   onToggleMenu: () => void;
 }
 
-export default function ChatInput({ message, onChange, onSubmit, onToggleMenu }: ChatInputProps) {
+export default function ChatInput({
+  message,
+  onChange,
+  onSubmit,
+  onToggleMenu,
+}: ChatInputProps) {
   return (
     <form
       onSubmit={(e) => {

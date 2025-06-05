@@ -171,7 +171,7 @@ const Header = () => {
                     {item.icon}
                     {item.label}
                   </button>
-                )
+                ),
               )}
             </div>
 
@@ -234,7 +234,7 @@ const Header = () => {
                     {item.icon}
                     {item.label}
                   </button>
-                )
+                ),
               )}
             </div>
           </div>

@@ -45,7 +45,7 @@ export default function Watchlist({
   const filteredCompanies = companies.filter(
     (company) =>
       company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.code.includes(searchQuery)
+      company.code.includes(searchQuery),
   );
 
   const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
@@ -85,7 +85,7 @@ export default function Watchlist({
                   key={index}
                   onClick={() =>
                     onCompanySelect(
-                      company === selectedCompany ? null : company
+                      company === selectedCompany ? null : company,
                     )
                   }
                   className={`p-4 rounded-lg border transition-colors duration-200 cursor-pointer ${
