@@ -113,7 +113,7 @@ export default function NewsAnalysis() {
               </div>
               <div
                 className={`px-2 py-1 rounded-full text-xs font-medium ${getSentimentColor(
-                  news.sentiment
+                  news.sentiment,
                 )}`}
               >
                 {news.sentiment === "positive"

@@ -6,7 +6,7 @@ export interface Message {
 }
 export interface NewMessagePT {
   msg_id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   ts: string;
 }

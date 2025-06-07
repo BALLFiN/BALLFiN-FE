@@ -10,7 +10,7 @@ interface RegisterResponse {
 }
 
 export const register = async (
-  data: RegisterRequest
+  data: RegisterRequest,
 ): Promise<RegisterResponse> => {
   try {
     const response = await fetch(
@@ -21,7 +21,7 @@ export const register = async (
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      }
+      },
     );
 
     if (!response.ok) {

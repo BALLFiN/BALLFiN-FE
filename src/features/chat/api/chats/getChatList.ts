@@ -1,5 +1,5 @@
-import { axiosInstance } from '@/lib/axiosInstance';
-import { ChatListItem } from '../../types';
+import { axiosInstance } from "@/lib/axiosInstance";
+import { ChatListItem } from "../../types";
 
 interface ChatListResponse {
   chat_id: string;
@@ -9,7 +9,7 @@ interface ChatListResponse {
 }
 
 export const getChatList = async (limit = 10): Promise<ChatListItem[]> => {
-  const res = await axiosInstance.get<ChatListResponse[]>('/chat/chats', {
+  const res = await axiosInstance.get<ChatListResponse[]>("/chat/chats", {
     params: { limit },
   });
   return res.data.map(
@@ -18,6 +18,6 @@ export const getChatList = async (limit = 10): Promise<ChatListItem[]> => {
       title: item.title,
       createdAt: item.created_at,
       updatedAt: item.updated_at,
-    })
+    }),
   );
 };

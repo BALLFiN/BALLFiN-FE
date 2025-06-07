@@ -15,7 +15,7 @@ if (rootElement) {
       <QueryClientProvider client={queryClient}>
         <App />
       </QueryClientProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 } else {
   console.error('Root element not found!');

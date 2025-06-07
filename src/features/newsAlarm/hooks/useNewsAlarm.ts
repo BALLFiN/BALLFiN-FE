@@ -73,7 +73,7 @@ export function useNewsAlarm() {
           return { ...alarm, isActive: newIsActive };
         }
         return alarm;
-      })
+      }),
     );
   };
 
@@ -91,7 +91,7 @@ export function useNewsAlarm() {
           return { ...alarm, notificationType: type };
         }
         return alarm;
-      })
+      }),
     );
   };
 

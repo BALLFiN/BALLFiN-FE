@@ -4,7 +4,6 @@ import { NewsItem } from "./types";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export interface MyFeedParams {
-  user_email: string;
   limit?: number;
 }
 
@@ -13,13 +12,20 @@ interface MyFeedResponse {
   total: number;
 }
 
-export const getMyFeed = async (params: MyFeedParams): Promise<NewsItem[]> => {
+export const getMyFeed = async (
+  params: MyFeedParams = {},
+): Promise<NewsItem[]> => {
   try {
     const requestUrl = `${API_URL}/news/my-feed`;
     const requestParams = {
-      user_email: params.user_email,
       limit: params.limit || 20,
     };
+
+    const tokenKey = "access_token";
+    let token = localStorage.getItem(tokenKey);
+    if (token && !token.startsWith("Bearer ")) {
+      token = `Bearer ${token}`;
+    }
 
     console.log("API 요청 정보:", {
       url: requestUrl,
@@ -28,10 +34,16 @@ export const getMyFeed = async (params: MyFeedParams): Promise<NewsItem[]> => {
         VITE_API_URL: import.meta.env.VITE_API_URL,
         NODE_ENV: import.meta.env.NODE_ENV,
       },
+      headers: {
+        Authorization: token,
+      },
     });
 
     const response = await axios.get<MyFeedResponse>(requestUrl, {
       params: requestParams,
+      headers: {
+        Authorization: token,
+      },
     });
 
     console.log("API 응답:", {
@@ -76,7 +88,7 @@ export const getMyFeed = async (params: MyFeedParams): Promise<NewsItem[]> => {
       // 서버 에러 응답이 있는 경우
       if (error.response?.data) {
         throw new Error(
-          error.response.data.message || "뉴스 피드를 불러오는데 실패했습니다."
+          error.response.data.message || "뉴스 피드를 불러오는데 실패했습니다.",
         );
       }
     }

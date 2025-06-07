@@ -18,9 +18,10 @@ export interface NewsSearchParams {
   sort_by?: "relevance" | "date" | "views";
   start_date?: string;
   end_date?: string;
-  impact?: "positive" | "negative";
+  impact?: "positive" | "negative" | "neutral";
   limit?: number;
   offset?: number;
+  page?: number;
 }
 
 export interface NewsSearchResponse {

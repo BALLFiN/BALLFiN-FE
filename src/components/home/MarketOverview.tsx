@@ -51,35 +51,32 @@ const marketStats: MarketStat[] = [
 
 export default function MarketOverview() {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">시장 개요</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {marketStats.map((stat, index) => (
           <div
             key={index}
-            className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors"
+            className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 hover:shadow-md transition-all duration-300 border border-gray-100"
           >
-            <div className="text-sm text-gray-600 mb-1">{stat.title}</div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">
+            <div className="text-sm text-gray-500 mb-2">{stat.title}</div>
+            <div className="text-2xl font-bold text-gray-900 mb-2">
               {stat.value}
             </div>
             <div
-              className={`flex items-center gap-1 ${
-                stat.change.isPositive ? "text-green-600" : "text-red-600"
-              }`}
+              className={`flex items-center gap-1.5 ${stat.change.isPositive ? "text-green-600" : "text-red-600"}`}
             >
               {stat.change.isPositive ? (
                 <TrendingUp className="w-4 h-4" />
               ) : (
                 <TrendingDown className="w-4 h-4" />
               )}
-              <span className="text-sm">
+              <span className="text-sm font-medium">
                 {stat.change.percentage} ({stat.change.value})
               </span>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }
