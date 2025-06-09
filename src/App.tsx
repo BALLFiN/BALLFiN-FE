@@ -14,6 +14,7 @@ import StockDetailPage from '@/pages/stock/StockDetailPage';
 
 import MyPageChart from './pages/myPage/chart';
 import MyPageNews from './pages/myPage/news';
+import AramSettingsPage from './pages/myPage/aramSettings';
 
 const queryClient = new QueryClient();
 function App() {
@@ -36,6 +37,7 @@ function App() {
                 <Route path="chart" element={<MyPageChart />} />
                 <Route path="news" element={<MyPageNews />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="Aram" element={<AramSettingsPage />} />
               </Route>
             </Routes>
           </main>
