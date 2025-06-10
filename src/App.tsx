@@ -9,12 +9,13 @@ import SignUpPage from '@/pages/auth/signUpPage';
 import MyPage from '@/pages/myPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MyPageLayout from './components/layout/myPageLayout';
-import SettingsPage from './pages/myPage/Settings';
+
 import StockDetailPage from '@/pages/stock/StockDetailPage';
 
 import MyPageChart from './pages/myPage/chart';
 import MyPageNews from './pages/myPage/news';
 import AramSettingsPage from './pages/myPage/aramSettings';
+import ProfilePage from './pages/myPage/Settings';
 
 const queryClient = new QueryClient();
 function App() {
@@ -36,7 +37,7 @@ function App() {
                 <Route index element={<MyPage />} />
                 <Route path="chart" element={<MyPageChart />} />
                 <Route path="news" element={<MyPageNews />} />
-                <Route path="settings" element={<SettingsPage />} />
+                <Route path="settings" element={<ProfilePage />} />
                 <Route path="Aram" element={<AramSettingsPage />} />
               </Route>
             </Routes>

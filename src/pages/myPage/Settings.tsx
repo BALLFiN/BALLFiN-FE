@@ -1,30 +1,28 @@
-import { Bell, ChevronRight, Edit2, HelpCircle, LogOut, User } from 'lucide-react';
-
-export default function SettingsPage() {
-  const menuItems = [
-    { icon: User, label: '내 정보', color: 'text-gray-600' },
-    { icon: Edit2, label: '내 정보 수정', color: 'text-gray-600' },
-    { icon: Bell, label: '알림 설정', color: 'text-gray-600' },
-    { icon: HelpCircle, label: '고객센터', color: 'text-gray-600' },
-    { icon: LogOut, label: '로그아웃', color: 'text-red-600', isLogout: true },
-  ];
+export default function ProfilePage() {
   return (
-    <div className="bg-white rounded-xl shadow-sm">
-      <div className="divide-y divide-gray-100">
-        {menuItems.map((item, index) => (
-          <button
-            key={index}
-            className={`w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${
-              item.isLogout ? 'text-red-600' : ''
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <item.icon size={20} className={item.color} />
-              <span className={item.isLogout ? 'text-red-600' : 'text-gray-900'}>{item.label}</span>
+    <div className="w-full  h-screen flex flex-col items-center py-8">
+      <div className="w-4xl h-64  border border-gray-300  rounded-2xl shadow-md ">
+        <div className="py-6 px-8 h-full w-full flex-col  flex ">
+          <div className="flex justify-start h-16">
+            <div></div>
+            <p>프로필카드</p>
+            {/* h1 사이즈 추가해야될듯 안먹네 */}
+          </div>
+          <div className="flex  flex-col justify-around h-full w-full">
+            <div className="flex justify-between">
+              <div className="w-28 text-center">
+                <h3>닉네임</h3>
+              </div>
+              <div> 홍길동</div>
             </div>
-            <ChevronRight size={20} className={item.isLogout ? 'text-red-600' : 'text-gray-400'} />
-          </button>
-        ))}
+            <div className="flex justify-between">
+              <div className="w-28 text-center">
+                <h3>이메일</h3>
+              </div>
+              <div> hong@exapmle.com</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
