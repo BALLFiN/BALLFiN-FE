@@ -15,7 +15,7 @@ import StockDetailPage from '@/pages/stock/StockDetailPage';
 import MyPageChart from './pages/myPage/chart';
 import MyPageNews from './pages/myPage/news';
 import AramSettingsPage from './pages/myPage/aramSettings';
-import ProfilePage from './pages/myPage/Settings';
+import ProfilePage from './pages/myPage/profile';
 
 const queryClient = new QueryClient();
 function App() {
@@ -37,8 +37,8 @@ function App() {
                 <Route index element={<MyPage />} />
                 <Route path="chart" element={<MyPageChart />} />
                 <Route path="news" element={<MyPageNews />} />
-                <Route path="settings" element={<ProfilePage />} />
-                <Route path="Aram" element={<AramSettingsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="aramSettings" element={<AramSettingsPage />} />
               </Route>
             </Routes>
           </main>

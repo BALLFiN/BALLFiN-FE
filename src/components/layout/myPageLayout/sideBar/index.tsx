@@ -66,7 +66,7 @@ export default function MyPageSidebar() {
           <ul className="space-y-1">
             <li>
               <NavLink
-                to="settings"
+                to="profile"
                 end
                 className={({ isActive }) =>
                   `block px-8 py-2 rounded-l-lg transition-colors
