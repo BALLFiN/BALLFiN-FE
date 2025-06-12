@@ -8,8 +8,9 @@ import StockDetailPage from "@/pages/stock/StockDetailPage";
 import LoginPage from "@/pages/auth/loginPage";
 import SignUpPage from "@/pages/auth/signUpPage";
 import MyPage from "@/pages/auth/myPage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient();
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import TransactionPage from "@/pages/transaction/TransactionPage";
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -26,6 +27,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/mypage" element={<MyPage />} />
+              <Route path="/transaction" element={<TransactionPage />} />
             </Routes>
           </main>
         </div>
