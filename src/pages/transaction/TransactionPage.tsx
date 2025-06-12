@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  ArrowUpDown,
-  BarChart2,
-  Settings,
-  Clock,
-  AlertCircle,
-} from "lucide-react";
+import { BarChart2, Settings, Clock, AlertCircle } from "lucide-react";
 
 interface Strategy {
   id: string;
