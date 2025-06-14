@@ -1,7 +1,7 @@
 export default function ProfilePage() {
   return (
-    <div className="w-full  h-screen flex flex-col items-center py-8">
-      <div className="w-4xl h-64  border border-gray-300  rounded-2xl shadow-md ">
+    <div className="w-full  h-screen flex flex-col items-center py-8 ">
+      <div className="w-4xl h-64  border border-gray-300  rounded-2xl shadow-md bg-white ">
         <div className="py-6 px-8 h-full w-full flex-col  flex ">
           <div className="flex justify-start h-16">
             <div></div>

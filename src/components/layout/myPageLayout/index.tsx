@@ -5,7 +5,7 @@ export default function MyPageLayout() {
   return (
     <div className="min-h-screen flex ">
       <MyPageSidebar />
-      <main className=" w-full ">
+      <main className=" w-full bg-gray-50">
         <Outlet />
       </main>
     </div>
