@@ -19,13 +19,16 @@ interface ErrorResponse {
 
 export const login = async (data: LoginRequest): Promise<string> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       let errorMessage = "로그인에 실패했습니다.";
@@ -41,7 +44,7 @@ export const login = async (data: LoginRequest): Promise<string> => {
       if (response.status === 422) {
         const errorData: ErrorResponse = await response.json();
         throw new Error(
-          errorData.detail[0]?.msg || "입력값이 올바르지 않습니다.",
+          errorData.detail[0]?.msg || "입력값이 올바르지 않습니다."
         );
       }
 
@@ -68,12 +71,15 @@ export const verifyAuth = async (): Promise<{ message: string }> => {
       token = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/check`, {
-      method: "GET",
-      headers: {
-        Authorization: token,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/auth/check`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
 
     if (!response.ok) {
       if (response.status === 401) {

@@ -10,14 +10,14 @@ export const logout = async (): Promise<LogoutResponse> => {
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/logout`,
+      `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
         },
-      },
+      }
     );
 
     if (!response.ok) {

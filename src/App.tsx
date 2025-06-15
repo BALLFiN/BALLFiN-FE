@@ -4,17 +4,19 @@ import HomePage from './pages/homePage';
 import IntroPage from './pages/introPage';
 import NewsPage from '@/pages/news/newsPage';
 import StockPage from '@/pages/stock/stockPage';
+import StockDetailPage from '@/pages/stock/StockDetailPage';
 import LoginPage from '@/pages/auth/loginPage';
 import SignUpPage from '@/pages/auth/signUpPage';
-import MyPage from '@/pages/myPage';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import MyPageLayout from './components/layout/myPageLayout';
 
-import StockDetailPage from '@/pages/stock/StockDetailPage';
+import MyPageLayout from './components/layout/myPageLayout';
 
 import MyPageChart from './pages/myPage/chart';
 import MyPageNews from './pages/myPage/news';
 import AramSettingsPage from './pages/myPage/aramSettings';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import TransactionPage from '@/pages/transaction/TransactionPage';
+import MyPage from './pages/myPage';
 import ProfilePage from './pages/myPage/profile';
 
 const queryClient = new QueryClient();
@@ -40,9 +42,9 @@ function App() {
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="aramSettings" element={<AramSettingsPage />} />
               </Route>
+              <Route path="/transaction" element={<TransactionPage />} />
             </Routes>
           </main>
-          ㅌㅌ
         </div>
       </Router>
     </QueryClientProvider>
