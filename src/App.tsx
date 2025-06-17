@@ -1,16 +1,25 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./components/layout/Header";
-import HomePage from "./pages/HomePage";
-import IntroPage from "./pages/introPage";
-import NewsPage from "@/pages/news/newsPage";
-import StockPage from "@/pages/stock/stockPage";
-import StockDetailPage from "@/pages/stock/StockDetailPage";
-import LoginPage from "@/pages/auth/loginPage";
-import SignUpPage from "@/pages/auth/signUpPage";
-import MyPage from "@/pages/auth/myPage";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/layout/Header';
+import HomePage from './pages/homePage';
+import IntroPage from './pages/introPage';
+import NewsPage from '@/pages/news/newsPage';
+import StockPage from '@/pages/stock/stockPage';
+import StockDetailPage from '@/pages/stock/StockDetailPage';
+import LoginPage from '@/pages/auth/loginPage';
+import SignUpPage from '@/pages/auth/signUpPage';
+
+import MyPageLayout from './components/layout/myPageLayout';
+
+import MyPageChart from './pages/myPage/chart';
+import MyPageNews from './pages/myPage/news';
+import AramSettingsPage from './pages/myPage/aramSettings';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import TransactionPage from '@/pages/transaction/TransactionPage';
+import MyPage from './pages/myPage';
+import ProfilePage from './pages/myPage/profile';
+
 const queryClient = new QueryClient();
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import TransactionPage from "@/pages/transaction/TransactionPage";
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -26,7 +35,13 @@ function App() {
               <Route path="/stock/:code" element={<StockDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/mypage" element={<MyPageLayout />}>
+                <Route index element={<MyPage />} />
+                <Route path="chart" element={<MyPageChart />} />
+                <Route path="news" element={<MyPageNews />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="aramSettings" element={<AramSettingsPage />} />
+              </Route>
               <Route path="/transaction" element={<TransactionPage />} />
             </Routes>
           </main>
