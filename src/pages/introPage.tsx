@@ -12,6 +12,7 @@ import { StatCard } from "../components/Intro/StatCard";
 import { AIModelCard } from "../components/Intro/AIModelCard";
 import { FeatureCard } from "../components/Intro/FeatureCard";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const features = [
   {
@@ -89,6 +90,8 @@ const aiModels = [
 ];
 
 export default function Intro() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-white">
       {/* 헤더 섹션 */}
@@ -234,6 +237,7 @@ export default function Intro() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/transaction")}
             className="bg-white text-[#0A5C2B] px-8 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
           >
             무료로 시작하기
