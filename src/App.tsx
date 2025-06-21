@@ -16,7 +16,7 @@ import AramSettingsPage from "./pages/myPage/aramSettings";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TransactionPage from "@/pages/transaction/TransactionPage";
-ㅊ;
+
 import MyPage from "./pages/myPage";
 import ProfilePage from "./pages/myPage/profile";
 
