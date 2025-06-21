@@ -142,7 +142,7 @@ export default function Intro() {
     <div className="min-h-screen bg-white snap-y snap-mandatory overflow-y-scroll">
       {/* 헤더 + 통계 섹션 */}
       <div className="bg-[#0A5C2B]/5 min-h-screen flex items-center relative overflow-hidden snap-start">
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -173,7 +173,7 @@ export default function Intro() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-xl text-gray-600 max-w-2xl"
+              className="text-l text-gray-600 max-w-2xl"
             >
               AI 기반의 지능형 금융 투자 플랫폼으로, 더 나은 투자 결정을 내리실
               수 있도록 도와드립니다.
@@ -201,7 +201,7 @@ export default function Intro() {
 
       {/* 주요 기능 섹션 */}
       <div className="bg-white min-h-screen flex items-center relative snap-start">
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -216,7 +216,7 @@ export default function Intro() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
           >
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} index={index} />
@@ -227,7 +227,7 @@ export default function Intro() {
 
       {/* AI 모델 정보 섹션 */}
       <div className="bg-[#0A5C2B]/5 min-h-screen flex items-center relative snap-start">
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -253,7 +253,7 @@ export default function Intro() {
 
       {/* 시작하기 섹션 */}
       <div className="bg-white min-h-screen flex items-center relative snap-start">
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -323,7 +323,7 @@ export default function Intro() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 max-w-7xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 max-w-7xl mx-auto"
           >
             {/* 천성윤 */}
             <motion.div
