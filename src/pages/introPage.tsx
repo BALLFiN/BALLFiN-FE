@@ -94,14 +94,14 @@ export default function Intro() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 헤더 섹션 */}
-      <div className="bg-gradient-to-b from-[#0A5C2B]/5 to-white py-24 relative overflow-hidden">
+      {/* 헤더 + 통계 섹션 */}
+      <div className="bg-[#0A5C2B]/5  min-h-[80vh] flex items-center relative overflow-hidden">
         <div className="container mx-auto px-4 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex flex-col items-center text-center"
+            className="flex flex-col items-center text-center mb-16"
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
@@ -133,55 +133,54 @@ export default function Intro() {
               수 있도록 도와드립니다.
             </motion.p>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative max-w-7xl mx-auto"
+          >
+            {stats.map((stat, index) => (
+              <StatCard
+                key={index}
+                value={stat.value}
+                label={stat.label}
+                index={index}
+              />
+            ))}
+          </motion.div>
         </div>
       </div>
 
-      {/* 통계 섹션 */}
-      <div className="container mx-auto px-4 py-12 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative max-w-7xl mx-auto"
-        >
-          {stats.map((stat, index) => (
-            <StatCard
-              key={index}
-              value={stat.value}
-              label={stat.label}
-              index={index}
-            />
-          ))}
-        </motion.div>
-      </div>
-
       {/* 주요 기능 섹션 */}
-      <div className="container mx-auto px-4 py-12 relative">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-3xl font-bold text-gray-900 text-center mb-12"
-        >
-          주요 기능
-        </motion.h2>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative"
-        >
-          {features.map((feature, index) => (
-            <FeatureCard key={index} {...feature} index={index} />
-          ))}
-        </motion.div>
+      <div className="bg-white min-h-[80vh] flex items-center relative">
+        <div className="container mx-auto px-4 relative">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-3xl font-bold text-gray-900 text-center mb-12"
+          >
+            주요 기능
+          </motion.h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative"
+          >
+            {features.map((feature, index) => (
+              <FeatureCard key={index} {...feature} index={index} />
+            ))}
+          </motion.div>
+        </div>
       </div>
 
       {/* AI 모델 정보 섹션 */}
-      <div className="bg-gray-50 py-12 relative">
+      <div className="bg-[#0A5C2B]/5  min-h-[100vh] flex items-center relative">
         <div className="container mx-auto px-4 relative z-10">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -197,7 +196,7 @@ export default function Intro() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto"
           >
             {aiModels.map((model, index) => (
               <AIModelCard key={index} model={model} index={index} />
@@ -207,42 +206,44 @@ export default function Intro() {
       </div>
 
       {/* 시작하기 섹션 */}
-      <div className="container mx-auto px-4 py-12 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="bg-[#0A5C2B] rounded-xl p-8 text-center text-white relative"
-        >
-          <motion.h2
+      <div className="bg-white min-h-[80vh] flex items-center relative">
+        <div className="container mx-auto px-4 relative">
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-2xl font-bold mb-4"
+            transition={{ duration: 0.8 }}
+            className="bg-[#0A5C2B] rounded-xl p-8 text-center text-white relative"
           >
-            지금 바로 BALLFiN과 함께 시작하세요
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mb-6 text-white/90"
-          >
-            AI 기반의 지능형 투자 플랫폼으로 더 나은 투자 결정을 내리실 수
-            있습니다.
-          </motion.p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/transaction")}
-            className="bg-white text-[#0A5C2B] px-8 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
-          >
-            무료로 시작하기
-          </motion.button>
-        </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-2xl font-bold mb-4"
+            >
+              지금 바로 BALLFiN과 함께 시작하세요
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="mb-6 text-white/90"
+            >
+              AI 기반의 지능형 투자 플랫폼으로 더 나은 투자 결정을 내리실 수
+              있습니다.
+            </motion.p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/transaction")}
+              className="bg-white text-[#0A5C2B] px-8 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
+            >
+              무료로 시작하기
+            </motion.button>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
