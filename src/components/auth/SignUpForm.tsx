@@ -1,71 +1,22 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { register } from "../../api/auth/signUpApi";
 import Toast from "@/components/common/Toast";
+import { useSignUpForm } from "../../features/auth/useSignUpForm";
 
 export default function SignUpForm() {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    name: "",
-  });
-  const [toast, setToast] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({ show: false, message: "", type: "success" });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      setToast({
-        show: true,
-        message: "비밀번호가 일치하지 않습니다.",
-        type: "error",
-      });
-      return;
-    }
-
-    try {
-      await register({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-      });
-
-      setToast({
-        show: true,
-        message: "회원가입이 완료되었습니다.",
-        type: "success",
-      });
-
-      // 회원가입 성공 후 로그인 페이지로 이동
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-    } catch (error) {
-      setToast({
-        show: true,
-        message: "회원가입에 실패했습니다.",
-        type: "error",
-      });
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const {
+    formData,
+    showPassword,
+    showConfirmPassword,
+    toast,
+    handleSubmit,
+    handleChange,
+    togglePasswordVisibility,
+    toggleConfirmPasswordVisibility,
+    closeToast,
+    navigateToLogin,
+  } = useSignUpForm();
 
   return (
     <div className="w-full lg:w-1/2 p-8">
@@ -152,7 +103,7 @@ export default function SignUpForm() {
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={togglePasswordVisibility}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPassword ? (
@@ -188,7 +139,7 @@ export default function SignUpForm() {
             />
             <button
               type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              onClick={toggleConfirmPasswordVisibility}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showConfirmPassword ? (
@@ -213,7 +164,7 @@ export default function SignUpForm() {
           <button
             type="button"
             className="text-sm text-gray-600 hover:text-[#0A5C2B]"
-            onClick={() => navigate("/login")}
+            onClick={navigateToLogin}
           >
             이미 계정이 있으신가요? 로그인하기
           </button>
@@ -235,11 +186,7 @@ export default function SignUpForm() {
       </div>
 
       {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast({ ...toast, show: false })}
-        />
+        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
       )}
     </div>
   );
