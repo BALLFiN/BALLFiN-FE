@@ -1,44 +1,38 @@
-import NewsSummary from "@/components/home/NewsSummary";
-import StockSummary from "@/components/home/StockSummary";
 import BotButton from "@/components/chat/BotButton";
 import MarketOverview from "@/components/home/MarketOverview";
-import AIRecommendations from "@/components/home/AIRecommendations";
-import StockPrediction from "@/components/home/StockPrediction";
-import NewsAnalysis from "@/components/home/NewsAnalysis";
+import PopularStocks from "@/components/home/PopularStocks";
+import TrendingKeywords from "@/components/home/TrendingKeywords";
+import TrendingNews from "@/components/home/TrendingNews";
 
 const Home = () => {
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* 환영 메시지 */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
-          안녕하세요, Barbell님!{" "}
-          <span className="text-[#0A5C2B]">AI 투자 인사이트</span>가
-          준비되었습니다.
-        </h1>
-        <button className="mt-4 px-6 py-2 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors">
-          투자 시작하기
-        </button>
+      {/* 환영 메시지 및 실시간 인기 뉴스 */}
+      <div className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="pl-20 lg:col-span-2">
+          <h1 className="text-2xl font-bold text-gray-900">
+            안녕하세요, Barbell님!{" "}
+            <span className="text-[#0A5C2B]">AI 투자 인사이트</span>가
+            준비되었습니다.
+          </h1>
+          <button className="mt-4 px-6 py-2 bg-[#0A5C2B] w-40 text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors">
+            투자 시작하기
+          </button>
+        </div>
+        <div>
+          <TrendingNews />
+        </div>
       </div>
 
       {/* 시장 개요 */}
-      <MarketOverview />
-
-      {/* AI 추천 종목 */}
-      <div className="mt-8">
-        <AIRecommendations />
+      <div className="mb-8">
+        <MarketOverview />
       </div>
 
-      {/* 주가 예측 및 뉴스 분석 */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <StockPrediction />
-        <NewsAnalysis />
-      </div>
-
-      {/* 뉴스 요약 및 주식 요약 */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <NewsSummary />
-        <StockSummary />
+      {/* 인기 종목 및 키워드 */}
+      <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-2">
+        <PopularStocks />
+        <TrendingKeywords />
       </div>
 
       {/* 챗봇 버튼 */}
