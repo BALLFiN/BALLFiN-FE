@@ -1,12 +1,8 @@
 import { useState } from "react";
-import {
-  Search,
-  ArrowUpDown,
-  TrendingUp,
-  TrendingDown,
-  Star,
-} from "lucide-react";
+import { ArrowUpDown, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import StockSearchBar from "../../components/stock/StockSearchBar";
+import AutoTradingSection from "../../components/stock/AutoTradingSection";
 
 interface StockItem {
   id: number;
@@ -149,30 +145,21 @@ export default function StockPage() {
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
-  // Top 10 데이터 계산
-  const topPositiveStocks = allStocks
-    .filter((stock) => stock.sentiment === "positive")
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
-
-  const topNegativeStocks = allStocks
-    .filter((stock) => stock.sentiment === "negative")
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 10);
+  // 검색 처리 함수
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 검색 및 필터 영역 */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
+          <div className="flex-1">
+            <StockSearchBar
+              onSearch={handleSearch}
               placeholder="종목명 또는 종목코드 검색"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              allStocks={allStocks}
             />
           </div>
           <div className="flex gap-2">
@@ -257,73 +244,6 @@ export default function StockPage() {
             <span>변동률</span>
             <ArrowUpDown className="w-4 h-4" />
           </button>
-        </div>
-      </div>
-
-      {/* Top 10 섹션 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* 호재 Top 10 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-green-500" />
-            <h2 className="text-lg font-semibold">호재 Top 10</h2>
-          </div>
-          <div className="space-y-4">
-            {topPositiveStocks.map((stock) => (
-              <div
-                key={stock.id}
-                className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <div className="font-medium">{stock.name}</div>
-                  <div className="text-sm text-gray-500">{stock.code}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-medium">
-                    {stock.price.toLocaleString()}원
-                  </div>
-                  <div
-                    className={`text-sm ${stock.change >= 0 ? "text-red-500" : "text-blue-500"}`}
-                  >
-                    {stock.change >= 0 ? "+" : ""}
-                    {stock.change}%
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 악재 Top 10 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingDown className="w-5 h-5 text-red-500" />
-            <h2 className="text-lg font-semibold">악재 Top 10</h2>
-          </div>
-          <div className="space-y-4">
-            {topNegativeStocks.map((stock) => (
-              <div
-                key={stock.id}
-                className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <div className="font-medium">{stock.name}</div>
-                  <div className="text-sm text-gray-500">{stock.code}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-medium">
-                    {stock.price.toLocaleString()}원
-                  </div>
-                  <div
-                    className={`text-sm ${stock.change >= 0 ? "text-red-500" : "text-blue-500"}`}
-                  >
-                    {stock.change >= 0 ? "+" : ""}
-                    {stock.change}%
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -433,48 +353,8 @@ export default function StockPage() {
         </table>
       </div>
 
-      {/* 자동거래 시작 버튼 */}
-      <div className="mt-8 p-8 bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-4">자동거래 시작하기</h3>
-          <div className="text-sm text-gray-600">
-            <p className="font-medium mb-3">※ 유의사항</p>
-            <ul className="space-y-2.5">
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>
-                  자동거래는 실시간 시장 상황에 따라 자동으로 매매가
-                  이루어집니다.
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>투자 손실에 대한 책임은 투자자 본인에게 있습니다.</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>
-                  자동거래 시작 전 반드시 투자 전략과 리스크를 충분히 이해하시기
-                  바랍니다.
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>
-                  시스템 오류나 네트워크 문제로 인한 거래 지연이 발생할 수
-                  있습니다.
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <button
-          onClick={() => navigate("/transaction")}
-          className="w-full py-4 text-lg font-medium bg-[#0A5C2B] text-white rounded-lg hover:bg-[#084825] transition-colors"
-        >
-          자동거래 시작하기
-        </button>
-      </div>
+      {/* 자동거래 시작하기 */}
+      <AutoTradingSection />
     </div>
   );
 }
