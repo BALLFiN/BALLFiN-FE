@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { TrendingUp, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 
 interface Keyword {
   id: string;
@@ -168,14 +168,10 @@ export default function TrendingKeywords() {
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
           <h2 className="text-xl font-bold text-gray-900">
             실시간 인기뉴스 키워드
           </h2>
         </div>
-        <button className="text-sm text-[#0A5C2B] hover:underline">
-          더보기
-        </button>
       </div>
 
       {/* 필터 버튼 */}

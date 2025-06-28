@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, ExternalLink, TrendingUp } from "lucide-react";
+import { Heart, ExternalLink } from "lucide-react";
 
 interface Stock {
   id: string;
@@ -133,7 +133,6 @@ export default function PopularStocks() {
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
           <h2 className="text-xl font-bold text-gray-900">
             실시간 인기 종목 TOP 5
           </h2>
