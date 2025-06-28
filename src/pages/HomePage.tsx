@@ -3,6 +3,7 @@ import StockSummary from "@/components/home/StockSummary";
 import BotButton from "@/components/chat/BotButton";
 import MarketOverview from "@/components/home/MarketOverview";
 import AIRecommendations from "@/components/home/AIRecommendations";
+import PopularStocks from "@/components/home/PopularStocks";
 
 const Home = () => {
   return (
@@ -20,7 +21,14 @@ const Home = () => {
       </div>
 
       {/* 시장 개요 */}
-      <MarketOverview />
+      <div className="mb-8">
+        <MarketOverview />
+      </div>
+
+      {/* 인기 종목 */}
+      <div className="mb-8">
+        <PopularStocks />
+      </div>
 
       {/* AI 추천 종목 */}
       <div className="mt-8">
