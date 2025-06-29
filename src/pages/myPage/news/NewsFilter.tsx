@@ -1,6 +1,5 @@
-export default function NewsTabs() {
+export default function NewsFilter() {
   return (
-    /* 기업선택 + 정렬 */
     <div>
       <div className="flex items-center space-x-4">
         <select className="border border-gray-300 rounded px-2 py-1 text-sm">
