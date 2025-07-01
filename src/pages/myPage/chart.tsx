@@ -56,10 +56,10 @@ export default function MyPageChart() {
   const btnClass = `px-2  hover:bg-gray-100 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`;
 
   return (
-    <section className=" rounded-xl shadow-sm p-6  w-full h-full">
+    <section className="p-6  w-full h-full">
       {/* 상단 타이틀 */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
           <Star className="text-yellow-400" size={20} />
           ChartList
         </h2>
