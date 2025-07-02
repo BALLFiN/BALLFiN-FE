@@ -28,3 +28,5 @@ export default function NewsList() {
     </div>
   );
 }
+
+// 즐겨찾기 기능 즐겨찾기 클릭시 ture -false

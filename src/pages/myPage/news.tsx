@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import NewsList from './news/NewsList';
-import NewsTabs from './news/NewsTabs';
-import NewsFilter from './news/NewsFilter';
+
+import NewsHeader from './news/NewsHeader';
 
 export default function MyPageNews() {
   return (
@@ -13,12 +13,7 @@ export default function MyPageNews() {
         </h1>
       </div>
       <div className="w-[calc(100%-2rem)] bg-white rounded-2xl shadow overflow-hidden px-8 mx-4   ">
-        <div className="pt-6">
-          <div className="flex justify-between items-center">
-            <NewsTabs />
-            <NewsFilter />
-          </div>
-        </div>
+        <NewsHeader />
         <hr className=" border-gray-400 border mt-4" />
         <NewsList />
       </div>
