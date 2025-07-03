@@ -14,17 +14,17 @@ export default function MyPageChart() {
   // 예시 초기 데이터
   const [stocks, setStocks] = useState<Stock[]>([
     { id: '1', code: '005930', name: '삼성전자', price: 59100, change: 2.25, isFavorite: true },
-    { id: '2', code: '000660', name: 'SK하이닉스', price: 88800, change: -0.75, isFavorite: false },
-    { id: '1', code: '005930', name: '삼성전자', price: 59100, change: 2.25, isFavorite: true },
-    { id: '2', code: '000660', name: 'SK하이닉스', price: 88800, change: -0.75, isFavorite: false },
-    { id: '1', code: '005930', name: '삼성전자', price: 59100, change: 2.25, isFavorite: true },
-    { id: '2', code: '000660', name: 'SK하이닉스', price: 88800, change: -0.75, isFavorite: false },
-    { id: '1', code: '005930', name: '삼성전자', price: 59100, change: 2.25, isFavorite: true },
-    { id: '2', code: '000660', name: 'SK하이닉스', price: 88800, change: -0.75, isFavorite: false },
-    { id: '1', code: '005930', name: '삼성전자', price: 59100, change: 2.25, isFavorite: true },
-    { id: '2', code: '000660', name: 'SK하이닉스', price: 88800, change: -0.75, isFavorite: false },
-    { id: '1', code: '005930', name: '삼성전자', price: 59100, change: 2.25, isFavorite: true },
-    { id: '2', code: '000660', name: 'SK하이닉스', price: 88800, change: -0.75, isFavorite: false },
+    { id: '2', code: '000660', name: 'SKT', price: 88800, change: -0.75, isFavorite: false },
+    { id: '3', code: '005931', name: '삼성', price: 59100, change: 0.25, isFavorite: true },
+    { id: '4', code: '000661', name: 'SK하이닉스', price: 88800, change: -9.75, isFavorite: false },
+    { id: '5', code: '005932', name: '삼성화재', price: 59100, change: 1.25, isFavorite: true },
+    { id: '6', code: '000662', name: 'KT', price: 88800, change: -5.75, isFavorite: false },
+    { id: '7', code: '005933', name: '삼성bio', price: 59100, change: 4.25, isFavorite: true },
+    { id: '8', code: '000663', name: 'T1', price: 88800, change: 3.75, isFavorite: false },
+    { id: '9', code: '005934', name: '삼성물류', price: 59100, change: 7.25, isFavorite: true },
+    { id: '10', code: '000665', name: '한화', price: 88800, change: -1.75, isFavorite: false },
+    { id: '11', code: '005935', name: '삼성생명', price: 59100, change: 0.25, isFavorite: true },
+    { id: '12', code: '000666', name: '농심', price: 88800, change: 0.75, isFavorite: false },
   ]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
