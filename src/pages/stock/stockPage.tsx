@@ -1,12 +1,8 @@
 import { useState } from "react";
-import {
-  Search,
-  ArrowUpDown,
-  TrendingUp,
-  TrendingDown,
-  Star,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowUpDown } from "lucide-react";
+import StockSearchBar from "@/components/stock/StockSearchBar";
+import StockList from "@/components/stock/StockList";
+import AutoTradingSection from "@/components/stock/AutoTradingSection";
 
 interface StockItem {
   id: number;
@@ -26,7 +22,6 @@ interface StockItem {
 }
 
 export default function StockPage() {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"score" | "price" | "change">("score");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -35,7 +30,7 @@ export default function StockPage() {
   >("all");
   const [favoriteStocks, setFavoriteStocks] = useState<number[]>([]);
 
-  // 임시 데이터
+  // 임의 데이터 10개
   const allStocks: StockItem[] = [
     {
       id: 1,
@@ -97,6 +92,96 @@ export default function StockPage() {
         recommendation: "hold",
       },
     },
+    {
+      id: 5,
+      name: "NAVER",
+      code: "035420",
+      price: 220000,
+      change: 3.2,
+      score: 90,
+      sentiment: "positive",
+      newsCount: 15,
+      prediction: {
+        targetPrice: 240000,
+        confidence: 0.85,
+        recommendation: "buy",
+      },
+    },
+    {
+      id: 6,
+      name: "카카오",
+      code: "035720",
+      price: 45000,
+      change: -2.1,
+      score: 30,
+      sentiment: "negative",
+      newsCount: 7,
+      prediction: {
+        targetPrice: 42000,
+        confidence: 0.62,
+        recommendation: "sell",
+      },
+    },
+    {
+      id: 7,
+      name: "LG화학",
+      code: "051910",
+      price: 550000,
+      change: 1.5,
+      score: 70,
+      sentiment: "positive",
+      newsCount: 9,
+      prediction: {
+        targetPrice: 580000,
+        confidence: 0.75,
+        recommendation: "buy",
+      },
+    },
+    {
+      id: 8,
+      name: "POSCO홀딩스",
+      code: "005490",
+      price: 450000,
+      change: -0.8,
+      score: 55,
+      sentiment: "neutral",
+      newsCount: 5,
+      prediction: {
+        targetPrice: 445000,
+        confidence: 0.68,
+        recommendation: "hold",
+      },
+    },
+    {
+      id: 9,
+      name: "기아",
+      code: "000270",
+      price: 85000,
+      change: 4.2,
+      score: 88,
+      sentiment: "positive",
+      newsCount: 11,
+      prediction: {
+        targetPrice: 92000,
+        confidence: 0.82,
+        recommendation: "buy",
+      },
+    },
+    {
+      id: 10,
+      name: "KB금융",
+      code: "105560",
+      price: 65000,
+      change: 0.5,
+      score: 60,
+      sentiment: "neutral",
+      newsCount: 4,
+      prediction: {
+        targetPrice: 66000,
+        confidence: 0.7,
+        recommendation: "hold",
+      },
+    },
   ];
 
   // 즐겨찾기 토글 함수
@@ -110,9 +195,9 @@ export default function StockPage() {
     });
   };
 
-  // 상세 페이지로 이동
-  const handleViewDetail = (stockCode: string) => {
-    navigate(`/stock/${stockCode}`);
+  // 검색 처리 함수
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
   // 필터링 및 정렬된 데이터 계산
@@ -149,331 +234,121 @@ export default function StockPage() {
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
-  // Top 10 데이터 계산
-  const topPositiveStocks = allStocks
-    .filter((stock) => stock.sentiment === "positive")
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
-
-  const topNegativeStocks = allStocks
-    .filter((stock) => stock.sentiment === "negative")
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 10);
-
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 검색 및 필터 영역 */}
       <div className="mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="종목명 또는 종목코드 검색"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded-lg ${
-                filter === "all"
-                  ? "bg-[#0A5C2B] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              전체
-            </button>
-            <button
-              onClick={() => setFilter("positive")}
-              className={`px-4 py-2 rounded-lg ${
-                filter === "positive"
-                  ? "bg-[#0A5C2B] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              호재
-            </button>
-            <button
-              onClick={() => setFilter("negative")}
-              className={`px-4 py-2 rounded-lg ${
-                filter === "negative"
-                  ? "bg-[#0A5C2B] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              악재
-            </button>
-            <button
-              onClick={() => setFilter("favorite")}
-              className={`px-4 py-2 rounded-lg ${
-                filter === "favorite"
-                  ? "bg-[#0A5C2B] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              즐겨찾기
-            </button>
-          </div>
-        </div>
-
-        {/* 정렬 옵션 */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => {
-              setSortBy("score");
-              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-            }}
-            className={`flex items-center gap-1 px-3 py-1 rounded ${
-              sortBy === "score" ? "bg-gray-100" : ""
-            }`}
-          >
-            <span>스코어</span>
-            <ArrowUpDown className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => {
-              setSortBy("price");
-              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-            }}
-            className={`flex items-center gap-1 px-3 py-1 rounded ${
-              sortBy === "price" ? "bg-gray-100" : ""
-            }`}
-          >
-            <span>가격</span>
-            <ArrowUpDown className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => {
-              setSortBy("change");
-              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-            }}
-            className={`flex items-center gap-1 px-3 py-1 rounded ${
-              sortBy === "change" ? "bg-gray-100" : ""
-            }`}
-          >
-            <span>변동률</span>
-            <ArrowUpDown className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Top 10 섹션 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* 호재 Top 10 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-green-500" />
-            <h2 className="text-lg font-semibold">호재 Top 10</h2>
-          </div>
-          <div className="space-y-4">
-            {topPositiveStocks.map((stock) => (
-              <div
-                key={stock.id}
-                className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <div className="font-medium">{stock.name}</div>
-                  <div className="text-sm text-gray-500">{stock.code}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-medium">
-                    {stock.price.toLocaleString()}원
-                  </div>
-                  <div
-                    className={`text-sm ${stock.change >= 0 ? "text-red-500" : "text-blue-500"}`}
-                  >
-                    {stock.change >= 0 ? "+" : ""}
-                    {stock.change}%
-                  </div>
-                </div>
+        <div className="flex justify-center">
+          <div className="w-5/6">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1">
+                <StockSearchBar
+                  onSearch={handleSearch}
+                  placeholder="종목명 또는 종목코드 검색"
+                  allStocks={allStocks}
+                />
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 악재 Top 10 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingDown className="w-5 h-5 text-red-500" />
-            <h2 className="text-lg font-semibold">악재 Top 10</h2>
-          </div>
-          <div className="space-y-4">
-            {topNegativeStocks.map((stock) => (
-              <div
-                key={stock.id}
-                className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <div className="font-medium">{stock.name}</div>
-                  <div className="text-sm text-gray-500">{stock.code}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-medium">
-                    {stock.price.toLocaleString()}원
-                  </div>
-                  <div
-                    className={`text-sm ${stock.change >= 0 ? "text-red-500" : "text-blue-500"}`}
-                  >
-                    {stock.change >= 0 ? "+" : ""}
-                    {stock.change}%
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 주식 목록 테이블 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                종목
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                현재가
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                변동률
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                스코어
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                예측가
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                추천
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                액션
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredAndSortedStocks.map((stock) => (
-              <tr key={stock.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-medium">{stock.name}</div>
-                  <div className="text-sm text-gray-500">{stock.code}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {stock.price.toLocaleString()}원
-                </td>
-                <td
-                  className={`px-6 py-4 whitespace-nowrap ${
-                    stock.change >= 0 ? "text-red-500" : "text-blue-500"
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFilter("all")}
+                  className={`px-4 py-2 rounded-lg ${
+                    filter === "all"
+                      ? "bg-[#0A5C2B] text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
-                  {stock.change >= 0 ? "+" : ""}
-                  {stock.change}%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        stock.sentiment === "positive"
-                          ? "bg-green-500"
-                          : stock.sentiment === "negative"
-                            ? "bg-red-500"
-                            : "bg-gray-500"
-                      }`}
-                    />
-                    {stock.score}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {stock.prediction.targetPrice.toLocaleString()}원
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      stock.prediction.recommendation === "buy"
-                        ? "bg-green-100 text-green-800"
-                        : stock.prediction.recommendation === "sell"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    {stock.prediction.recommendation === "buy"
-                      ? "매수"
-                      : stock.prediction.recommendation === "sell"
-                        ? "매도"
-                        : "관망"}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleViewDetail(stock.code)}
-                      className="px-2 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    >
-                      조회
-                    </button>
-                    <button
-                      onClick={() => toggleFavorite(stock.id)}
-                      className={`p-1 rounded-full hover:bg-gray-100 ${
-                        favoriteStocks.includes(stock.id)
-                          ? "text-yellow-500"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      <Star size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  전체
+                </button>
+                <button
+                  onClick={() => setFilter("positive")}
+                  className={`px-4 py-2 rounded-lg ${
+                    filter === "positive"
+                      ? "bg-[#0A5C2B] text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  호재
+                </button>
+                <button
+                  onClick={() => setFilter("negative")}
+                  className={`px-4 py-2 rounded-lg ${
+                    filter === "negative"
+                      ? "bg-[#0A5C2B] text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  악재
+                </button>
+                <button
+                  onClick={() => setFilter("favorite")}
+                  className={`px-4 py-2 rounded-lg ${
+                    filter === "favorite"
+                      ? "bg-[#0A5C2B] text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  즐겨찾기
+                </button>
+              </div>
+            </div>
 
-      {/* 자동거래 시작 버튼 */}
-      <div className="mt-8 p-8 bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-4">자동거래 시작하기</h3>
-          <div className="text-sm text-gray-600">
-            <p className="font-medium mb-3">※ 유의사항</p>
-            <ul className="space-y-2.5">
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>
-                  자동거래는 실시간 시장 상황에 따라 자동으로 매매가
-                  이루어집니다.
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>투자 손실에 대한 책임은 투자자 본인에게 있습니다.</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>
-                  자동거래 시작 전 반드시 투자 전략과 리스크를 충분히 이해하시기
-                  바랍니다.
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-[#0A5C2B] mr-2">•</span>
-                <span>
-                  시스템 오류나 네트워크 문제로 인한 거래 지연이 발생할 수
-                  있습니다.
-                </span>
-              </li>
-            </ul>
+            {/* 정렬 옵션 */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  setSortBy("score");
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+                className={`flex items-center gap-1 px-3 py-1 rounded ${
+                  sortBy === "score" ? "bg-gray-100" : ""
+                }`}
+              >
+                <span>스코어</span>
+                <ArrowUpDown className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {
+                  setSortBy("price");
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+                className={`flex items-center gap-1 px-3 py-1 rounded ${
+                  sortBy === "price" ? "bg-gray-100" : ""
+                }`}
+              >
+                <span>가격</span>
+                <ArrowUpDown className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {
+                  setSortBy("change");
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+                className={`flex items-center gap-1 px-3 py-1 rounded ${
+                  sortBy === "change" ? "bg-gray-100" : ""
+                }`}
+              >
+                <span>변동률</span>
+                <ArrowUpDown className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
-        <button
-          onClick={() => navigate("/transaction")}
-          className="w-full py-4 text-lg font-medium bg-[#0A5C2B] text-white rounded-lg hover:bg-[#084825] transition-colors"
-        >
-          자동거래 시작하기
-        </button>
+      </div>
+
+      {/* 주식 목록 */}
+      <div className="flex justify-center">
+        <div className="w-5/6">
+          <StockList
+            stocks={filteredAndSortedStocks}
+            favoriteStocks={favoriteStocks}
+            onToggleFavorite={toggleFavorite}
+          />
+        </div>
+      </div>
+
+      {/* 자동거래 시작하기 - 우측 하단 고정 */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <AutoTradingSection />
       </div>
     </div>
   );
