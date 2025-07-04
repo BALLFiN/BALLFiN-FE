@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface NewsItem {
   id: string;
@@ -86,6 +87,24 @@ const trendingNews: NewsItem[] = [
 
 export default function TrendingNews() {
   const navigate = useNavigate();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // 1초 간격으로 순위 순환
+  useEffect(() => {
+    if (isHovered) return; // 호버 상태에서는 애니메이션 중지
+
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % trendingNews.length);
+        setIsAnimating(false);
+      }, 300); // 애니메이션 중간에 인덱스 변경
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, [isHovered]);
 
   const getRankColor = (rank: number) => {
     switch (rank) {
@@ -121,7 +140,12 @@ export default function TrendingNews() {
   };
 
   return (
-    <div className="bg-white group relative">
+    <div
+      className="bg-white relative overflow-visible"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ zIndex: 50 }}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-[#0A5C2B]" />
@@ -129,23 +153,27 @@ export default function TrendingNews() {
         </div>
       </div>
 
-      {/* 기본 표시 (1위만) */}
-      <div className="space-y-2">
+      {/* 기본 표시 (현재 인덱스의 뉴스) */}
+      <div className="space-y-2 relative h-16">
         <div
-          className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
-          onClick={() => navigate(`/news/${trendingNews[0].id}`)}
+          className={`flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-all duration-700 cursor-pointer absolute w-full ${
+            isAnimating
+              ? "transform -translate-y-4 opacity-0"
+              : "transform translate-y-0 opacity-100"
+          }`}
+          onClick={() => navigate(`/news/${trendingNews[currentIndex].id}`)}
         >
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getRankColor(trendingNews[0].rank)} flex-shrink-0`}
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getRankColor(trendingNews[currentIndex].rank)} flex-shrink-0`}
           >
-            {trendingNews[0].rank}
+            {trendingNews[currentIndex].rank}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="text-sm font-medium text-gray-900 truncate hover:text-[#0A5C2B] transition-colors">
-                {trendingNews[0].title}
+                {trendingNews[currentIndex].title}
               </h4>
-              {trendingNews[0].isNew && (
+              {trendingNews[currentIndex].isNew && (
                 <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                   NEW
                 </span>
@@ -153,12 +181,12 @@ export default function TrendingNews() {
             </div>
             <div className="flex items-center gap-2">
               <span
-                className={`text-xs px-2 py-0.5 rounded-full ${getCategoryColor(trendingNews[0].category)}`}
+                className={`text-xs px-2 py-0.5 rounded-full ${getCategoryColor(trendingNews[currentIndex].category)}`}
               >
-                {trendingNews[0].category}
+                {trendingNews[currentIndex].category}
               </span>
               <span className="text-xs text-gray-500">
-                조회수 {formatViews(trendingNews[0].views)}
+                조회수 {formatViews(trendingNews[currentIndex].views)}
               </span>
             </div>
           </div>
@@ -166,45 +194,50 @@ export default function TrendingNews() {
       </div>
 
       {/* Hover 시 전체 표시 */}
-      <div className="absolute top-full left-0 right-0 bg-white rounded-xl   p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 max-h-96 overflow-y-auto">
-        <div className="space-y-2">
-          {trendingNews.map((news) => (
-            <div
-              key={news.id}
-              className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
-              onClick={() => navigate(`/news/${news.id}`)}
-            >
+      {isHovered && (
+        <div
+          className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-lg p-4 transition-all duration-300 z-50 max-h-96 overflow-y-auto"
+          style={{ minWidth: 300 }}
+        >
+          <div className="space-y-2">
+            {trendingNews.map((news) => (
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getRankColor(news.rank)} flex-shrink-0`}
+                key={news.id}
+                className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                onClick={() => navigate(`/news/${news.id}`)}
               >
-                {news.rank}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-sm font-medium text-gray-900 truncate hover:text-[#0A5C2B] transition-colors">
-                    {news.title}
-                  </h4>
-                  {news.isNew && (
-                    <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                      NEW
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getRankColor(news.rank)} flex-shrink-0`}
+                >
+                  {news.rank}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-sm font-medium text-gray-900 truncate hover:text-[#0A5C2B] transition-colors">
+                      {news.title}
+                    </h4>
+                    {news.isNew && (
+                      <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                        NEW
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getCategoryColor(news.category)}`}
+                    >
+                      {news.category}
                     </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${getCategoryColor(news.category)}`}
-                  >
-                    {news.category}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    조회수 {formatViews(news.views)}
-                  </span>
+                    <span className="text-xs text-gray-500">
+                      조회수 {formatViews(news.views)}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
