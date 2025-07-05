@@ -22,6 +22,7 @@ export default function TrendingNews() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -57,6 +58,9 @@ export default function TrendingNews() {
     return () => clearInterval(interval);
   }, [isHovered, newsList]);
 
+  // hover된 인덱스가 있으면 해당 뉴스를 표시, 없으면 자동 순환
+  const displayIndex = hoveredIndex !== null ? hoveredIndex : currentIndex;
+
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1:
@@ -90,24 +94,78 @@ export default function TrendingNews() {
     return views.toLocaleString();
   };
 
+  // 공통: 기본 표시 영역(뉴스 한 줄) 레이아웃
+  const renderMainBox = (content: React.ReactNode) => (
+    <div className="space-y-2 relative h-28">
+      <div
+        className="px-5 py-4 bg-white border-2 border-green-700 shadow rounded-xl w-full absolute flex items-center"
+        style={{ position: "relative" }}
+      >
+        {/* 왼쪽 초록 포인트 바 */}
+        <div className="w-1 h-12 rounded bg-[#0A5C2B] mr-4" />
+        <div className="flex-1 min-w-0 flex items-center justify-center">
+          {content}
+        </div>
+        <button
+          className="ml-4 p-2 rounded-full hover:bg-green-100 transition-colors"
+          aria-label="뉴스 전체 검색"
+          onClick={() => navigate("/news")}
+          type="button"
+        >
+          <Search className="w-6 h-6 text-[#0A5C2B] hover:text-green-700" />
+        </button>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 text-center text-gray-500">
-        실시간 인기 뉴스를 불러오는 중...
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
+            <h3 className="text-xl font-bold text-gray-900">
+              실시간 인기 뉴스
+            </h3>
+          </div>
+        </div>
+        {renderMainBox(
+          <span className="text-gray-500">
+            실시간 인기 뉴스를 불러오는 중...
+          </span>
+        )}
       </div>
     );
   }
   if (error) {
     return (
-      <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 text-center text-red-500">
-        {error}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
+            <h3 className="text-xl font-bold text-gray-900">
+              실시간 인기 뉴스
+            </h3>
+          </div>
+        </div>
+        {renderMainBox(<span className="text-red-500">{error}</span>)}
       </div>
     );
   }
   if (newsList.length === 0) {
     return (
-      <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 text-center text-gray-400">
-        인기 뉴스가 없습니다.
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
+            <h3 className="text-xl font-bold text-gray-900">
+              실시간 인기 뉴스
+            </h3>
+          </div>
+        </div>
+        {renderMainBox(
+          <span className="text-gray-400">인기 뉴스가 없습니다.</span>
+        )}
       </div>
     );
   }
@@ -116,7 +174,10 @@ export default function TrendingNews() {
     <div
       className="bg-white relative overflow-visible p-6"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setHoveredIndex(null);
+      }}
       style={{ zIndex: 50 }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -141,25 +202,25 @@ export default function TrendingNews() {
                   ? "transform -translate-y-4 opacity-0"
                   : "transform translate-y-0 opacity-100"
               }`}
-              onClick={() => navigate(`/news/${newsList[currentIndex].id}`)}
+              onClick={() => navigate(`/news/${newsList[displayIndex].id}`)}
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-bold ${getRankColor(newsList[currentIndex].rank ?? currentIndex + 1)} flex-shrink-0`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-bold ${getRankColor(newsList[displayIndex].rank ?? displayIndex + 1)} flex-shrink-0`}
               >
-                {newsList[currentIndex].rank ?? currentIndex + 1}
+                {newsList[displayIndex].rank ?? displayIndex + 1}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
                   <h4 className="text-base font-medium text-gray-900 truncate hover:text-[#0A5C2B] transition-colors">
-                    {newsList[currentIndex].title}
+                    {newsList[displayIndex].title}
                   </h4>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-500">
-                    {newsList[currentIndex].press || "언론사 미상"}
+                    {newsList[displayIndex].press || "언론사 미상"}
                   </span>
                   <span className="text-sm text-gray-500">
-                    조회수 {formatViews(newsList[currentIndex].views)}
+                    조회수 {formatViews(newsList[displayIndex].views)}
                   </span>
                 </div>
               </div>
@@ -175,7 +236,7 @@ export default function TrendingNews() {
           </button>
         </div>
       </div>
-
+      {/* 뉴스 목록  */}
       {isHovered && (
         <div
           className="absolute left-0 right-0 bg-white rounded-xl shadow-lg p-6 transition-all duration-300 z-50 max-h-96 overflow-y-auto border border-gray-100"
@@ -187,6 +248,8 @@ export default function TrendingNews() {
                 key={news.id}
                 className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
                 onClick={() => navigate(`/news/${news.id}`)}
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
               >
                 <div className="flex items-center min-w-0">
                   <span className="text-lg font-semibold text-gray-900 w-6 text-left">
