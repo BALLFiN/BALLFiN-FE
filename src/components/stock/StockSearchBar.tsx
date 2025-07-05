@@ -123,6 +123,12 @@ export default function StockSearchBar({
     }
   };
 
+  // 최근 검색어 모두 삭제
+  const clearAllRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem("recentStockSearches");
+  };
+
   return (
     <div ref={searchRef} className={`relative ${className}`}>
       {/* 검색 입력창 */}
@@ -160,25 +166,9 @@ export default function StockSearchBar({
                 <div
                   key={stock.id}
                   onClick={() => handleStockSelect(stock)}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer"
+                  className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
                 >
-                  <div>
-                    <div className="font-medium">{stock.name}</div>
-                    <div className="text-sm text-gray-500">{stock.code}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">
-                      {stock.price.toLocaleString()}원
-                    </div>
-                    <div
-                      className={`text-sm ${
-                        stock.change >= 0 ? "text-red-500" : "text-blue-500"
-                      }`}
-                    >
-                      {stock.change >= 0 ? "+" : ""}
-                      {stock.change}%
-                    </div>
-                  </div>
+                  <div className="font-medium">{stock.name}</div>
                 </div>
               ))}
             </div>
@@ -187,9 +177,17 @@ export default function StockSearchBar({
           {/* 최근 검색어 */}
           {!searchQuery && recentSearches.length > 0 && (
             <div className="p-3 border-b border-gray-100">
-              <div className="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1">
-                <Clock size={12} />
-                최근 검색어
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs font-medium text-gray-500 flex items-center gap-1">
+                  <Clock size={12} />
+                  최근 검색어
+                </div>
+                <button
+                  onClick={clearAllRecentSearches}
+                  className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 "
+                >
+                  모두 삭제
+                </button>
               </div>
               {recentSearches.map((query, index) => (
                 <div
@@ -213,8 +211,8 @@ export default function StockSearchBar({
             </div>
           )}
 
-          {/* 인기 종목 */}
-          {!searchQuery && (
+          {/* 인기 종목: 최근 검색어가 없을 때만 노출 */}
+          {!searchQuery && recentSearches.length === 0 && (
             <div className="p-3">
               <div className="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1">
                 <TrendingUp size={12} />
@@ -224,25 +222,9 @@ export default function StockSearchBar({
                 <div
                   key={stock.id}
                   onClick={() => handleStockSelect(stock)}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer"
+                  className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
                 >
-                  <div>
-                    <div className="font-medium">{stock.name}</div>
-                    <div className="text-sm text-gray-500">{stock.code}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">
-                      {stock.price.toLocaleString()}원
-                    </div>
-                    <div
-                      className={`text-sm ${
-                        stock.change >= 0 ? "text-red-500" : "text-blue-500"
-                      }`}
-                    >
-                      {stock.change >= 0 ? "+" : ""}
-                      {stock.change}%
-                    </div>
-                  </div>
+                  <div className="font-medium">{stock.name}</div>
                 </div>
               ))}
             </div>

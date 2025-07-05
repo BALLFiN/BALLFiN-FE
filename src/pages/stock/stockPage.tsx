@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ArrowUpDown } from "lucide-react";
 import StockSearchBar from "@/components/stock/StockSearchBar";
 import StockList from "@/components/stock/StockList";
 import AutoTradingSection from "@/components/stock/AutoTradingSection";
@@ -23,11 +22,8 @@ interface StockItem {
 
 export default function StockPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"score" | "price" | "change">("score");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [filter, setFilter] = useState<
-    "all" | "positive" | "negative" | "favorite"
-  >("all");
+  const [mainFilter, setMainFilter] = useState<"all" | "favorite">("all");
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [favoriteStocks, setFavoriteStocks] = useState<number[]>([]);
 
   // 임의 데이터 10개
@@ -203,34 +199,19 @@ export default function StockPage() {
   // 필터링 및 정렬된 데이터 계산
   const filteredAndSortedStocks = allStocks
     .filter((stock) => {
-      // 검색어 필터링
+      // 메인 필터
+      const matchesMain =
+        mainFilter === "all" ? true : favoriteStocks.includes(stock.id);
+      // 검색어 필터
       const matchesSearch = searchQuery
         ? stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           stock.code.includes(searchQuery)
         : true;
-
-      // 감성 필터링
-      const matchesFilter =
-        filter === "all"
-          ? true
-          : filter === "favorite"
-            ? favoriteStocks.includes(stock.id)
-            : stock.sentiment === filter;
-
-      return matchesSearch && matchesFilter;
+      return matchesMain && matchesSearch;
     })
     .sort((a, b) => {
-      // 정렬 기준에 따라 비교
-      let comparison = 0;
-      if (sortBy === "score") {
-        comparison = a.score - b.score;
-      } else if (sortBy === "price") {
-        comparison = a.price - b.price;
-      } else if (sortBy === "change") {
-        comparison = a.change - b.change;
-      }
-
-      // 정렬 방향에 따라 반환
+      // 변동률 정렬
+      const comparison = a.change - b.change;
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
@@ -240,95 +221,44 @@ export default function StockPage() {
       <div className="mb-8">
         <div className="flex justify-center">
           <div className="w-5/6">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="flex-1">
-                <StockSearchBar
-                  onSearch={handleSearch}
-                  placeholder="종목명 또는 종목코드 검색"
-                  allStocks={allStocks}
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setFilter("all")}
-                  className={`px-4 py-2 rounded-lg ${
-                    filter === "all"
-                      ? "bg-[#0A5C2B] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  전체
-                </button>
-                <button
-                  onClick={() => setFilter("positive")}
-                  className={`px-4 py-2 rounded-lg ${
-                    filter === "positive"
-                      ? "bg-[#0A5C2B] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  호재
-                </button>
-                <button
-                  onClick={() => setFilter("negative")}
-                  className={`px-4 py-2 rounded-lg ${
-                    filter === "negative"
-                      ? "bg-[#0A5C2B] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  악재
-                </button>
-                <button
-                  onClick={() => setFilter("favorite")}
-                  className={`px-4 py-2 rounded-lg ${
-                    filter === "favorite"
-                      ? "bg-[#0A5C2B] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  즐겨찾기
-                </button>
-              </div>
+            <div className="mb-6">
+              <StockSearchBar
+                onSearch={handleSearch}
+                placeholder="종목명 또는 종목코드 검색"
+                allStocks={allStocks}
+              />
             </div>
-
-            {/* 정렬 옵션 */}
-            <div className="flex items-center gap-4">
+            {/* 필터 + 정렬 한 줄에 배치 */}
+            <div className="flex items-center gap-2 mb-2">
+              {/* 필터/정렬 (왼쪽) */}
               <button
-                onClick={() => {
-                  setSortBy("score");
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                }}
-                className={`flex items-center gap-1 px-3 py-1 rounded ${
-                  sortBy === "score" ? "bg-gray-100" : ""
+                onClick={() => setMainFilter("all")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors h-10 min-w-[64px] ${
+                  mainFilter === "all"
+                    ? "bg-gray-200 text-black border border-gray-800"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
                 }`}
               >
-                <span>스코어</span>
-                <ArrowUpDown className="w-4 h-4" />
+                전체
               </button>
               <button
-                onClick={() => {
-                  setSortBy("price");
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                }}
-                className={`flex items-center gap-1 px-3 py-1 rounded ${
-                  sortBy === "price" ? "bg-gray-100" : ""
+                onClick={() => setMainFilter("favorite")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors h-10 min-w-[64px] ${
+                  mainFilter === "favorite"
+                    ? "bg-yellow-200 text-yellow-900 border border-yellow-400"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
                 }`}
               >
-                <span>가격</span>
-                <ArrowUpDown className="w-4 h-4" />
+                즐겨찾기
               </button>
+              {/* 변동률 정렬 버튼 */}
               <button
-                onClick={() => {
-                  setSortBy("change");
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                }}
-                className={`flex items-center gap-1 px-3 py-1 rounded ${
-                  sortBy === "change" ? "bg-gray-100" : ""
-                }`}
+                onClick={() =>
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                }
+                className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors h-10 min-w-[100px] bg-blue-100 text-blue-800 border border-blue-400`}
               >
-                <span>변동률</span>
-                <ArrowUpDown className="w-4 h-4" />
+                변동률 {sortOrder === "asc" ? "▲" : "▼"}
               </button>
             </div>
           </div>

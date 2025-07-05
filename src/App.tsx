@@ -6,6 +6,7 @@ import Header from "./components/layout/Header";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const IntroPage = lazy(() => import("./pages/introPage"));
 const NewsPage = lazy(() => import("@/pages/news/newsPage"));
+const NewsDetailPage = lazy(() => import("@/pages/news/NewsDetailPage"));
 const StockPage = lazy(() => import("@/pages/stock/stockPage"));
 const StockDetailPage = lazy(() => import("@/pages/stock/StockDetailPage"));
 const LoginPage = lazy(() => import("@/pages/auth/loginPage"));
@@ -44,6 +45,7 @@ function App() {
                 <Route path="/intro" element={<IntroPage />} />
                 <Route path="/" element={<HomePage />} />
                 <Route path="/news" element={<NewsPage />} />
+                <Route path="/news/:id" element={<NewsDetailPage />} />
                 <Route path="/stock" element={<StockPage />} />
                 <Route path="/stock/:code" element={<StockDetailPage />} />
                 <Route path="/login" element={<LoginPage />} />
