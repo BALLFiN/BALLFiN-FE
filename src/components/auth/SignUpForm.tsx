@@ -1,4 +1,3 @@
-import React from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Toast from "@/components/common/Toast";
