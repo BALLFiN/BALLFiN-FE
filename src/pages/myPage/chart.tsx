@@ -138,7 +138,7 @@ export default function MyPageChart() {
                 </tr>
               </thead>
               <tbody>
-                {stocks.map((s, idx) => {
+                {stocks.map((s) => {
                   const checked = selectedIds.includes(s.id);
                   return (
                     <tr key={s.id} className="hover:bg-gray-50 h-12">
