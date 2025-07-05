@@ -119,7 +119,7 @@ export default function TrendingNews() {
       onMouseLeave={() => setIsHovered(false)}
       style={{ zIndex: 50 }}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
           <h3 className="text-xl font-bold text-gray-900">실시간 인기 뉴스</h3>
@@ -127,8 +127,11 @@ export default function TrendingNews() {
       </div>
 
       {/* 기본 표시 (현재 인덱스의 뉴스) */}
-      <div className="space-y-2 relative h-28">
-        <div className="px-5 py-4 bg-white border-2 border-green-700 shadow rounded-xl w-full absolute flex items-center">
+      <div className="space-y-2 relative h-auto">
+        <div
+          className="px-5 py-4 bg-white border-2 border-green-700 shadow rounded-xl w-full absolute flex items-center"
+          style={{ position: "relative" }}
+        >
           {/* 왼쪽 초록 포인트 바 */}
           <div className="w-1 h-12 rounded bg-[#0A5C2B] mr-4" />
           <div className="flex-1 min-w-0">
@@ -175,8 +178,8 @@ export default function TrendingNews() {
 
       {isHovered && (
         <div
-          className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-lg p-6 transition-all duration-300 z-50 max-h-96 overflow-y-auto border border-gray-100"
-          style={{ minWidth: 400 }}
+          className="absolute left-0 right-0 bg-white rounded-xl shadow-lg p-6 transition-all duration-300 z-50 max-h-96 overflow-y-auto border border-gray-100"
+          style={{ minWidth: 400, top: "100%" }}
         >
           <div className="grid grid-cols-2 gap-x-8 gap-y-2">
             {newsList.map((news, idx) => (
