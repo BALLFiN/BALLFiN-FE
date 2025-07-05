@@ -136,7 +136,7 @@ const Header = () => {
                 <img
                   src={BALLFiNLogo}
                   alt="BALLFiN Logo"
-                  className="h-10 w-auto"
+                  className="h-11 w-auto"
                 />
               </Link>
             </div>
@@ -146,10 +146,10 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-md text-sm transition-colors ${
                     isActiveRoute(item.to)
-                      ? "text-[#0A5C2B] font-semibold"
-                      : "text-gray-700 hover:text-[#0A5C2B]"
+                      ? "text-[#0A5C2B] font-bold"
+                      : "text-gray-700 hover:text-[#0A5C2B] font-medium"
                   }`}
                 >
                   {item.label}
@@ -211,10 +211,10 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`block px-3 py-2 rounded-md text-m font-medium transition-colors ${
+                  className={`block px-3 py-2 rounded-md text-m transition-colors ${
                     isActiveRoute(item.to)
-                      ? "text-[#0A5C2B] font-semibold"
-                      : "text-gray-700 hover:text-[#0A5C2B]"
+                      ? "text-[#0A5C2B] font-bold"
+                      : "text-gray-700 hover:text-[#0A5C2B] font-medium"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
