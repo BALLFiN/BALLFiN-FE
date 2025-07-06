@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { logout } from "../../api/auth/logoutApi";
 import Toast from "@/components/common/Toast";
@@ -26,6 +26,7 @@ interface AuthButtonItem {
 type AuthItem = AuthLinkItem | AuthButtonItem;
 
 const Header = () => {
+  const location = useLocation();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -115,6 +116,11 @@ const Header = () => {
     return "to" in item;
   };
 
+  // 현재 경로가 navItem의 경로와 일치하는지 확인하는 함수
+  const isActiveRoute = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
     <>
       <header
@@ -130,7 +136,7 @@ const Header = () => {
                 <img
                   src={BALLFiNLogo}
                   alt="BALLFiN Logo"
-                  className="h-10 w-auto"
+                  className="h-11 w-auto"
                 />
               </Link>
             </div>
@@ -140,7 +146,11 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="text-gray-700 hover:text-[#0A5C2B] px-3 py-2 rounded-md text-sm font-medium"
+                  className={`px-3 py-2 rounded-md text-sm transition-colors ${
+                    isActiveRoute(item.to)
+                      ? "text-[#0A5C2B] font-bold"
+                      : "text-gray-700 hover:text-[#0A5C2B] font-medium"
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -171,7 +181,7 @@ const Header = () => {
                     {item.icon}
                     {item.label}
                   </button>
-                ),
+                )
               )}
             </div>
 
@@ -201,7 +211,11 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="block text-gray-700 hover:text-[#0A5C2B] px-3 py-2 rounded-md text-base font-medium"
+                  className={`block px-3 py-2 rounded-md text-m transition-colors ${
+                    isActiveRoute(item.to)
+                      ? "text-[#0A5C2B] font-bold"
+                      : "text-gray-700 hover:text-[#0A5C2B] font-medium"
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.label}
@@ -234,7 +248,7 @@ const Header = () => {
                     {item.icon}
                     {item.label}
                   </button>
-                ),
+                )
               )}
             </div>
           </div>

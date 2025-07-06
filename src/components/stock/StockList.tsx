@@ -8,9 +8,6 @@ interface StockItem {
   price: number;
   change: number;
   sentiment: "positive" | "negative" | "neutral";
-  prediction: {
-    recommendation: "buy" | "sell" | "hold";
-  };
 }
 
 interface StockListProps {
@@ -45,9 +42,6 @@ export default function StockList({
               변동률
             </th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              추천
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               액션
             </th>
           </tr>
@@ -69,23 +63,6 @@ export default function StockList({
               >
                 {stock.change >= 0 ? "+" : ""}
                 {stock.change}%
-              </td>
-              <td className="px-4 py-4 whitespace-nowrap">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    stock.prediction.recommendation === "buy"
-                      ? "bg-green-100 text-green-800"
-                      : stock.prediction.recommendation === "sell"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {stock.prediction.recommendation === "buy"
-                    ? "매수"
-                    : stock.prediction.recommendation === "sell"
-                      ? "매도"
-                      : "관망"}
-                </span>
               </td>
               <td className="px-4 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">

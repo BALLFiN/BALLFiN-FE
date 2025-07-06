@@ -1,15 +1,10 @@
 import BALLFiNLogo from "../assets/BALLFiN.svg";
-import { TrendingUp } from "lucide-react";
 import { Brain } from "lucide-react";
 import { Network } from "lucide-react";
 import { Zap } from "lucide-react";
 import { ChartBar } from "lucide-react";
 import { MessageSquare } from "lucide-react";
 import { Target } from "lucide-react";
-import { BarChart3 } from "lucide-react";
-import { Cpu } from "lucide-react";
-import { StatCard } from "../components/Intro/StatCard";
-import { AIModelCard } from "../components/Intro/AIModelCard";
 import { FeatureCard } from "../components/Intro/FeatureCard";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -65,83 +60,13 @@ const features = [
   },
 ];
 
-const stats = [
-  { label: "활성 사용자", value: "50,000+" },
-  { label: "분석된 뉴스", value: "1M+" },
-  { label: "예측 정확도", value: "97.8%" },
-  { label: "보유 종목", value: "2,000+" },
-];
-
-const aiModels = [
-  {
-    icon: TrendingUp,
-    title: "주가 예측 모델",
-    data: [
-      { label: "학습 데이터", value: "2010-2025 시장 데이터" },
-      { label: "알고리즘", value: "LSTM + 트랜스포머" },
-      { label: "정확도", value: "89.4%" },
-      { label: "최근 업데이트", value: "2025.03.20" },
-    ],
-  },
-  {
-    icon: MessageSquare,
-    title: "뉴스 분석 모델",
-    data: [
-      { label: "학습 데이터", value: "150만+ 금융 뉴스 아티클" },
-      { label: "알고리즘", value: "BERT 언어 모델" },
-      { label: "정확도", value: "93.2%" },
-      { label: "최근 업데이트", value: "2025.03.22" },
-    ],
-  },
-  {
-    icon: Network,
-    title: "Knowledge Graph 모델",
-    data: [
-      { label: "노드 수", value: "1,000만+ 엔티티" },
-      { label: "관계 수", value: "5,000만+ 관계" },
-      { label: "실시간 처리", value: "1ms 이하" },
-      { label: "최근 업데이트", value: "2025.03.25" },
-    ],
-  },
-  {
-    icon: BarChart3,
-    title: "포트폴리오 최적화 모델",
-    data: [
-      { label: "최적화 알고리즘", value: "Black-Litterman + ML" },
-      { label: "리스크 모델", value: "VaR + CVaR" },
-      { label: "수익률 개선", value: "15.3% 향상" },
-      { label: "최근 업데이트", value: "2025.03.18" },
-    ],
-  },
-  {
-    icon: Cpu,
-    title: "감정 분석 모델",
-    data: [
-      { label: "소셜 미디어", value: "실시간 분석" },
-      { label: "알고리즘", value: "RoBERTa + BiLSTM" },
-      { label: "정확도", value: "91.7%" },
-      { label: "최근 업데이트", value: "2025.03.24" },
-    ],
-  },
-  {
-    icon: Zap,
-    title: "실시간 거래 모델",
-    data: [
-      { label: "응답 시간", value: "0.1ms 이하" },
-      { label: "처리량", value: "100만+ TPS" },
-      { label: "알고리즘", value: "강화학습 + DRL" },
-      { label: "최근 업데이트", value: "2025.03.21" },
-    ],
-  },
-];
-
 export default function Intro() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white snap-y snap-mandatory overflow-y-scroll">
-      {/* 헤더 + 통계 섹션 */}
-      <div className="bg-[#0A5C2B]/5 min-h-screen flex items-center relative overflow-hidden snap-start">
+      {/* 헤더  섹션 */}
+      <div className="bg-white min-h-screen flex items-center relative overflow-hidden snap-start">
         <div className="container mx-auto px-4 py-8 md:py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -179,28 +104,11 @@ export default function Intro() {
               수 있도록 도와드립니다.
             </motion.p>
           </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative max-w-7xl mx-auto"
-          >
-            {stats.map((stat, index) => (
-              <StatCard
-                key={index}
-                value={stat.value}
-                label={stat.label}
-                index={index}
-              />
-            ))}
-          </motion.div>
         </div>
       </div>
 
       {/* 주요 기능 섹션 */}
-      <div className="bg-white min-h-screen flex items-center relative snap-start">
+      <div className="bg-[#0A5C2B]/5 min-h-screen flex items-center relative snap-start">
         <div className="container mx-auto px-4 py-8 md:py-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -220,32 +128,6 @@ export default function Intro() {
           >
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} index={index} />
-            ))}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* AI 모델 정보 섹션 */}
-      <div className="bg-[#0A5C2B]/5 min-h-screen flex items-center relative snap-start">
-        <div className="container mx-auto px-4 py-8 md:py-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-3xl font-bold text-gray-900 text-center mb-12"
-          >
-            AI 모델 정보
-          </motion.h2>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
-          >
-            {aiModels.map((model, index) => (
-              <AIModelCard key={index} model={model} index={index} />
             ))}
           </motion.div>
         </div>

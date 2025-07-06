@@ -36,6 +36,13 @@ interface MarketStat {
   };
   sparklineData: number[];
   description: string;
+  detailedInfo?: {
+    currentMeaning: string;
+    ranges: Array<{
+      range: string;
+      meaning: string;
+    }>;
+  };
 }
 
 const marketStats: MarketStat[] = [
@@ -52,6 +59,16 @@ const marketStats: MarketStat[] = [
     sparklineData: [3067.5, 3080.2, 3095.8, 3104.3, 3104.28],
     description:
       "한국 종합주가지수(KOSPI)와 기술주 중심의 KOSDAQ 지수를 포함한 한국 주식시장의 전반적인 움직임을 나타냅니다. KOSPI는 대형주 중심, KOSDAQ은 IT, 바이오 등 혁신기업들의 성과를 반영합니다.",
+    detailedInfo: {
+      currentMeaning:
+        "KOSPI 3,100pt 돌파로 상승 모멘텀 강화, 대형주 중심의 상승세 지속",
+      ranges: [
+        { range: "2,800pt 이하", meaning: "저평가 구간, 매수 기회로 간주" },
+        { range: "2,800~3,000pt", meaning: "적정 수준, 안정적인 투자 환경" },
+        { range: "3,000~3,200pt", meaning: "상승 추세, 모멘텀 주의" },
+        { range: "3,200pt 이상", meaning: "고평가 우려, 수익 실현 고려" },
+      ],
+    },
   },
   {
     id: "nasdaq",
@@ -66,6 +83,16 @@ const marketStats: MarketStat[] = [
     sparklineData: [16613.9, 16680.5, 16720.8, 16735.2, 16742.38],
     description:
       "미국 기술주 중심의 주가지수로 글로벌 IT 기업들의 성과를 나타냅니다.",
+    detailedInfo: {
+      currentMeaning:
+        "AI 반도체 수요 증가로 기술주 상승세 지속, 글로벌 IT 섹터 호조",
+      ranges: [
+        { range: "15,000pt 이하", meaning: "기술주 조정, 매수 기회" },
+        { range: "15,000~16,000pt", meaning: "적정 수준, 안정적 성장" },
+        { range: "16,000~17,000pt", meaning: "강세 지속, AI 테마 주목" },
+        { range: "17,000pt 이상", meaning: "고평가 우려, 수익 실현 고려" },
+      ],
+    },
   },
   {
     id: "interest-rate",
@@ -80,6 +107,15 @@ const marketStats: MarketStat[] = [
     sparklineData: [3.5, 3.5, 3.5, 3.5, 3.5],
     description:
       "한국은행이 설정하는 기준금리로 통화정책의 방향성을 나타냅니다.",
+    detailedInfo: {
+      currentMeaning: "금리 동결로 안정적 통화정책 유지, 인플레이션 관리 중점",
+      ranges: [
+        { range: "3.0% 이하", meaning: "확장적 통화정책, 투자/소비 촉진" },
+        { range: "3.0~3.5%", meaning: "중립적 통화정책, 경제 안정" },
+        { range: "3.5~4.0%", meaning: "긴축적 통화정책, 인플레이션 억제" },
+        { range: "4.0% 이상", meaning: "강력한 긴축, 경제 침체 우려" },
+      ],
+    },
   },
   {
     id: "exchange-rate",
@@ -94,6 +130,15 @@ const marketStats: MarketStat[] = [
     sparklineData: [1332.25, 1330.8, 1329.4, 1328.9, 1328.5],
     description:
       "원화 대비 달러화의 가치를 나타내며, 수출입과 자본이동에 영향을 줍니다.",
+    detailedInfo: {
+      currentMeaning: "원화 강세로 수출 경쟁력 악화 우려, 수입 물가 하락 효과",
+      ranges: [
+        { range: "1,200원 이하", meaning: "원화 과강세, 수출업계 부담" },
+        { range: "1,200~1,300원", meaning: "적정 수준, 수출입 균형" },
+        { range: "1,300~1,400원", meaning: "원화 약세, 수출 경쟁력 향상" },
+        { range: "1,400원 이상", meaning: "원화 과약세, 수입 물가 상승" },
+      ],
+    },
   },
   {
     id: "wti",
@@ -108,6 +153,18 @@ const marketStats: MarketStat[] = [
     sparklineData: [77.22, 77.85, 78.12, 78.38, 78.45],
     description:
       "서부텍사스산 원유 가격으로 글로벌 에너지 시장의 동향을 반영합니다.",
+    detailedInfo: {
+      currentMeaning: "중동 정세 불안과 수요 증가로 원유 가격 상승세 지속",
+      ranges: [
+        {
+          range: "60달러 이하",
+          meaning: "저유가, 소비자 혜택, 산업 비용 절감",
+        },
+        { range: "60~80달러", meaning: "적정 수준, 안정적 에너지 시장" },
+        { range: "80~100달러", meaning: "고유가, 인플레이션 압박" },
+        { range: "100달러 이상", meaning: "초고유가, 경제 성장 저해" },
+      ],
+    },
   },
   {
     id: "vix",
@@ -121,6 +178,20 @@ const marketStats: MarketStat[] = [
     },
     sparklineData: [19.3, 19.1, 18.8, 18.6, 18.45],
     description: "변동성 지수로 시장의 불확실성과 투자자 심리를 나타냅니다.",
+    detailedInfo: {
+      currentMeaning:
+        "VIX 20 이하로 시장이 매우 안정적임을 의미, 투자자 심리 양호",
+      ranges: [
+        { range: "20 이하", meaning: "시장이 매우 안정적임을 의미" },
+        { range: "20~30", meaning: "평균 수준의 변동성" },
+        { range: "30~40", meaning: "높은 변동성, 투자자 불안 심화" },
+        {
+          range: "40 이상",
+          meaning:
+            "시장의 공포 심리가 극에 달해 주가가 바닥을 다질 가능성도 있음",
+        },
+      ],
+    },
   },
 ];
 
@@ -206,7 +277,36 @@ const MarketModalContent = ({ data }: MarketModalContentProps) => {
 
       <div>
         <h3 className="text-sm font-medium text-gray-700 mb-2">설명</h3>
-        <p className="text-sm text-gray-600">{data.description}</p>
+        <p className="text-sm text-gray-600 mb-4">{data.description}</p>
+
+        {data.detailedInfo && (
+          <>
+            <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+              <h4 className="text-sm font-medium text-blue-800 mb-1">
+                현재 수치의 의미
+              </h4>
+              <p className="text-sm text-blue-700">
+                {data.detailedInfo.currentMeaning}
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                수치별 해석
+              </h4>
+              <div className="space-y-2">
+                {data.detailedInfo.ranges.map((range, idx) => (
+                  <div key={idx} className="flex gap-2 text-sm">
+                    <span className="font-medium text-[#0A5C2B] min-w-[80px]">
+                      {range.range}:
+                    </span>
+                    <span className="text-gray-600">{range.meaning}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
