@@ -134,7 +134,7 @@ export default function PopularStocks() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold text-gray-900">
-            실시간 인기 종목 TOP 5
+            실시간 인기 종목 Top 5
           </h2>
         </div>
         <button className="text-sm text-[#0A5C2B] hover:underline">
