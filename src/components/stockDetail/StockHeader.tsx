@@ -17,11 +17,11 @@ export default function StockHeader({
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-between mb-8">
+    <div className="flex items-center justify-between mb-2">
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 hover:bg-gray-100 rounded-full"
+          className="p-4 hover:bg-gray-100 rounded-full"
         >
           <ArrowLeft size={24} />
         </button>
