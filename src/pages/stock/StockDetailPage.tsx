@@ -13,9 +13,23 @@ interface StockDetail {
   code: string;
   price: number;
   change: number;
+  changeAmount: number;
   score: number;
   sentiment: "positive" | "negative" | "neutral";
   newsCount: number;
+  previousVolume?: number;
+  currentVolume?: number;
+  tradingAmount?: number;
+  week52High?: {
+    price: number;
+    date: string;
+  };
+  week52Low?: {
+    price: number;
+    date: string;
+  };
+  upperLimit?: number;
+  lowerLimit?: number;
   prediction: {
     targetPrice: number;
     confidence: number;
@@ -82,9 +96,23 @@ export default function StockDetailPage() {
       code: "005930",
       price: 72400,
       change: -1.63,
+      changeAmount: -1200,
       score: 75,
       sentiment: "positive",
       newsCount: 12,
+      previousVolume: 15000000,
+      currentVolume: 18000000,
+      tradingAmount: 1303200000000,
+      week52High: {
+        price: 85000,
+        date: "2024-01-15",
+      },
+      week52Low: {
+        price: 65000,
+        date: "2024-06-20",
+      },
+      upperLimit: 79640,
+      lowerLimit: 65160,
       prediction: {
         targetPrice: 80000,
         confidence: 85,
@@ -160,6 +188,16 @@ export default function StockDetailPage() {
             code={stock.code}
             isFavorite={isFavorite}
             onToggleFavorite={() => setIsFavorite(!isFavorite)}
+            currentPrice={stock.price}
+            changeAmount={stock.changeAmount}
+            changePercent={stock.change}
+            previousVolume={stock.previousVolume}
+            currentVolume={stock.currentVolume}
+            tradingAmount={stock.tradingAmount}
+            week52High={stock.week52High}
+            week52Low={stock.week52Low}
+            upperLimit={stock.upperLimit}
+            lowerLimit={stock.lowerLimit}
           />
         </div>
       </div>
@@ -167,7 +205,7 @@ export default function StockDetailPage() {
       {/* 메인 콘텐츠 */}
       <div className="container mx-auto px-4 py-6">
         {/* 차트와 기술적 분석 영역 */}
-        <div className="flex gap-6 mb-8">
+        <div className="flex gap-4">
           {/* 차트 영역 */}
           <div className="flex-1">
             <StockChart
@@ -181,32 +219,12 @@ export default function StockDetailPage() {
 
           {/* 기술적 분석 사이드바 */}
           <div className="w-118">
-            {/* 현재가 정보 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
-              <div className="text-center">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  현재가
-                </h2>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stock.price.toLocaleString()}원
-                </div>
-                <div
-                  className={`text-sm font-medium ${
-                    stock.change >= 0 ? "text-red-500" : "text-blue-500"
-                  }`}
-                >
-                  {stock.change >= 0 ? "+" : ""}
-                  {stock.change.toFixed(2)}%
-                </div>
-              </div>
-            </div>
-
             <TechnicalAnalysis stock={stock} historicalData={historicalData} />
           </div>
         </div>
 
         {/* 하단 섹션들 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* 관련 뉴스 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -215,20 +233,22 @@ export default function StockDetailPage() {
             <StockNews news={news} />
           </div>
 
+          {/* 예정사항 영역 */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              예정사항
+            </h3>
+            <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+              <p className="text-gray-500">추가 콘텐츠 영역</p>
+            </div>
+          </div>
+
           {/* 재무제표 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               재무제표
             </h3>
             {financialData && <FinancialStatement data={financialData} />}
-          </div>
-        </div>
-
-        {/* 예정사항 영역 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">예정사항</h3>
-          <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500">추가 콘텐츠 영역</p>
           </div>
         </div>
       </div>
