@@ -1,6 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Header from "./components/layout/Header";
+import { AnimatePresence } from "framer-motion";
 
 // Lazy loading 적용
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -22,16 +28,34 @@ const MyPage = lazy(() => import("./pages/myPage"));
 const ProfilePage = lazy(() => import("./pages/myPage/profile"));
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Loading from "./components/common/Loading";
 
 const queryClient = new QueryClient();
 
-// 로딩 컴포넌트
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <Loading />
-  </div>
-);
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/intro" element={<IntroPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/news" element={<NewsPage />} />
+        <Route path="/news/:id" element={<NewsDetailPage />} />
+        <Route path="/stock" element={<StockPage />} />
+        <Route path="/stock/:code" element={<StockDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/mypage" element={<MyPageLayout />}>
+          <Route index element={<MyPage />} />
+          <Route path="chart" element={<MyPageChart />} />
+          <Route path="news" element={<MyPageNews />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="aramSettings" element={<AramSettingsPage />} />
+        </Route>
+        <Route path="/transaction" element={<TransactionPage />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
 
 function App() {
   return (
@@ -40,25 +64,8 @@ function App() {
         <div className="min-h-screen bg-white">
           <Header />
           <main className="pt-16">
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/intro" element={<IntroPage />} />
-                <Route path="/" element={<HomePage />} />
-                <Route path="/news" element={<NewsPage />} />
-                <Route path="/news/:id" element={<NewsDetailPage />} />
-                <Route path="/stock" element={<StockPage />} />
-                <Route path="/stock/:code" element={<StockDetailPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
-                <Route path="/mypage" element={<MyPageLayout />}>
-                  <Route index element={<MyPage />} />
-                  <Route path="chart" element={<MyPageChart />} />
-                  <Route path="news" element={<MyPageNews />} />
-                  <Route path="profile" element={<ProfilePage />} />
-                  <Route path="aramSettings" element={<AramSettingsPage />} />
-                </Route>
-                <Route path="/transaction" element={<TransactionPage />} />
-              </Routes>
+            <Suspense fallback={<div />}>
+              <AnimatedRoutes />
             </Suspense>
           </main>
         </div>

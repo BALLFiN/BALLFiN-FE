@@ -2,23 +2,7 @@ import { useState } from "react";
 import StockSearchBar from "@/components/stock/StockSearchBar";
 import StockList from "@/components/stock/StockList";
 import AutoTradingSection from "@/components/stock/AutoTradingSection";
-
-interface StockItem {
-  id: number;
-  name: string;
-  code: string;
-  price: number;
-  change: number;
-  score: number;
-  sentiment: "positive" | "negative" | "neutral";
-  newsCount: number;
-  prediction: {
-    targetPrice: number;
-    confidence: number;
-    recommendation: "buy" | "sell" | "hold";
-  };
-  isFavorite?: boolean;
-}
+import { StockItem } from "@/components/stock/types";
 
 export default function StockPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,7 +17,12 @@ export default function StockPage() {
       name: "삼성전자",
       code: "005930",
       price: 75000,
+      close: 75000,
+      high: 76000,
+      low: 74000,
       change: 2.5,
+      changePercent: 3.45,
+      volume: 15000000,
       score: 85,
       sentiment: "positive",
       newsCount: 12,
@@ -48,7 +37,12 @@ export default function StockPage() {
       name: "현대자동차",
       code: "005380",
       price: 185000,
+      close: 185000,
+      high: 187000,
+      low: 183000,
       change: -1.2,
+      changePercent: -0.65,
+      volume: 8000000,
       score: 35,
       sentiment: "negative",
       newsCount: 8,
@@ -63,7 +57,12 @@ export default function StockPage() {
       name: "SK하이닉스",
       code: "000660",
       price: 120000,
+      close: 120000,
+      high: 122000,
+      low: 118000,
       change: 1.8,
+      changePercent: 1.52,
+      volume: 12000000,
       score: 75,
       sentiment: "positive",
       newsCount: 10,
@@ -78,7 +77,12 @@ export default function StockPage() {
       name: "LG전자",
       code: "066570",
       price: 95000,
+      close: 95000,
+      high: 96000,
+      low: 94000,
       change: -0.5,
+      changePercent: -0.52,
+      volume: 6000000,
       score: 45,
       sentiment: "negative",
       newsCount: 6,
@@ -93,7 +97,12 @@ export default function StockPage() {
       name: "NAVER",
       code: "035420",
       price: 220000,
+      close: 220000,
+      high: 225000,
+      low: 218000,
       change: 3.2,
+      changePercent: 1.47,
+      volume: 5000000,
       score: 90,
       sentiment: "positive",
       newsCount: 15,
@@ -108,7 +117,12 @@ export default function StockPage() {
       name: "카카오",
       code: "035720",
       price: 45000,
+      close: 45000,
+      high: 46000,
+      low: 44000,
       change: -2.1,
+      changePercent: -4.46,
+      volume: 18000000,
       score: 30,
       sentiment: "negative",
       newsCount: 7,
@@ -123,7 +137,12 @@ export default function StockPage() {
       name: "LG화학",
       code: "051910",
       price: 550000,
+      close: 550000,
+      high: 555000,
+      low: 545000,
       change: 1.5,
+      changePercent: 0.27,
+      volume: 3000000,
       score: 70,
       sentiment: "positive",
       newsCount: 9,
@@ -138,7 +157,12 @@ export default function StockPage() {
       name: "POSCO홀딩스",
       code: "005490",
       price: 450000,
+      close: 450000,
+      high: 452000,
+      low: 448000,
       change: -0.8,
+      changePercent: -0.18,
+      volume: 4000000,
       score: 55,
       sentiment: "neutral",
       newsCount: 5,
@@ -153,7 +177,12 @@ export default function StockPage() {
       name: "기아",
       code: "000270",
       price: 85000,
+      close: 85000,
+      high: 87000,
+      low: 84000,
       change: 4.2,
+      changePercent: 5.2,
+      volume: 10000000,
       score: 88,
       sentiment: "positive",
       newsCount: 11,
@@ -168,7 +197,12 @@ export default function StockPage() {
       name: "KB금융",
       code: "105560",
       price: 65000,
+      close: 65000,
+      high: 65500,
+      low: 64500,
       change: 0.5,
+      changePercent: 0.77,
+      volume: 7000000,
       score: 60,
       sentiment: "neutral",
       newsCount: 4,
