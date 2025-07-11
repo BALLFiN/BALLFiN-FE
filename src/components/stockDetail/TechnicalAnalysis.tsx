@@ -1,14 +1,5 @@
 import { useState } from "react";
-import {
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  Activity,
-  Bell,
-  Target,
-  Zap,
-  Layers,
-} from "lucide-react";
+import { TrendingUp, BarChart3, Activity, Target, Layers } from "lucide-react";
 
 interface StockDetail {
   id: number;
@@ -136,49 +127,40 @@ export default function TechnicalAnalysis({
       case "pattern":
         return (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl p-5 border border-gray-100">
-              <div className="flex items-center mb-4">
-                <BarChart3 className="w-5 h-5 text-purple-600 mr-2" />
-                <h4 className="font-semibold text-gray-900">차트 패턴</h4>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-red-50 rounded-lg p-3 border border-red-100">
-                  <div className="text-sm font-medium text-red-800 mb-1">
-                    패턴
-                  </div>
-                  <div className="text-lg font-bold text-red-600">
-                    하락 쐐기형
-                  </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="bg-red-50 rounded-lg p-3 border border-red-100">
+                <div className="text-sm font-medium text-red-800 mb-1">
+                  패턴
                 </div>
-
-                <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
-                  <div className="text-sm font-medium text-orange-800 mb-1">
-                    RSI
-                  </div>
-                  <div className="text-lg font-bold text-orange-600">{rsi}</div>
-                  <div className="text-xs text-orange-600">과매도 구간</div>
+                <div className="text-lg font-bold text-red-600">
+                  하락 쐐기형
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <span className="text-sm font-medium text-blue-800">
-                    MACD
-                  </span>
-                  <span className="text-sm font-bold text-blue-600">
-                    골든크로스 형성 중
-                  </span>
+              <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                <div className="text-sm font-medium text-orange-800 mb-1">
+                  RSI
                 </div>
+                <div className="text-lg font-bold text-orange-600">{rsi}</div>
+                <div className="text-xs text-orange-600">과매도 구간</div>
+              </div>
+            </div>
 
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
-                  <span className="text-sm font-medium text-green-800">
-                    볼린저밴드
-                  </span>
-                  <span className="text-sm font-bold text-green-600">
-                    하단 밴드 근접
-                  </span>
-                </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <span className="text-sm font-medium text-blue-800">MACD</span>
+                <span className="text-sm font-bold text-blue-600">
+                  골든크로스 형성 중
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                <span className="text-sm font-medium text-green-800">
+                  볼린저밴드
+                </span>
+                <span className="text-sm font-bold text-green-600">
+                  하단 밴드 근접
+                </span>
               </div>
             </div>
 
@@ -198,32 +180,25 @@ export default function TechnicalAnalysis({
       case "volatility":
         return (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl p-5 border border-gray-100">
-              <div className="flex items-center mb-4">
-                <TrendingUp className="w-5 h-5 text-emerald-600 mr-2" />
-                <h4 className="font-semibold text-gray-900">가격 변동성</h4>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm font-medium text-emerald-800">
-                      일일 변동폭
-                    </span>
-                    <span className="text-lg font-bold text-emerald-600">
-                      {dailyRange}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-emerald-200 rounded-full h-2 mb-2">
-                    <div
-                      className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min(dailyRange * 10, 100)}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-emerald-700">
-                    <span>71,200원</span>
-                    <span>73,500원</span>
-                  </div>
+            <div className="space-y-4">
+              <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-medium text-emerald-800">
+                    일일 변동폭
+                  </span>
+                  <span className="text-lg font-bold text-emerald-600">
+                    {dailyRange}%
+                  </span>
+                </div>
+                <div className="w-full bg-emerald-200 rounded-full h-2 mb-2">
+                  <div
+                    className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(dailyRange * 10, 100)}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-emerald-700">
+                  <span>71,200원</span>
+                  <span>73,500원</span>
                 </div>
 
                 <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
@@ -268,30 +243,23 @@ export default function TechnicalAnalysis({
       case "volume":
         return (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl p-5 border border-gray-100">
-              <div className="flex items-center mb-4">
-                <Layers className="w-5 h-5 text-blue-600 mr-2" />
-                <h4 className="font-semibold text-gray-900">거래량 분석</h4>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-blue-800">
-                      현재 거래량
-                    </span>
-                    <span className="text-lg font-bold text-blue-600">
-                      {currentVolume.toLocaleString()}주
-                    </span>
-                  </div>
-                  <div className="w-full bg-blue-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                      style={{
-                        width: `${Math.min((currentVolume / avgVolume) * 100, 100)}%`,
-                      }}
-                    ></div>
-                  </div>
+            <div className="space-y-4">
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-blue-800 ">
+                    현재 거래량
+                  </span>
+                  <span className="text-lg font-bold text-blue-600 mb-2">
+                    {currentVolume.toLocaleString()}주
+                  </span>
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-2 my-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min((currentVolume / avgVolume) * 100, 100)}%`,
+                    }}
+                  ></div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -350,21 +318,28 @@ export default function TechnicalAnalysis({
 
       {/* 탭 네비게이션 */}
       <div className="px-6 py-3 border-b border-gray-100">
-        <div className="flex space-x-1">
+        <div className="flex space-x-1 justify-center">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex flex-col items-center mx-2 my-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.id
                     ? "bg-blue-50 text-blue-700 border border-blue-200"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <Icon className="w-4 h-4 mr-2" />
-                {tab.label}
+                <Icon className="w-4 h-4 mb-1" />
+                <span className="text-center leading-tight">
+                  {tab.label.split(" ").map((word, index) => (
+                    <span key={index}>
+                      {word}
+                      {index < tab.label.split(" ").length - 1 && <br />}
+                    </span>
+                  ))}
+                </span>
               </button>
             );
           })}
