@@ -81,15 +81,6 @@ export default function FinancialStatement({ data }: FinancialStatementProps) {
       trend: "neutral",
       color: "text-gray-600",
     },
-    {
-      label: "배당수익률",
-      value: data.dividendYield.toFixed(1),
-      unit: "%",
-      description:
-        "주가 대비 배당금의 비율로, 투자 대비 배당 수익을 나타냅니다.",
-      trend: "up",
-      color: "text-green-600",
-    },
   ];
 
   const getTrendIcon = (trend: "up" | "down" | "neutral") => {
