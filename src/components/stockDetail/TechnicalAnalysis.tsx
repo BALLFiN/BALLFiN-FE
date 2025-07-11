@@ -74,137 +74,258 @@ export default function TechnicalAnalysis({
       case "summary":
         return (
           <div className="space-y-4">
-            {/* 주요 지표 요약 */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h4 className="font-bold text-gray-800 mb-3 flex items-center">
-                <Activity className="w-4 h-4 text-blue-500 mr-2" />
-                주요 지표 요약
-              </h4>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="text-center p-2 bg-white rounded shadow">
-                  <div className="text-green-500 font-bold">상승</div>
-                  <div className="text-gray-600">이동평균선</div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-4 border border-gray-100">
+                <div className="flex items-center mb-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  <span className="text-sm font-medium text-gray-700">
+                    이동평균선
+                  </span>
                 </div>
-                <div className="text-center p-2 bg-white rounded shadow">
-                  <div className="text-red-500 font-bold">하락</div>
-                  <div className="text-gray-600">스토캐스틱</div>
-                </div>
-                <div className="text-center p-2 bg-white rounded shadow">
-                  <div className="text-blue-500 font-bold">중립</div>
-                  <div className="text-gray-600">CCI</div>
-                </div>
-                <div className="text-center p-2 bg-white rounded shadow">
-                  <div className="text-green-500 font-bold">매수</div>
-                  <div className="text-gray-600">종합 신호</div>
+                <div className="text-lg font-bold text-green-600">상승</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  5일선 &gt; 20일선
                 </div>
               </div>
+
+              <div className="bg-white rounded-xl p-4 border border-gray-100">
+                <div className="flex items-center mb-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                  <span className="text-sm font-medium text-gray-700">
+                    스토캐스틱
+                  </span>
+                </div>
+                <div className="text-lg font-bold text-red-600">하락</div>
+                <div className="text-xs text-gray-500 mt-1">과매도 구간</div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 border border-gray-100">
+                <div className="flex items-center mb-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                  <span className="text-sm font-medium text-gray-700">CCI</span>
+                </div>
+                <div className="text-lg font-bold text-blue-600">중립</div>
+                <div className="text-xs text-gray-500 mt-1">-100 ~ +100</div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 border border-gray-100">
+                <div className="flex items-center mb-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  <span className="text-sm font-medium text-gray-700">
+                    종합 신호
+                  </span>
+                </div>
+                <div className="text-lg font-bold text-green-600">매수</div>
+                <div className="text-xs text-gray-500 mt-1">3/4 지표 매수</div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+              <div className="flex items-center mb-2">
+                <Activity className="w-4 h-4 text-blue-600 mr-2" />
+                <span className="font-medium text-blue-900">분석 요약</span>
+              </div>
+              <p className="text-sm text-blue-800 leading-relaxed">
+                이동평균선이 상승세를 보이고 있으며, 스토캐스틱은 과매도
+                구간에서 반등 신호를 보이고 있습니다. 종합적으로 매수 신호가
+                우세한 상황입니다.
+              </p>
             </div>
           </div>
         );
       case "pattern":
         return (
-          <div className="bg-gradient-to-r from-pink-400 to-red-500 text-white rounded-lg p-4">
-            <div className="flex items-center mb-3">
-              <BarChart3 className="w-5 h-5 mr-2" />
-              <h4 className="font-bold text-lg">차트 패턴</h4>
-            </div>
-            <div className="space-y-2 text-sm">
-              <p>
-                <strong>패턴:</strong> 하락 쐐기형 패턴
-              </p>
-              <p>
-                <strong>RSI:</strong> 과매도 구간 ({rsi})
-              </p>
-              <p>
-                <strong>MACD:</strong> 골든크로스 형성 중
-              </p>
-              <p>
-                <strong>볼린저밴드:</strong> 하단 밴드 근접
-              </p>
-              <div className="mt-3 p-2 bg-white bg-opacity-20 rounded">
-                <p className="text-xs">
-                  현재 하락 쐐기형 패턴이 완성되어 가고 있으며, RSI가 과매도
-                  구간에 진입하여 반등 가능성이 높아지고 있습니다.
-                </p>
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl p-5 border border-gray-100">
+              <div className="flex items-center mb-4">
+                <BarChart3 className="w-5 h-5 text-purple-600 mr-2" />
+                <h4 className="font-semibold text-gray-900">차트 패턴</h4>
               </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="bg-red-50 rounded-lg p-3 border border-red-100">
+                  <div className="text-sm font-medium text-red-800 mb-1">
+                    패턴
+                  </div>
+                  <div className="text-lg font-bold text-red-600">
+                    하락 쐐기형
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                  <div className="text-sm font-medium text-orange-800 mb-1">
+                    RSI
+                  </div>
+                  <div className="text-lg font-bold text-orange-600">{rsi}</div>
+                  <div className="text-xs text-orange-600">과매도 구간</div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                  <span className="text-sm font-medium text-blue-800">
+                    MACD
+                  </span>
+                  <span className="text-sm font-bold text-blue-600">
+                    골든크로스 형성 중
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                  <span className="text-sm font-medium text-green-800">
+                    볼린저밴드
+                  </span>
+                  <span className="text-sm font-bold text-green-600">
+                    하단 밴드 근접
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+              <div className="flex items-center mb-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                <span className="font-medium text-purple-900">패턴 해석</span>
+              </div>
+              <p className="text-sm text-purple-800 leading-relaxed">
+                현재 하락 쐐기형 패턴이 완성되어 가고 있으며, RSI가 과매도
+                구간에 진입하여 반등 가능성이 높아지고 있습니다.
+              </p>
             </div>
           </div>
         );
 
       case "volatility":
         return (
-          <div className="bg-gradient-to-r from-green-400 to-cyan-500 text-white rounded-lg p-4">
-            <div className="flex items-center mb-3">
-              <TrendingUp className="w-5 h-5 mr-2" />
-              <h4 className="font-bold text-lg">가격 변동성</h4>
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl p-5 border border-gray-100">
+              <div className="flex items-center mb-4">
+                <TrendingUp className="w-5 h-5 text-emerald-600 mr-2" />
+                <h4 className="font-semibold text-gray-900">가격 변동성</h4>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm font-medium text-emerald-800">
+                      일일 변동폭
+                    </span>
+                    <span className="text-lg font-bold text-emerald-600">
+                      {dailyRange}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-emerald-200 rounded-full h-2 mb-2">
+                    <div
+                      className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(dailyRange * 10, 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-emerald-700">
+                    <span>71,200원</span>
+                    <span>73,500원</span>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm font-medium text-amber-800">
+                      52주 변동폭
+                    </span>
+                    <span className="text-lg font-bold text-amber-600">
+                      {weeklyRange}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-amber-200 rounded-full h-2 mb-2">
+                    <div
+                      className="bg-amber-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(weeklyRange, 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-amber-700">
+                    <span>최저: 58,400원</span>
+                    <span>최고: 84,800원</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="space-y-3">
-              <div className="bg-white bg-opacity-20 rounded p-3">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm">일일 변동폭</span>
-                  <span className="font-bold">{dailyRange}%</span>
-                </div>
-                <div className="w-full bg-white bg-opacity-30 rounded-full h-2">
-                  <div
-                    className="bg-yellow-300 h-2 rounded-full"
-                    style={{ width: `${dailyRange * 10}%` }}
-                  ></div>
-                </div>
-                <div className="flex justify-between text-xs mt-1">
-                  <span>71,200</span>
-                  <span>73,500</span>
-                </div>
+
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+              <div className="flex items-center mb-2">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                <span className="font-medium text-emerald-900">
+                  변동성 분석
+                </span>
               </div>
-              <div className="bg-white bg-opacity-20 rounded p-3">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm">52주 변동폭</span>
-                  <span className="font-bold">{weeklyRange}%</span>
-                </div>
-                <div className="w-full bg-white bg-opacity-30 rounded-full h-2">
-                  <div
-                    className="bg-red-400 h-2 rounded-full"
-                    style={{ width: `${weeklyRange}%` }}
-                  ></div>
-                </div>
-                <div className="flex justify-between text-xs mt-1">
-                  <span>최저: 58,400</span>
-                  <span>최고: 84,800</span>
-                </div>
-              </div>
+              <p className="text-sm text-emerald-800 leading-relaxed">
+                일일 변동폭은 평균적인 수준이며, 52주 변동폭은 시장 평균 대비
+                높은 편입니다. 현재 가격은 52주 범위의 중간 지점에 위치하고 있어
+                안정적인 거래가 가능합니다.
+              </p>
             </div>
           </div>
         );
 
       case "volume":
         return (
-          <div className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white rounded-lg p-4">
-            <div className="flex items-center mb-3">
-              <Layers className="w-5 h-5 mr-2" />
-              <h4 className="font-bold text-lg">거래량 분석</h4>
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl p-5 border border-gray-100">
+              <div className="flex items-center mb-4">
+                <Layers className="w-5 h-5 text-blue-600 mr-2" />
+                <h4 className="font-semibold text-gray-900">거래량 분석</h4>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-blue-800">
+                      현재 거래량
+                    </span>
+                    <span className="text-lg font-bold text-blue-600">
+                      {currentVolume.toLocaleString()}주
+                    </span>
+                  </div>
+                  <div className="w-full bg-blue-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${Math.min((currentVolume / avgVolume) * 100, 100)}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div className="text-sm font-medium text-gray-700 mb-1">
+                      평균 거래량
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">
+                      {avgVolume.toLocaleString()}주
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+                    <div className="text-sm font-medium text-green-700 mb-1">
+                      거래량 비율
+                    </div>
+                    <div className="text-lg font-bold text-green-600">
+                      +{volumeRatio}%
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>현재 거래량:</span>
-                <span className="font-bold">
-                  {currentVolume.toLocaleString()}주
-                </span>
+
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+              <div className="flex items-center mb-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                <span className="font-medium text-blue-900">거래량 해석</span>
               </div>
-              <div className="flex justify-between">
-                <span>평균 거래량:</span>
-                <span>{avgVolume.toLocaleString()}주</span>
-              </div>
-              <div className="flex justify-between">
-                <span>거래량 비율:</span>
-                <span className="text-yellow-300 font-bold">
-                  +{volumeRatio}%
-                </span>
-              </div>
-              <div className="mt-3 p-2 bg-white bg-opacity-20 rounded">
-                <p className="text-xs">
-                  평균 대비 높은 거래량을 보이고 있어 매수세 유입이 감지되고
-                  있습니다.
-                </p>
-              </div>
+              <p className="text-sm text-blue-800 leading-relaxed">
+                평균 대비 {volumeRatio}% 높은 거래량을 보이고 있어 매수세 유입이
+                감지되고 있습니다. 이는 가격 상승의 지지 요인으로 작용할 수
+                있습니다.
+              </p>
             </div>
           </div>
         );
@@ -215,40 +336,44 @@ export default function TechnicalAnalysis({
   };
 
   return (
-    <div className="bg-white shadow-sm rounded-xl p-6 max-h-[514px] overflow-y-hidden">
-      <div className="space-y-6">
-        {/* 헤더 */}
-        <div className="text-center border-b pb-4">
-          <h3 className="text-xl font-bold text-gray-800 mb-2">기술적 분석</h3>
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm inline-flex items-center">
-            <Zap className="w-4 h-4 mr-1" />
-            실시간 분석
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      {/* 헤더 */}
+      <div className="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">기술적 분석</h3>
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs text-gray-600 font-medium">실시간</span>
           </div>
         </div>
+      </div>
 
-        {/* 탭 네비게이션 */}
-        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+      {/* 탭 네비게이션 */}
+      <div className="px-6 py-3 border-b border-gray-100">
+        <div className="flex space-x-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.id
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
+                    ? "bg-blue-50 text-blue-700 border border-blue-200"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <Icon className="w-3 h-3 mr-1" />
+                <Icon className="w-4 h-4 mr-2" />
                 {tab.label}
               </button>
             );
           })}
         </div>
+      </div>
 
-        {/* 탭 콘텐츠 */}
-        <div className="min-h-[400px]">{renderTabContent()}</div>
+      {/* 탭 콘텐츠 */}
+      <div className="p-6 min-h-[400px] bg-gray-50/30">
+        {renderTabContent()}
       </div>
     </div>
   );
