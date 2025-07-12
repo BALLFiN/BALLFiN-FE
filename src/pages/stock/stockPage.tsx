@@ -5,7 +5,7 @@ import AutoTradingSection from "@/components/stock/AutoTradingSection";
 
 import LivePriceIndicator from "@/components/stock/LivePriceIndicator";
 import { StockItem } from "@/components/stock/types";
-import { Filter, SortAsc, SortDesc, Star } from "lucide-react";
+import { Filter, SortAsc, Star } from "lucide-react";
 
 export default function StockPage() {
   const [searchQuery, setSearchQuery] = useState("");

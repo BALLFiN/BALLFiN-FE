@@ -23,22 +23,6 @@ interface HistoricalData {
   ma120?: number;
 }
 
-interface StockDetail {
-  id: number;
-  name: string;
-  code: string;
-  price: number;
-  change: number;
-  score: number;
-  sentiment: "positive" | "negative" | "neutral";
-  newsCount: number;
-  prediction: {
-    targetPrice: number;
-    confidence: number;
-    recommendation: "buy" | "sell" | "hold";
-  };
-}
-
 interface StockChartProps {
   data: HistoricalData[];
   showMA: {
