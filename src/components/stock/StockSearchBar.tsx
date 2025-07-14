@@ -1,20 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, Clock, TrendingUp, X } from "lucide-react";
-
-interface StockItem {
-  id: number;
-  name: string;
-  code: string;
-  price: number;
-  change: number;
-}
-
-interface StockSearchBarProps {
-  onSearch?: (query: string) => void;
-  placeholder?: string;
-  className?: string;
-  allStocks?: StockItem[];
-}
+import { StockItem, StockSearchBarProps } from "./types";
 
 export default function StockSearchBar({
   onSearch,
@@ -26,11 +12,66 @@ export default function StockSearchBar({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [popularStocks] = useState<StockItem[]>([
-    { id: 1, name: "삼성전자", code: "005930", price: 75000, change: 2.5 },
-    { id: 2, name: "현대자동차", code: "005380", price: 185000, change: -1.2 },
-    { id: 3, name: "SK하이닉스", code: "000660", price: 120000, change: 1.8 },
-    { id: 4, name: "LG전자", code: "066570", price: 95000, change: -0.5 },
-    { id: 5, name: "NAVER", code: "035420", price: 220000, change: 3.2 },
+    {
+      id: 1,
+      name: "삼성전자",
+      code: "005930",
+      price: 75000,
+      close: 75000,
+      high: 76000,
+      low: 74000,
+      change: 2.5,
+      changePercent: 3.45,
+      volume: 15000000,
+    },
+    {
+      id: 2,
+      name: "현대자동차",
+      code: "005380",
+      price: 185000,
+      close: 185000,
+      high: 187000,
+      low: 183000,
+      change: -1.2,
+      changePercent: -0.65,
+      volume: 8000000,
+    },
+    {
+      id: 3,
+      name: "SK하이닉스",
+      code: "000660",
+      price: 120000,
+      close: 120000,
+      high: 122000,
+      low: 118000,
+      change: 1.8,
+      changePercent: 1.52,
+      volume: 12000000,
+    },
+    {
+      id: 4,
+      name: "LG전자",
+      code: "066570",
+      price: 95000,
+      close: 95000,
+      high: 96000,
+      low: 94000,
+      change: -0.5,
+      changePercent: -0.52,
+      volume: 6000000,
+    },
+    {
+      id: 5,
+      name: "NAVER",
+      code: "035420",
+      price: 220000,
+      close: 220000,
+      high: 225000,
+      low: 218000,
+      change: 3.2,
+      changePercent: 1.47,
+      volume: 5000000,
+    },
   ]);
   const [filteredStocks, setFilteredStocks] = useState<StockItem[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -133,11 +174,11 @@ export default function StockSearchBar({
     <div ref={searchRef} className={`relative ${className}`}>
       {/* 검색 입력창 */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
           type="text"
           placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]"
+          className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-green-900 shadow-sm"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsDropdownOpen(true)}
@@ -146,7 +187,7 @@ export default function StockSearchBar({
         {searchQuery && (
           <button
             onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
             <X size={16} />
           </button>

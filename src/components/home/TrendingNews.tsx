@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { TrendingUp, Search } from "lucide-react";
+import { TrendingUp, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { searchNews } from "@/api/news/search";
 
@@ -42,7 +42,7 @@ export default function TrendingNews() {
         arr.forEach((item, idx) => (item.rank = idx + 1));
         setNewsList(arr);
       })
-      .catch((e) => setError("뉴스를 불러오는 데 실패했습니다."))
+      .catch(() => setError("뉴스를 불러오는 데 실패했습니다."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -107,12 +107,12 @@ export default function TrendingNews() {
           {content}
         </div>
         <button
-          className="ml-4 p-2 rounded-full hover:bg-green-100 transition-colors"
+          className="ml-4 p-2 rounded-full hover:bg-green-100 transition-colors flex items-center gap-1"
           aria-label="뉴스 전체 검색"
           onClick={() => navigate("/news")}
           type="button"
         >
-          <Search className="w-6 h-6 text-[#0A5C2B] hover:text-green-700" />
+          <Plus className="w-6 h-6 text-[#0A5C2B] hover:text-green-700" />
         </button>
       </div>
     </div>
@@ -172,7 +172,7 @@ export default function TrendingNews() {
 
   return (
     <div
-      className="bg-white relative overflow-visible p-6"
+      className="bg-white relative overflow-visible pb-6 px-6"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -183,7 +183,9 @@ export default function TrendingNews() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <TrendingUp className="w-6 h-6 text-[#0A5C2B]" />
-          <h3 className="text-xl font-bold text-gray-900">실시간 인기 뉴스</h3>
+          <h3 className="text-xl font-bold text-gray-900">
+            실시간 인기 뉴스 Top 10
+          </h3>
         </div>
       </div>
 
@@ -227,12 +229,12 @@ export default function TrendingNews() {
             </div>
           </div>
           <button
-            className="ml-4 p-2 rounded-full hover:bg-green-100 transition-colors"
+            className="ml-4 p-2 rounded-full hover:bg-green-100 transition-colors flex items-center gap-1"
             aria-label="뉴스 전체 검색"
             onClick={() => navigate("/news")}
             type="button"
           >
-            <Search className="w-6 h-6 text-[#0A5C2B] hover:text-green-700" />
+            <Plus className="w-6 h-6 text-[#0A5C2B] hover:text-green-700" />
           </button>
         </div>
       </div>
