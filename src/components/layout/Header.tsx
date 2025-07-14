@@ -124,7 +124,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 bg-white shadow-md z-50 transition-transform duration-300 ${
+        className={`fixed top-0 left-0 right-0 bg-white shadow-md z-[9999] transition-transform duration-300 ${
           isVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -202,9 +202,9 @@ const Header = () => {
 
           {/* 모바일 메뉴 */}
           <div
-            className={`md:hidden transition-all duration-300 ease-in-out ${
+            className={`md:hidden transition-all duration-300 ease-in-out absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 ${
               isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            } overflow-hidden`}
+            } overflow-hidden z-9999`}
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
