@@ -10,7 +10,7 @@ export type HistoricalData = {
   close: number;
   volume: number;
 };
-export type TimeRangePT = '1m' | '5m' | '15m' | '30m' | '1h' | '1d' | '1w' | '1m' | '3m' | '1y';
+export type TimeRangePT = '1m' | '5m' | '15m' | '30m' | '1h' | '1d' | '1w' | '1M' | '3M' | '1y';
 
 export default function StockChartPrice({ data }: StockChartProps) {
   const [timeRange, setTimeRange] = useState<TimeRangePT>('1d');
@@ -21,7 +21,7 @@ export default function StockChartPrice({ data }: StockChartProps) {
   };
 
   return (
-    <div>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 max-w-6xl mx-auto">
       <StockChartHeader
         timeRange={timeRange}
         onTimeRangeChange={setTimeRange}
