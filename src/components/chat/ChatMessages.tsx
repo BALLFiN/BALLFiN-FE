@@ -108,9 +108,11 @@ export const ChatMessages = ({
               </div>
             )}
             {newsInfo ? (
-              <div className="flex flex-col gap-2 max-w-[80%]">
+              <div
+                className={`flex flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}
+              >
                 {/* 뉴스 정보 카드 - 말풍선 외부 */}
-                <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
+                <div className="max-w-[85%] p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -153,7 +155,7 @@ export const ChatMessages = ({
 
                 {/* 질문 말풍선 */}
                 <div
-                  className={`rounded-lg p-3 ${
+                  className={`max-w-[65%] rounded-lg p-3 ${
                     isUser
                       ? "bg-[#0A5C2B] text-white rounded-br-none"
                       : "bg-gray-100 text-gray-800 rounded-bl-none"
