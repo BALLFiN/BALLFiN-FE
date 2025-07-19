@@ -17,9 +17,20 @@ export const ChatMessages = ({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ** 제거하는 함수
-  const removeAsterisks = (text: string) => {
-    return text.replace(/\*\*/g, "");
+  // 마크다운 링크를 HTML로 변환하고 ** 제거하는 함수
+  const processMessageContent = (text: string) => {
+    // 마크다운 링크 패턴: [텍스트](URL)
+    const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+    // 링크를 HTML로 변환
+    let processedText = text.replace(linkPattern, (_match, linkText, url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
+    });
+
+    // ** 제거 (링크 변환 후)
+    processedText = processedText.replace(/\*\*/g, "");
+
+    return processedText;
   };
 
   return (
@@ -43,9 +54,12 @@ export const ChatMessages = ({
                   : "bg-gray-100 text-gray-800 rounded-bl-none"
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">
-                {removeAsterisks(msg.content)}
-              </p>
+              <div
+                className="text-sm whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: processMessageContent(msg.content),
+                }}
+              />
             </div>
             {isUser && (
               <div className="w-8 h-8 rounded-full bg-[#0A5C2B] flex items-center justify-center">
