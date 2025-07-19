@@ -26,6 +26,7 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
     message,
     setMessage,
     currentChatId,
+    setCurrentChatId,
     editingId,
     editTitle,
     setEditTitle,
@@ -57,6 +58,8 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
             response.chatId ||
             response.data?.id;
           if (newChatId) {
+            // 새 채팅방으로 이동
+            setCurrentChatId(newChatId);
             // 새 채팅방 생성 후 메시지 전송
             sendMessage({ chatId: newChatId, message });
             setMessage("");
