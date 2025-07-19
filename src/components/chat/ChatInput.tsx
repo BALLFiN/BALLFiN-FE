@@ -77,30 +77,42 @@ export default function ChatInput({
     >
       {/* 뉴스 정보 카드 */}
       {newsInfo && (
-        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Newspaper className="w-4 h-4 text-blue-600" />
-                <h4 className="font-medium text-blue-900">드롭된 뉴스</h4>
+        <div className="mb-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm max-w-2xl mx-auto">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <Newspaper className="w-4 h-4 text-blue-600" />
+                  <h4 className="font-medium text-blue-900 text-sm sm:text-base">
+                    드롭된 뉴스
+                  </h4>
+                </div>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${getImpactColor(newsInfo.impact)}`}
                 >
                   {getImpactText(newsInfo.impact)}
                 </span>
               </div>
-              <h5 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">
+              <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-2 line-clamp-2 leading-tight">
                 {newsInfo.title}
               </h5>
-              <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
+              <div className="flex items-center gap-2 sm:gap-3 text-xs text-gray-600 mb-2 flex-wrap">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  {formatDate(newsInfo.published_at)}
+                  <span className="hidden sm:inline">
+                    {formatDate(newsInfo.published_at)}
+                  </span>
+                  <span className="sm:hidden">
+                    {formatDate(newsInfo.published_at).split(" ")[0]}
+                  </span>
                 </span>
-                <span>{newsInfo.press || "언론사 미상"}</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="truncate">
+                  {newsInfo.press || "언론사 미상"}
+                </span>
               </div>
               {newsInfo.summary && (
-                <p className="text-xs text-gray-700 line-clamp-2">
+                <p className="text-xs text-gray-700 line-clamp-2 leading-relaxed">
                   {newsInfo.summary}
                 </p>
               )}
@@ -108,7 +120,7 @@ export default function ChatInput({
             <button
               type="button"
               onClick={onRemoveNews}
-              className="ml-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
             >
               <X size={16} />
             </button>
@@ -116,42 +128,44 @@ export default function ChatInput({
         </div>
       )}
 
-      <div className="flex gap-2">
-        <div className="relative flex-1">
+      <div className="flex gap-2 sm:gap-3 max-w-2xl mx-auto">
+        <div className="relative flex-1 min-w-0">
           <textarea
             value={message}
             onChange={(e) => onChange(e.target.value)}
             placeholder="메시지를 입력하세요..."
             disabled={isLoading}
-            rows={Math.min(5, Math.max(2, message.split("\n").length))}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
-            style={{ minHeight: "40px", maxHeight: "200px" }}
+            rows={Math.min(3, Math.max(1, message.split("\n").length))}
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0A5C2B] focus:border-[#0A5C2B] disabled:bg-gray-50 disabled:cursor-not-allowed resize-none text-sm sm:text-base placeholder-gray-400 transition-all duration-200"
+            style={{ minHeight: "36px", maxHeight: "120px" }}
           />
           {message && (
             <button
               type="button"
               onClick={() => onChange("")}
-              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
             >
-              <X size={16} />
+              <X size={14} className="sm:w-4 sm:h-4" />
             </button>
           )}
         </div>
-        <button
-          type="button"
-          onClick={onToggleMenu}
-          disabled={isLoading}
-          className="px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Menu size={20} />
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 bg-[#0A5C2B] text-white rounded-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send size={20} />
-        </button>
+        <div className="flex gap-1 sm:gap-2">
+          <button
+            type="button"
+            onClick={onToggleMenu}
+            disabled={isLoading}
+            className="p-2 sm:p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Menu size={16} className="sm:w-4 sm:h-4" />
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="p-2 sm:p-2.5 bg-[#0A5C2B] text-white rounded-xl hover:bg-[#0A5C2B]/90 active:scale-95 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          >
+            <Send size={16} className="sm:w-4 sm:h-4" />
+          </button>
+        </div>
       </div>
     </form>
   );
