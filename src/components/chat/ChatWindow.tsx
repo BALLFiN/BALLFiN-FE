@@ -39,10 +39,10 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
     showHistory,
     setShowHistory,
   } = useChatManager();
-  const { data: messages = [], isLoading } = useChatMessages(
+  const { data: messages = [], isLoading: messagesLoading } = useChatMessages(
     currentChatId ?? ""
   );
-  const { mutate: sendMessage } = useSendMessage();
+  const { mutate: sendMessage, isPending: isSending } = useSendMessage();
 
   const handleSubmit = () => {
     if (!message.trim()) return;
@@ -127,7 +127,7 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-          {isLoading ? <div></div> : <ChatMessages messages={messages} />}
+          <ChatMessages messages={messages} isLoading={isSending} />
         </div>
       )}
 
@@ -137,6 +137,7 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
         onChange={setMessage}
         onSubmit={handleSubmit}
         onToggleMenu={() => setShowMenu(!showMenu)}
+        isLoading={isSending}
       />
     </div>
   );
