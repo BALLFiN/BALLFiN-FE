@@ -1,27 +1,21 @@
 import ChatInput from "./ChatInput";
-import ChatMenu from "./ChatMenu";
-import ChatHistoryList from "./ChatHistoryList";
-
-import { X } from "lucide-react";
+import ChatHeader from "./ChatHeader";
+import ChatBody from "./ChatBody";
+import ChatDropZone from "./ChatDropZone";
 import { ChatWindowProps } from "@/features/chat/types";
 import { useChatManager } from "@/features/chat/hooks/useChatUI";
-
 import { useCreateChat } from "@/features/chat/hooks/chatList/useChatMutation";
-
-import { ChatMessages } from "./ChatMessages";
 import {
   useChatMessages,
   useSendMessage,
 } from "@/features/chat/hooks/chatMessage/useChatMessage";
 import { useChatList } from "@/features/chat/hooks/chatList/useChatList";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const { mutate: createChat } = useCreateChat();
   const { data: chatList = [] } = useChatList();
-  const [isDragOver, setIsDragOver] = useState(false);
   const [newsInfo, setNewsInfo] = useState<any>(null);
-  const dropZoneRef = useRef<HTMLDivElement>(null);
   const generateKoreanTimestamp = () => {
     const now = new Date();
     return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -47,45 +41,14 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const { data: messages = [] } = useChatMessages(currentChatId ?? "");
   const { mutate: sendMessage, isPending: isSending } = useSendMessage();
 
-  // 드래그 앤 드롭 핸들러들
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-
     const newsData = e.dataTransfer.getData("application/json");
     if (newsData) {
       try {
         const news = JSON.parse(newsData);
 
-        // 뉴스 정보를 깔끔하게 포맷팅
-        const formatDate = (dateString: string) => {
-          if (!dateString) return "";
-          const date = new Date(dateString);
-          return date.toLocaleDateString("ko-KR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          });
-        };
-
         // 뉴스 정보를 상태에 저장
         setNewsInfo(news);
-
-        // 입력창에 기본 질문 설정
-        setMessage(`이 뉴스에 대해 분석해주세요.`);
 
         // 입력창에 포커스
         setTimeout(() => {
@@ -176,80 +139,54 @@ ${newsInfo.impact ? `영향도: ${newsInfo.impact === "positive" ? "긍정" : ne
     }
   };
 
-  if (!isOpen) return null;
+  const handleToggleHistory = () => {
+    setShowHistory(!showHistory);
+    setShowMenu(false);
+  };
+
+  const handleCreateNewChat = () => {
+    const title = generateKoreanTimestamp();
+    createChat(title);
+    setShowMenu(false);
+  };
+
+  const handleToggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
   return (
-    <div
-      ref={dropZoneRef}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      className={`fixed bottom-4 sm:bottom-8 md:bottom-24 right-2 sm:right-4 md:right-8 w-[95vw] sm:w-[80vw] md:w-[60vw] lg:w-[40vw] xl:w-[30vw] h-[70vh] sm:h-[550px] md:h-[600px] bg-white rounded-lg shadow-xl border-2 flex flex-col z-999 max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl transition-all duration-200 ${
-        isDragOver
-          ? "border-[#0A5C2B] bg-green-50 shadow-2xl"
-          : "border-gray-200"
-      }`}
-    >
-      <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200">
-        <h3 className="text-base sm:text-lg font-semibold text-[#0A5C2B]">
-          BALLFiN 챗봇
-        </h3>
-        <button
-          onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 transition-colors p-1"
-        >
-          <X size={18} className="sm:w-5 sm:h-5" />
-        </button>
-      </div>
+    <ChatDropZone onDrop={handleDrop} isOpen={isOpen}>
+      <ChatHeader onClose={onClose} />
 
-      {showMenu && (
-        <ChatMenu
-          onClickHistory={() => {
-            setShowHistory(!showHistory);
-            setShowMenu(false);
-          }}
-          onCreateNewChat={() => {
-            // if (chatHistories.length >= 12) {
-            //   alert('채팅방은 최대 10개까지 생성할 수 있습니다.');
-            //   return;
-            // }
-            const title = generateKoreanTimestamp();
-            createChat(title);
-            setShowMenu(false);
-          }}
-        />
-      )}
+      <ChatBody
+        showMenu={showMenu}
+        showHistory={showHistory}
+        chatList={chatList}
+        currentChatId={currentChatId}
+        editingId={editingId}
+        editTitle={editTitle}
+        messages={messages}
+        isSending={isSending}
+        onToggleHistory={handleToggleHistory}
+        onToggleMenu={handleToggleMenu}
+        onCreateNewChat={handleCreateNewChat}
+        onLoad={loadChat as any}
+        onEditStart={startEditing as any}
+        onEditChange={setEditTitle}
+        onEditSave={saveEdit}
+        onEditCancel={cancelEdit}
+        formatDate={formatDate}
+      />
 
-      {showHistory ? (
-        <div className="flex-1 overflow-y-auto">
-          <ChatHistoryList
-            histories={chatList}
-            currentId={currentChatId}
-            editingId={editingId}
-            editTitle={editTitle}
-            onLoad={loadChat as any}
-            onEditStart={startEditing as any}
-            onEditChange={setEditTitle}
-            onEditSave={saveEdit}
-            onEditCancel={cancelEdit}
-            formatDate={formatDate}
-          />
-        </div>
-      ) : (
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-          <ChatMessages messages={messages} isLoading={isSending} />
-        </div>
-      )}
-
-      {/* 입력창 */}
       <ChatInput
         message={message}
         onChange={setMessage}
         onSubmit={handleSubmit}
-        onToggleMenu={() => setShowMenu(!showMenu)}
+        onToggleMenu={handleToggleMenu}
         isLoading={isSending}
         newsInfo={newsInfo}
         onRemoveNews={handleRemoveNews}
       />
-    </div>
+    </ChatDropZone>
   );
 }

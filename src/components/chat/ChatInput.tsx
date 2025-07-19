@@ -73,7 +73,7 @@ export default function ChatInput({
         e.preventDefault();
         onSubmit();
       }}
-      className="p-4"
+      className="p-3 sm:p-4 border-t border-gray-100"
     >
       {/* 뉴스 정보 카드 */}
       {newsInfo && (
