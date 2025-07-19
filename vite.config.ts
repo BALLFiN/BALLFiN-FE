@@ -34,5 +34,12 @@ export default defineConfig({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      "/chat": {
+        target: "http://44.207.10.254",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

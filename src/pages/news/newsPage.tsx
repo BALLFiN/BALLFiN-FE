@@ -5,6 +5,7 @@ import { NewsItem, searchNews, getMyFeed } from "../../api/news/index";
 import NewsTimeline from "../../components/news/NewsTimeline";
 import TopNewsSection from "../../components/news/TopNewsSection";
 import { motion } from "framer-motion";
+import BotButton from "@/components/chat/BotButton";
 
 export default function NewsPage() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
@@ -172,6 +173,7 @@ export default function NewsPage() {
           />
         </div>
       </div>
+      <BotButton />
     </motion.div>
   );
 }

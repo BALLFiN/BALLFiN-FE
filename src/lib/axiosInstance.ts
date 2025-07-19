@@ -1,7 +1,12 @@
 import axios from "axios";
 
+// 개발 환경에서는 프록시 사용, 프로덕션에서는 실제 URL 사용
+const baseURL = import.meta.env.DEV
+  ? "" // 개발 환경에서는 프록시 사용
+  : import.meta.env.VITE_API_BASE_URL;
+
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
