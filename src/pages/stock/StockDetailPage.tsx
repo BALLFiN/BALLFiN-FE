@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import StockHeader from "@/components/stockDetail/StockHeader";
-import StockChart from "@/components/stockDetail/StockChart";
-import StockNews from "@/components/stockDetail/StockNews";
-import TechnicalAnalysis from "@/components/stockDetail/TechnicalAnalysis";
-import FinancialStatement from "@/components/stockDetail/FinancialStatement";
-import Loading from "@/components/common/Loading";
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import StockHeader from '@/components/stockDetail/StockHeader';
+
+import StockNews from '@/components/stockDetail/StockNews';
+import TechnicalAnalysis from '@/components/stockDetail/TechnicalAnalysis';
+import FinancialStatement from '@/components/stockDetail/FinancialStatement';
+import Loading from '@/components/common/Loading';
+
+import StockChartPrice from '@/components/stockDetail/chart';
 
 interface StockDetail {
   id: number;
@@ -15,7 +17,7 @@ interface StockDetail {
   change: number;
   changeAmount: number;
   score: number;
-  sentiment: "positive" | "negative" | "neutral";
+  sentiment: 'positive' | 'negative' | 'neutral';
   newsCount: number;
   previousVolume?: number;
   currentVolume?: number;
@@ -33,7 +35,7 @@ interface StockDetail {
   prediction: {
     targetPrice: number;
     confidence: number;
-    recommendation: "buy" | "sell" | "hold";
+    recommendation: 'buy' | 'sell' | 'hold';
   };
 }
 
@@ -55,7 +57,7 @@ interface NewsItem {
   title: string;
   source: string;
   date: string;
-  sentiment: "positive" | "negative" | "neutral";
+  sentiment: 'positive' | 'negative' | 'neutral';
   url: string;
 }
 
@@ -73,82 +75,62 @@ export default function StockDetailPage() {
   const { code } = useParams<{ code: string }>();
   const [stock, setStock] = useState<StockDetail | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [showMA, setShowMA] = useState({
-    ma5: true,
-    ma20: true,
-    ma60: false,
-    ma120: false,
-  });
-  const [timeRange, setTimeRange] = useState<
-    "1m" | "5m" | "15m" | "30m" | "1h" | "1d" | "1w" | "1m" | "3m" | "1y"
-  >("1d");
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [financialData, setFinancialData] = useState<FinancialData | null>(
-    null
-  );
+  const [financialData, setFinancialData] = useState<FinancialData | null>(null);
 
   useEffect(() => {
     // TODO: API 호출로 대체
     const mockStock: StockDetail = {
       id: 1,
-      name: "삼성전자",
-      code: "005930",
+      name: '삼성전자',
+      code: '005930',
       price: 72400,
       change: -1.63,
       changeAmount: -1200,
       score: 75,
-      sentiment: "positive",
+      sentiment: 'positive',
       newsCount: 12,
       previousVolume: 15000000,
       currentVolume: 18000000,
       tradingAmount: 1303200000000,
       week52High: {
         price: 85000,
-        date: "2024-01-15",
+        date: '2024-01-15',
       },
       week52Low: {
         price: 65000,
-        date: "2024-06-20",
+        date: '2024-06-20',
       },
       upperLimit: 79640,
       lowerLimit: 65160,
       prediction: {
         targetPrice: 80000,
         confidence: 85,
-        recommendation: "buy",
+        recommendation: 'buy',
       },
     };
 
-    const mockHistoricalData: HistoricalData[] = Array.from(
-      { length: 30 },
-      (_, i) => ({
-        date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0],
-        open: 70000 + Math.random() * 10000,
-        high: 75000 + Math.random() * 10000,
-        low: 65000 + Math.random() * 10000,
-        close: 70000 + Math.random() * 10000,
-        volume: Math.floor(Math.random() * 1000000),
-        ma5: 72000 + Math.random() * 5000,
-        ma20: 71000 + Math.random() * 3000,
-        ma60: 70500 + Math.random() * 2000,
-        ma120: 70000 + Math.random() * 1500,
-      })
-    );
+    const mockHistoricalData: HistoricalData[] = Array.from({ length: 30 }, (_, i) => ({
+      date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      open: 70000 + Math.random() * 10000,
+      high: 75000 + Math.random() * 10000,
+      low: 65000 + Math.random() * 10000,
+      close: 70000 + Math.random() * 10000,
+      volume: Math.floor(Math.random() * 1000000),
+      ma5: 72000 + Math.random() * 5000,
+      ma20: 71000 + Math.random() * 3000,
+      ma60: 70500 + Math.random() * 2000,
+      ma120: 70000 + Math.random() * 1500,
+    }));
 
     const mockNews: NewsItem[] = Array.from({ length: 5 }, (_, i) => ({
       id: i + 1,
       title: `삼성전자, ${i + 1}분기 실적 발표... 시장 예상치 상회`,
-      source: "한국경제",
-      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-      sentiment: ["positive", "negative", "neutral"][
-        Math.floor(Math.random() * 3)
-      ] as any,
-      url: "#",
+      source: '한국경제',
+      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      sentiment: ['positive', 'negative', 'neutral'][Math.floor(Math.random() * 3)] as any,
+      url: '#',
     }));
 
     const mockFinancialData: FinancialData = {
@@ -166,13 +148,6 @@ export default function StockDetailPage() {
     setNews(mockNews);
     setFinancialData(mockFinancialData);
   }, [code]);
-
-  const handleToggleMA = (maType: "ma5" | "ma20" | "ma60" | "ma120") => {
-    setShowMA((prev) => ({
-      ...prev,
-      [maType]: !prev[maType],
-    }));
-  };
 
   if (!stock) {
     return <Loading />;
@@ -208,13 +183,7 @@ export default function StockDetailPage() {
         <div className="flex gap-4">
           {/* 차트 영역 */}
           <div className="flex-1">
-            <StockChart
-              data={historicalData}
-              showMA={showMA}
-              timeRange={timeRange}
-              onTimeRangeChange={setTimeRange}
-              onToggleMA={handleToggleMA}
-            />
+            <StockChartPrice data={historicalData} />
           </div>
 
           {/* 기술적 분석 사이드바 */}
@@ -227,17 +196,13 @@ export default function StockDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* 관련 뉴스 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              관련 뉴스
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">관련 뉴스</h3>
             <StockNews news={news} />
           </div>
 
           {/* 예정사항 영역 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              예정사항
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">예정사항</h3>
             <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
               <p className="text-gray-500">추가 콘텐츠 영역</p>
             </div>
@@ -245,9 +210,7 @@ export default function StockDetailPage() {
 
           {/* 재무제표 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              재무제표
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">재무제표</h3>
             {financialData && <FinancialStatement data={financialData} />}
           </div>
         </div>
