@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { TrendingUp, Plus } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { searchNews } from "@/api/news/search";
 
 interface NewsItem {
@@ -23,6 +23,20 @@ export default function TrendingNews() {
   const [isHovered, setIsHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  // 드래그 앤 드롭 기능
+  const handleDragStart = (e: React.DragEvent, news: NewsItem) => {
+    e.stopPropagation();
+    const newsData = {
+      id: news.id,
+      title: news.title,
+      press: news.press,
+      category: news.category,
+      views: news.views,
+    };
+    e.dataTransfer.setData("application/json", JSON.stringify(newsData));
+    e.dataTransfer.effectAllowed = "copy";
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -199,6 +213,8 @@ export default function TrendingNews() {
           <div className="w-1 h-12 rounded bg-[#0A5C2B] mr-4" />
           <div className="flex-1 min-w-0">
             <div
+              draggable
+              onDragStart={(e) => handleDragStart(e, newsList[displayIndex])}
               className={`flex items-center gap-4 h-10 transition-all duration-700 cursor-pointer w-full ${
                 isAnimating
                   ? "transform -translate-y-4 opacity-0"
@@ -248,6 +264,8 @@ export default function TrendingNews() {
             {newsList.map((news, idx) => (
               <div
                 key={news.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, news)}
                 className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
                 onClick={() => navigate(`/news/${news.id}`)}
                 onMouseEnter={() => setHoveredIndex(idx)}

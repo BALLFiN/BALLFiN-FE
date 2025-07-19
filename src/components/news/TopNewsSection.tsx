@@ -1,5 +1,6 @@
 import { Clock } from "lucide-react";
 import { NewsItem } from "../../api/news/index";
+import { useRef } from "react";
 
 interface TopNewsSectionProps {
   topNews: NewsItem[];
@@ -12,6 +13,21 @@ export default function TopNewsSection({
   onNewsClick,
   isLoading = false,
 }: TopNewsSectionProps) {
+  // 드래그 앤 드롭 기능
+  const handleDragStart = (e: React.DragEvent, news: NewsItem) => {
+    e.stopPropagation();
+    const newsData = {
+      id: news.id,
+      title: news.title,
+      press: news.press,
+      published_at: news.published_at,
+      summary: news.summary,
+      impact: news.impact,
+    };
+    e.dataTransfer.setData("application/json", JSON.stringify(newsData));
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-[90rem] mx-auto">
@@ -55,6 +71,8 @@ export default function TopNewsSection({
         {topNews.map((news, index) => (
           <div
             key={news.id}
+            draggable
+            onDragStart={(e) => handleDragStart(e, news)}
             className="rounded-xl border border-gray-100 hover:border-[#0A5C2B]/20 cursor-pointer transition-all duration-300 overflow-hidden relative bg-white shadow-md hover:shadow-xl transform hover:-translate-y-1"
             onClick={() => onNewsClick(news)}
           >
