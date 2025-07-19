@@ -73,7 +73,7 @@ export default function ChatInput({
         e.preventDefault();
         onSubmit();
       }}
-      className="p-3 sm:p-4 border-t border-gray-100"
+      className="p-3 sm:p-4 "
     >
       {/* 뉴스 정보 카드 */}
       {newsInfo && (
@@ -133,6 +133,14 @@ export default function ChatInput({
           <textarea
             value={message}
             onChange={(e) => onChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (message.trim()) {
+                  onSubmit();
+                }
+              }
+            }}
             placeholder="메시지를 입력하세요..."
             disabled={isLoading}
             rows={Math.min(3, Math.max(1, message.split("\n").length))}
