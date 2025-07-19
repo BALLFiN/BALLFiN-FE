@@ -137,7 +137,10 @@ export default function PopularStocks() {
             실시간 인기 종목 Top 5
           </h2>
         </div>
-        <button className="text-sm text-[#0A5C2B] hover:underline">
+        <button
+          onClick={() => navigate("/stock")}
+          className="text-sm text-[#0A5C2B] hover:underline cursor-pointer"
+        >
           더보기
         </button>
       </div>
