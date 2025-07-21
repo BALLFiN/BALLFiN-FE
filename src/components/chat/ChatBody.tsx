@@ -33,7 +33,6 @@ export default function ChatBody({
   messages,
   isSending,
   onToggleHistory,
-  onToggleMenu,
   onCreateNewChat,
   onLoad,
   onEditStart,

@@ -1,5 +1,5 @@
 import { NewMessagePT } from "@/features/chat/types";
-import { Bot, User, Clock, Newspaper, X } from "lucide-react";
+import { Bot, User, Clock, Newspaper } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 interface ChatMessagesProps {

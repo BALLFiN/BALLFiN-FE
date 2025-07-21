@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { TrendingUp, Plus } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { searchNews } from "@/api/news/search";
 
 interface NewsItem {

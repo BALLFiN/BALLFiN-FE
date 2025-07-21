@@ -1,6 +1,5 @@
 import { Clock } from "lucide-react";
 import { NewsItem } from "../../api/news/index";
-import { useRef } from "react";
 
 interface TopNewsSectionProps {
   topNews: NewsItem[];
