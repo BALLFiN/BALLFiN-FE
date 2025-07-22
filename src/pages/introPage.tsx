@@ -1,10 +1,4 @@
 import BALLFiNLogo from "../assets/BALLFiN.svg";
-import { Brain } from "lucide-react";
-import { Network } from "lucide-react";
-import { Zap } from "lucide-react";
-import { ChartBar } from "lucide-react";
-import { MessageSquare } from "lucide-react";
-import { Target } from "lucide-react";
 import { FeatureCard } from "../components/Intro/FeatureCard";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -14,49 +8,55 @@ import kim from "../assets/member/kim.png";
 import jeong from "../assets/member/jeong.png";
 import yoon from "../assets/member/yoon.png";
 import lee from "../assets/member/lee.jpeg";
+import { BarChart2 } from "lucide-react"; // 실시간 시장 지표 및 주가 모니터링
+import { TrendingUp } from "lucide-react"; // 실시간 뉴스 기반 AI 주식 매매 서비스
+import { Newspaper } from "lucide-react"; // AI 기반 금융 뉴스 분석 서비스
+import { Activity } from "lucide-react"; // AI 기반 주가 및 재무 분석 서비스
+import { Bot } from "lucide-react"; // RAG 기반 금융 에이전트 챗봇
+import { Bell } from "lucide-react"; // 관심 종목 실시간 모니터링 및 알림
 
 const features = [
   {
-    icon: <Brain className="w-8 h-8 text-[#0A5C2B]" />,
-    title: "AI 기반 뉴스 분석 및 요약 제공",
+    icon: <BarChart2 className="w-8 h-8 text-[#0A5C2B]" />, // 실시간 시장 지표 및 주가 모니터링
+    title: "실시간 시장 지표 및 주가 모니터링",
     description:
-      "실시간 뉴스를 AI가 분석하여 호재/악재를 판단하고, 이해하기 쉬운 설명을 제공합니다. 복잡한 금융 뉴스를 누구나 이해할 수 있게 만들어드립니다.",
-    stats: "5,000+ 뉴스 소스 실시간 분석",
+      "주가 및 코스피, 나스닥, VIX 등 주요 시장 지표와 종목별 주가를 실시간으로 한눈에 확인할 수 있도록 제공합니다. 실시간 데이터 업데이트로 빠르고 정확한 투자 판단을 도와드립니다.",
+    stats: "코스피/나스닥/VIX 등 실시간 반영",
   },
   {
-    icon: <ChartBar className="w-8 h-8 text-[#0A5C2B]" />,
-    title: "스마트 주식 분석 및 추천",
+    icon: <TrendingUp className="w-8 h-8 text-[#0A5C2B]" />, // 실시간 뉴스 기반 AI 주식 매매 서비스
+    title: "실시간 뉴스 기반 AI 주식 매매 ",
     description:
-      "데이터 기반의 주식 매매 스코어링 시스템으로 투자 결정을 도와드립니다. 객관적인 분석과 추천으로 더 나은 투자 전략을 제시합니다.",
-    stats: "97.8% 정확도 달성",
+      "AI와 LLM 에이전트가 실시간 뉴스를 분석하여 최적의 주식 매매 타이밍을 제안합니다. 철저한 백테스팅을 통해 최대 300% 수익률을 달성한 전략을 실시간으로 경험해보세요.",
+    stats: "최대 300% 백테스트 수익률",
   },
   {
-    icon: <MessageSquare className="w-8 h-8 text-[#0A5C2B]" />,
-    title: "금융 지식 챗봇 비서 시스템",
+    icon: <Newspaper className="w-8 h-8 text-[#0A5C2B]" />, // AI 기반 금융 뉴스 분석 서비스
+    title: "AI 기반 금융 뉴스 분석 ",
     description:
-      "우측 하단의 챗봇 버튼을 통해 언제든지 금융 관련 질문을 하실 수 있습니다. 실시간으로 답변을 제공해드립니다.",
-    stats: "24/7 실시간 답변",
+      "실시간 금융 뉴스를 AI가 분석하여 호재, 악재, 중립 여부를 판단하고, 그 이유와 기업에 미치는 영향 점수, 요약 정보를 제공합니다. 복잡한 뉴스를 쉽고 빠르게 이해할 수 있도록 도와드립니다.",
+    stats: "호재/악재/중립 자동 분류",
   },
   {
-    icon: <Target className="w-8 h-8 text-[#0A5C2B]" />,
-    title: "맞춤형 투자 전략 선택 및 관리",
+    icon: <Activity className="w-8 h-8 text-[#0A5C2B]" />, // AI 기반 주가 및 재무 분석 서비스
+    title: "AI 기반 주가 및 재무 분석 ",
     description:
-      "개인의 투자 성향과 목표에 맞는 맞춤형 투자 전략을 제시합니다. AI가 분석한 데이터를 바탕으로 최적의 포트폴리오를 구성해드립니다.",
-    stats: "1,000+ 투자 전략 제공",
+      "주요 종목의 주가 차트 분석과 기업 재무제표를 AI가 심층적으로 분석하여 제공합니다. 투자자의 의사결정에 필수적인 인사이트를 명확하게 전달합니다.",
+    stats: "주가/재무제표 AI 분석 제공",
   },
   {
-    icon: <Network className="w-8 h-8 text-[#0A5C2B]" />,
-    title: "Knowledge Graph 기반 자동 매수/매도 관리",
+    icon: <Bot className="w-8 h-8 text-[#0A5C2B]" />, // RAG 기반 금융 에이전트 챗봇
+    title: "RAG 기반 금융 에이전트 챗봇",
     description:
-      "Knowledge Graph 기술을 활용한 지능형 자동 매수/매도 시스템으로 시장 변화에 실시간 대응합니다. 복잡한 시장 관계를 분석하여 최적의 매매 타이밍을 자동으로 포착합니다.",
-    stats: "실시간 자동 매매 실행",
+      "최신 뉴스와 웹에서 수집한 금융 정보를 활용하여 정교한 답변을 제공하는 금융 전문 챗봇입니다. Vector RAG와 웹 서치를 활용하여 맞춤형 금융 정보를 전달 받을 수 있습니다.",
+    stats: "Vector RAG + 웹서치 기반",
   },
   {
-    icon: <Zap className="w-8 h-8 text-[#0A5C2B]" />,
-    title: "실시간 모니터링 및 알림 시스템",
+    icon: <Bell className="w-8 h-8 text-[#0A5C2B]" />, // 관심 종목 실시간 모니터링 및 알림
+    title: "관심 종목 실시간 모니터링 및 알림",
     description:
-      "관심 종목과 포트폴리오의 실시간 가격 변동을 모니터링하고, 중요한 변화가 있을 때 즉시 알림을 제공합니다.",
-    stats: "실시간 가격 업데이트",
+      "관심 종목을 등록하면 실시간 주가 변동과 주요 뉴스를 빠르게 알려드립니다. 투자 기회를 놓치지 않도록 즉각적인 알림 서비스를 제공합니다.",
+    stats: "실시간 알림/모니터링 지원",
   },
 ];
 
