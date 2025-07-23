@@ -1,4 +1,4 @@
-import { TimeRangePT } from '.';
+import { dayTable, miniteTable, TimeRangePT } from '.';
 
 interface StockChartHeader {
   timeRange: TimeRangePT;
@@ -7,20 +7,6 @@ interface StockChartHeader {
   onToggleMA: (maType: 'ma5' | 'ma20' | 'ma60' | 'ma120') => void;
 }
 export default function StockChartHeader({ showMA, timeRange, onTimeRangeChange, onToggleMA }: StockChartHeader) {
-  const miniteTable: { key: TimeRangePT; label: string }[] = [
-    { key: '1m', label: '1분' },
-    { key: '5m', label: '5분' },
-    { key: '30m', label: '30분' },
-    { key: '1h', label: '1시간' },
-    { key: '6h', label: '6시간' },
-  ];
-  const dayTable: { key: TimeRangePT; label: string }[] = [
-    { key: '1d', label: '일봉' },
-    { key: '1w', label: '주봉' },
-    { key: '1mo', label: '월봉' },
-    { key: '1y', label: '연봉' },
-  ];
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
