@@ -1,4 +1,5 @@
 import { Send, Menu, X, Clock, Newspaper } from "lucide-react";
+import NewsInfoCard from "./NewsInfoCard";
 
 interface NewsInfo {
   id: string;
@@ -77,54 +78,15 @@ export default function ChatInput({
     >
       {/* 뉴스 정보 카드 */}
       {newsInfo && (
-        <div className="mb-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm max-w-2xl mx-auto">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <Newspaper className="w-4 h-4 text-blue-600" />
-                  <h4 className="font-medium text-blue-900 text-sm sm:text-base">
-                    드롭된 뉴스
-                  </h4>
-                </div>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getImpactColor(newsInfo.impact)}`}
-                >
-                  {getImpactText(newsInfo.impact)}
-                </span>
-              </div>
-              <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-2 line-clamp-2 leading-tight">
-                {newsInfo.title}
-              </h5>
-              <div className="flex items-center gap-2 sm:gap-3 text-xs text-gray-600 mb-2 flex-wrap">
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  <span className="hidden sm:inline">
-                    {formatDate(newsInfo.published_at)}
-                  </span>
-                  <span className="sm:hidden">
-                    {formatDate(newsInfo.published_at).split(" ")[0]}
-                  </span>
-                </span>
-                <span className="hidden sm:inline">•</span>
-                <span className="truncate">
-                  {newsInfo.press || "언론사 미상"}
-                </span>
-              </div>
-              {newsInfo.summary && (
-                <p className="text-xs text-gray-700 line-clamp-2 leading-relaxed">
-                  {newsInfo.summary}
-                </p>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={onRemoveNews}
-              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
-            >
-              <X size={16} />
-            </button>
-          </div>
+        <div className="mb-3 max-w-2xl mx-auto">
+          <NewsInfoCard
+            title={newsInfo.title}
+            press={newsInfo.press}
+            published_at={newsInfo.published_at}
+            summary={newsInfo.summary}
+            impact={newsInfo.impact}
+            onRemove={onRemoveNews}
+          />
         </div>
       )}
 
