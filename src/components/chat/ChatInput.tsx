@@ -1,4 +1,4 @@
-import { Send, Menu, X, Clock, Newspaper } from "lucide-react";
+import { Send, Menu, X } from "lucide-react";
 import NewsInfoCard from "./NewsInfoCard";
 
 interface NewsInfo {
@@ -29,45 +29,6 @@ export default function ChatInput({
   newsInfo,
   onRemoveNews,
 }: ChatInputProps) {
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
-
-  const getImpactColor = (impact?: string) => {
-    switch (impact) {
-      case "positive":
-        return "text-green-600 bg-green-50";
-      case "negative":
-        return "text-red-600 bg-red-50";
-      case "neutral":
-        return "text-gray-600 bg-gray-50";
-      default:
-        return "text-gray-600 bg-gray-50";
-    }
-  };
-
-  const getImpactText = (impact?: string) => {
-    switch (impact) {
-      case "positive":
-        return "긍정";
-      case "negative":
-        return "부정";
-      case "neutral":
-        return "중립";
-      default:
-        return "중립";
-    }
-  };
-
   return (
     <form
       onSubmit={(e) => {
