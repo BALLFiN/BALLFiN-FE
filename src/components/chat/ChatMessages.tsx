@@ -47,6 +47,12 @@ export const ChatMessages = ({
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
     });
 
+    // ### 헤딩을 bold 처리
+    processedText = processedText.replace(
+      /^### (.*)$/gm,
+      '<span class="font-bold">$1</span>'
+    );
+
     // ** 제거 (링크 변환 후)
     processedText = processedText.replace(/\*\*/g, "");
 
