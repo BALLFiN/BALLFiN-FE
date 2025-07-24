@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { HistoricalData, miniteTable, TimeRangePT } from '.';
+import { HistoricalData, TimeRangePT } from '.';
+import { miniteTable } from '@/config/chart';
 
 type Point = [number, number];
 export interface PriceVolumeChartProps {

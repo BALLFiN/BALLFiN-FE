@@ -1,4 +1,5 @@
-import { dayTable, miniteTable, TimeRangePT } from '.';
+import { dayTable, miniteTable } from '@/config/chart';
+import { TimeRangePT } from '.';
 
 interface StockChartHeader {
   timeRange: TimeRangePT;
