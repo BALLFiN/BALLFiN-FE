@@ -104,9 +104,7 @@ export const ChatMessages = ({
             className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}
           >
             {!isUser && (
-              <div className="w-8 h-8 rounded-full bg-[#0A5C2B] flex items-center justify-center">
-                <Bot size={16} className="text-white" />
-              </div>
+              <div className="w-8 h-8  flex items-center justify-center"></div>
             )}
             {newsInfo ? (
               <div
@@ -162,9 +160,6 @@ export const ChatMessages = ({
       })}
       {isLoading && (
         <div className="flex items-end gap-2 justify-start">
-          <div className="w-8 h-8 rounded-full bg-[#0A5C2B] flex items-center justify-center">
-            <Bot size={16} className="text-white" />
-          </div>
           <div className="max-w-[80%] rounded-lg p-3 bg-gray-100 text-gray-800 rounded-bl-none">
             <div className="flex items-center gap-2">
               <div className="flex space-x-1">
