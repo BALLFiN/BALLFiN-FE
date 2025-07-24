@@ -68,11 +68,8 @@ export const ChatMessages = ({
         return (
           <div
             key={msg.msg_id}
-            className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}
+            className={`flex items-end gap-2 justify-start`}
           >
-            {!isUser && (
-              <div className="w-8 h-8  flex items-center justify-center"></div>
-            )}
             {newsInfo ? (
               <div
                 className={`flex flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}
@@ -90,9 +87,9 @@ export const ChatMessages = ({
 
                 {/* 질문 말풍선 */}
                 <div
-                  className={`max-w-[65%] rounded-lg p-3 ${
+                  className={`max-w-[65%] rounded-lg p-3 mr-2 ${
                     isUser
-                      ? "bg-[#0A5C2B] text-white rounded-br-none"
+                      ? "bg-[#0A5C2B] text-white rounded-br-none ml-auto"
                       : "bg-gray-100 text-gray-800 rounded-bl-none"
                   }`}
                 >
@@ -103,25 +100,21 @@ export const ChatMessages = ({
               </div>
             ) : (
               <div
-                className={`max-w-[80%] rounded-lg p-3 ${
+                className={`max-w-[80%] w-fit rounded-lg p-3 text-left ${
                   isUser
-                    ? "bg-[#0A5C2B] text-white rounded-br-none"
-                    : "bg-gray-100 text-gray-800 rounded-bl-none"
+                    ? "bg-[#0A5C2B] text-white rounded-br-none ml-auto"
+                    : "bg-gray-100 text-gray-800 rounded-bl-none mr-auto"
                 }`}
               >
                 <div
-                  className="text-sm whitespace-pre-wrap"
+                  className="text-sm whitespace-pre-wrap mr-2"
                   dangerouslySetInnerHTML={{
                     __html: processMessageContent(msg.content),
                   }}
                 />
               </div>
             )}
-            {isUser && (
-              <div className="w-8 h-8 rounded-full bg-[#0A5C2B] flex items-center justify-center">
-                <User size={16} className="text-white" />
-              </div>
-            )}
+            {isUser && null}
           </div>
         );
       })}
