@@ -1,4 +1,4 @@
-import { Send, Menu, X } from "lucide-react";
+import { Send, X, Clock, Newspaper, Paperclip } from "lucide-react";
 import NewsInfoCard from "./NewsInfoCard";
 
 interface NewsInfo {
@@ -14,7 +14,7 @@ interface ChatInputProps {
   message: string;
   onChange: (val: string) => void;
   onSubmit: () => void;
-  onToggleMenu: () => void;
+  onFileAttach?: () => void;
   isLoading?: boolean;
   newsInfo?: NewsInfo | null;
   onRemoveNews?: () => void;
@@ -24,7 +24,7 @@ export default function ChatInput({
   message,
   onChange,
   onSubmit,
-  onToggleMenu,
+  onFileAttach,
   isLoading = false,
   newsInfo,
   onRemoveNews,
@@ -83,11 +83,12 @@ export default function ChatInput({
         <div className="flex gap-1 sm:gap-2">
           <button
             type="button"
-            onClick={onToggleMenu}
+            onClick={onFileAttach}
             disabled={isLoading}
             className="p-2 sm:p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            title="파일 첨부"
           >
-            <Menu size={16} className="sm:w-4 sm:h-4" />
+            <Paperclip size={16} className="sm:w-4 sm:h-4" />
           </button>
           <button
             type="submit"
