@@ -156,7 +156,11 @@ ${newsInfo.impact ? `영향도: ${newsInfo.impact === "positive" ? "긍정" : ne
 
   return (
     <ChatDropZone onDrop={handleDrop} isOpen={isOpen}>
-      <ChatHeader onClose={onClose} />
+      <ChatHeader
+        onClose={onClose}
+        onClickHistory={handleToggleHistory}
+        onCreateNewChat={handleCreateNewChat}
+      />
 
       <ChatBody
         showMenu={showMenu}
@@ -182,7 +186,6 @@ ${newsInfo.impact ? `영향도: ${newsInfo.impact === "positive" ? "긍정" : ne
         message={message}
         onChange={setMessage}
         onSubmit={handleSubmit}
-        onToggleMenu={handleToggleMenu}
         isLoading={isSending}
         newsInfo={newsInfo}
         onRemoveNews={handleRemoveNews}

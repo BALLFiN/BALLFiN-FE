@@ -26,6 +26,7 @@ const TransactionPage = lazy(
 );
 const MyPage = lazy(() => import("./pages/myPage"));
 const ProfilePage = lazy(() => import("./pages/myPage/profile"));
+const ChatPage = lazy(() => import("./pages/chatPage"));
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -52,6 +53,7 @@ function AnimatedRoutes() {
           <Route path="aramSettings" element={<AramSettingsPage />} />
         </Route>
         <Route path="/transaction" element={<TransactionPage />} />
+        <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </AnimatePresence>
   );
