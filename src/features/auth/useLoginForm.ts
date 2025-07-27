@@ -30,10 +30,15 @@ export const useLoginForm = () => {
     e.preventDefault();
 
     try {
-      const token = await login(formData);
+      const { token, user } = await login(formData);
 
       // 토큰을 로컬 스토리지에 저장
       localStorage.setItem("access_token", token);
+
+      // 사용자 정보도 로컬 스토리지에 저장
+      if (user) {
+        localStorage.setItem("user_info", JSON.stringify(user));
+      }
 
       setToast({
         show: true,
