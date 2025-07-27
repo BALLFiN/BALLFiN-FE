@@ -3,6 +3,7 @@ import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { logout } from "../../api/auth/logoutApi";
+import { verifyAuth } from "../../api/auth/loginApi";
 import Toast from "@/components/common/Toast";
 
 interface NavItem {
@@ -31,6 +32,7 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState<string>("");
   const [toast, setToast] = useState<{
     show: boolean;
     message: string;
@@ -38,20 +40,61 @@ const Header = () => {
   }>({ show: false, message: "", type: "success" });
 
   useEffect(() => {
-    // 로그인 상태 확인
-    const checkLoginStatus = () => {
+    // 로그인 상태 및 사용자 정보 확인
+    const checkLoginStatus = async () => {
       const token = localStorage.getItem("access_token");
-      setIsLoggedIn(!!token);
+
+      if (token) {
+        setIsLoggedIn(true);
+
+        // 먼저 localStorage에서 사용자 정보 확인
+        const storedUserInfo = localStorage.getItem("user_info");
+        if (storedUserInfo) {
+          try {
+            const user = JSON.parse(storedUserInfo);
+            if (user.name) {
+              setUserName(user.name);
+              return; // 사용자 정보가 있으면 API 호출하지 않음
+            }
+          } catch (error) {
+            console.error("저장된 사용자 정보 파싱 실패:", error);
+          }
+        }
+
+        // localStorage에 사용자 정보가 없으면 API로 확인
+        try {
+          const response = await verifyAuth();
+          if (response.user?.name) {
+            setUserName(response.user.name);
+            // API에서 받은 사용자 정보를 localStorage에 저장
+            localStorage.setItem("user_info", JSON.stringify(response.user));
+          }
+        } catch (error) {
+          console.error("사용자 정보 확인 실패:", error);
+          // 토큰이 유효하지 않으면 로그아웃 처리
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("user_info");
+          setIsLoggedIn(false);
+          setUserName("");
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserName("");
+      }
     };
 
     // 초기 로그인 상태 확인
     checkLoginStatus();
 
     // 로그인 상태 변경 이벤트 리스너 추가
-    window.addEventListener("storage", checkLoginStatus);
+    const handleStorageChange = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener("storage", checkLoginStatus);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -76,6 +119,8 @@ const Header = () => {
     try {
       await logout();
       setIsLoggedIn(false);
+      setUserName("");
+      localStorage.removeItem("user_info"); // 사용자 정보도 제거
       setToast({
         show: true,
         message: "로그아웃되었습니다.",
@@ -157,8 +202,11 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* 데스크톱 로그인/회원가입 또는 로그아웃 버튼 */}
+            {/* 데스크톱 로그인/회원가입 또는 사용자명 + 로그아웃 버튼 */}
             <div className="hidden md:flex items-center space-x-4">
+              {isLoggedIn && userName && (
+                <span className="text-gray-700 font-medium">{userName}님</span>
+              )}
               {authItems.map((item, index) =>
                 isAuthLink(item) ? (
                   <Link
@@ -207,6 +255,11 @@ const Header = () => {
             } overflow-hidden z-9999`}
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
+              {isLoggedIn && userName && (
+                <div className="px-3 py-2 text-gray-700 font-medium border-b border-gray-200">
+                  {userName}님
+                </div>
+              )}
               {navItems.map((item) => (
                 <Link
                   key={item.to}
