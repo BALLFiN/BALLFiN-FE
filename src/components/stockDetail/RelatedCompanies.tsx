@@ -10,10 +10,6 @@ interface RelatedCompany {
   changePercent: number;
 }
 
-interface RelatedCompaniesProps {
-  currentStockCode: string;
-}
-
 const mockRelatedCompanies: RelatedCompany[] = [
   {
     id: 1,
@@ -105,9 +101,7 @@ const mockRelatedCompanies: RelatedCompany[] = [
   },
 ];
 
-export default function RelatedCompanies({
-  currentStockCode,
-}: RelatedCompaniesProps) {
+export default function RelatedCompanies() {
   const navigate = useNavigate();
 
   const handleCompanyClick = (code: string) => {

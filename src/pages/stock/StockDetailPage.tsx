@@ -214,8 +214,8 @@ export default function StockDetailPage() {
             <StockNews news={news} />
           </div>
 
-          {/* 예정사항 영역 */}
-          <RelatedCompanies currentStockCode={stock.code} />
+          {/* 관련 회사 영역 */}
+          <RelatedCompanies />
 
           {/* 재무제표 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

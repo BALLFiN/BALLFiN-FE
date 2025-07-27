@@ -1,5 +1,4 @@
 import { NewMessagePT } from "@/features/chat/types";
-import { User } from "lucide-react";
 import { useEffect, useRef } from "react";
 import NewsInfoCard from "./NewsInfoCard";
 

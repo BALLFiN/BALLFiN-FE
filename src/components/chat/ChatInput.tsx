@@ -1,4 +1,4 @@
-import { Send, X, Clock, Newspaper, Paperclip } from "lucide-react";
+import { Send, X, Paperclip } from "lucide-react";
 import NewsInfoCard from "./NewsInfoCard";
 
 interface NewsInfo {
