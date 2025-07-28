@@ -1,56 +1,21 @@
-import { X, Copy } from "lucide-react";
+import { X, Copy, ExternalLink } from "lucide-react";
 import { NewsItem, getNewsDetail } from "../../api/news/index";
 import { useState, useEffect } from "react";
 import Loading from "../common/Loading";
 import Toast from "../common/Toast";
+import ImpactScore from "./ImpactScore";
 
 interface NewsAnalysisProps {
   news: NewsItem | null;
   onClose: () => void;
+  onNavigateToDetail?: (newsId: string) => void;
 }
 
-// Impact Score 컴포넌트
-const ImpactScore = ({ score }: { score?: number }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  if (!score) return null;
-
-  const getScoreColor = (score: number) => {
-    if (score >= 8) return "text-red-600";
-    if (score >= 6) return "text-orange-600";
-    if (score >= 4) return "text-yellow-600";
-    return "text-green-600";
-  };
-
-  const getScoreText = (score: number) => {
-    if (score >= 8) return "매우 높음";
-    if (score >= 6) return "높음";
-    if (score >= 4) return "보통";
-    return "낮음";
-  };
-
-  return (
-    <div className="relative">
-      <div
-        className={`text-sm ${getScoreColor(score)}`}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
-        <span className="text-gray-600">Impact Score</span>{" "}
-        <span className="font-bold">{score}</span>
-      </div>
-
-      {showTooltip && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-10">
-          Impact Score: {score}/10 ({getScoreText(score)})
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
+export default function NewsAnalysis({
+  news,
+  onClose,
+  onNavigateToDetail,
+}: NewsAnalysisProps) {
   const [isAnalyzing, setIsAnalyzing] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -96,92 +61,112 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
   return (
     <div className="relative">
       <div
-        className={`p-4 animate-slide-in max-w-2xl mx-auto transition-all duration-500 ease-in-out ${
+        className={`p-6 animate-slide-in max-w-2xl mx-auto transition-all duration-500 ease-in-out bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 ${
           !isAnalyzing[news.id] && !isLoading[news.id]
             ? "min-h-[400px]"
             : "min-h-[200px]"
         }`}
       >
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-xl font-bold text-gray-900">
+        <div className="flex justify-between items-start mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 leading-tight pr-4">
             {displayNews?.title || news.title}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-50 rounded-full transition-colors flex-shrink-0"
           >
-            <X className="w-4 h-4 text-gray-500" />
+            <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <span>{displayNews?.press || news.press}</span>
-          <span>•</span>
-          <span>
+
+        <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100">
+          <span className="font-medium text-gray-700">
+            {displayNews?.press || news.press}
+          </span>
+          <span className="text-gray-300">•</span>
+          <span className="text-gray-600">
             {new Date(
               displayNews?.published_at || news.published_at
             ).toLocaleDateString()}
           </span>
-          <span>•</span>
+          <span className="text-gray-300">•</span>
           <a
             href={displayNews?.link || news.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#0A5C2B] hover:underline"
+            className="text-blue-500 hover:text-blue-600 transition-colors font-medium"
           >
             원문 보기
           </a>
-          <span>•</span>
-          <ImpactScore
-            score={displayNews?.impact_score || news.impact_score || 5}
-          />
+          {onNavigateToDetail && (
+            <button
+              onClick={() => onNavigateToDetail(news.id)}
+              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              title="뉴스 상세 페이지로 이동"
+            >
+              <ExternalLink className="w-4.5 h-4.5 text-gray-500" />
+            </button>
+          )}
         </div>
 
         <div className="transition-all duration-500 ease-in-out">
           {isLoading[news.id] ? (
-            <div className="flex justify-center items-center h-32">
+            <div className="flex justify-center items-center h-40">
               <Loading />
             </div>
           ) : isAnalyzing[news.id] ? (
-            <div className="flex flex-col items-center justify-center h-32">
+            <div className="flex flex-col items-center justify-center h-40">
               <Loading />
             </div>
           ) : (
-            <div className="space-y-4 animate-fade-in">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-gray-900">요약</h3>
+            <div className="space-y-5 animate-fade-in">
+              <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+                <ImpactScore
+                  score={displayNews?.impact_score || news.impact_score || 9}
+                />
+              </div>
+              <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold text-gray-900 text-lg">요약</h3>
                   <button
                     onClick={() =>
                       handleCopy(displayNews?.summary || "", "summary")
                     }
-                    className="p-1.5 hover:bg-gray-200 rounded-full transition-colors"
+                    className="p-2 hover:bg-gray-200/50 rounded-full transition-colors"
                     title="복사하기"
                   >
                     <Copy
-                      className={`w-4 h-4 ${copyStatus["summary"] ? "text-[#0A5C2B]" : "text-gray-500"}`}
+                      className={`w-4 h-4 ${copyStatus["summary"] ? "text-blue-500" : "text-gray-400"}`}
                     />
                   </button>
                 </div>
-                <p className="text-gray-600">{displayNews?.summary}</p>
+                <p className="text-gray-700 leading-relaxed">
+                  {displayNews?.summary}
+                </p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 overflow-auto">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-gray-900">상세 분석</h3>
+
+              <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold text-gray-900 text-lg">
+                    상세 분석
+                  </h3>
                   <button
                     onClick={() =>
                       handleCopy(displayNews?.analysis || "", "analysis")
                     }
-                    className="p-1.5 hover:bg-gray-200 rounded-full transition-colors"
+                    className="p-2 hover:bg-gray-200/50 rounded-full transition-colors"
                     title="복사하기"
                   >
                     <Copy
-                      className={`w-4 h-4 ${copyStatus["analysis"] ? "text-[#0A5C2B]" : "text-gray-500"}`}
+                      className={`w-4 h-4 ${copyStatus["analysis"] ? "text-blue-500" : "text-gray-400"}`}
                     />
                   </button>
                 </div>
-                <p className="text-gray-600 max-h-[300px] overflow-y-auto">
-                  {displayNews?.analysis}
-                </p>
+                <div className="max-h-[300px] overflow-y-auto pr-2">
+                  <p className="text-gray-700 leading-relaxed">
+                    {displayNews?.analysis}
+                  </p>
+                </div>
               </div>
               {/* <div className="bg-gray-50 rounded-lg p-4">
                  <h3 className="font-medium text-gray-900 mb-2">관련 종목</h3>
@@ -201,12 +186,14 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
         </div>
       </div>
       {showToast && (
-        <Toast
-          message="클립보드에 복사되었습니다"
-          type="success"
-          onClose={() => setShowToast(false)}
-          duration={2000}
-        />
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+          <Toast
+            message="클립보드에 복사되었습니다"
+            type="success"
+            onClose={() => setShowToast(false)}
+            duration={2000}
+          />
+        </div>
       )}
     </div>
   );
