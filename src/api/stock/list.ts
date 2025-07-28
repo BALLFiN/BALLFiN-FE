@@ -30,14 +30,15 @@ export interface StockListResponse {
 
 export const getStockList = async (): Promise<StockListResponse> => {
   try {
-    // /stock/search API를 사용해서 전체 주식 데이터 가져오기
+    // /stock/search API를 사용해서 거래량 상위 주식 데이터 가져오기
+    // 실제로 데이터가 있는 주요 종목들만 사용
     const response = await axiosInstance.get("/stock/search", {
       params: {
         stock_codes:
-          "005930,000660,035420,035720,051910,000270,006400,068270,207940,373220", // 데이터가 있는 주요 KOSPI 종목들
+          "005930,000660,035420,035720,051910,000270,006400,068270,207940,373220", // 실제 데이터가 있는 종목들만
         period: "D",
         count: 30,
-        sort_by: "newest",
+        sort_by: "volume", // 거래량 순으로 정렬
       },
     });
 
@@ -52,7 +53,7 @@ export const getStockList = async (): Promise<StockListResponse> => {
       throw new Error("API 응답 데이터가 올바르지 않습니다.");
     }
 
-    // 각 종목별로 최신 데이터 추출
+    // 각 종목별로 최신 데이터 추출 (거래량 순으로 정렬됨)
     const stockItems: StockItem[] = [];
     let id = 1;
 
@@ -69,7 +70,7 @@ export const getStockList = async (): Promise<StockListResponse> => {
         Array.isArray(stockData.candles) &&
         stockData.candles.length > 0
       ) {
-        const latestCandle = stockData.candles[0]; // 최신 데이터 (newest 정렬)
+        const latestCandle = stockData.candles[0]; // 거래량 순으로 정렬된 최신 데이터
 
         stockItems.push({
           id: id++,
@@ -96,6 +97,9 @@ export const getStockList = async (): Promise<StockListResponse> => {
       }
     });
 
+    // 거래량 순으로 정렬 (API에서 이미 정렬되어 있지만 확실히 하기 위해)
+    stockItems.sort((a, b) => b.volume - a.volume);
+
     return {
       data: stockItems,
       message: "주식 목록을 성공적으로 가져왔습니다.",
@@ -119,21 +123,14 @@ const getStockNameByCode = (code: string): string => {
   const stockNames: { [key: string]: string } = {
     "005930": "삼성전자",
     "000660": "SK하이닉스",
-    "005380": "현대자동차",
-    "066570": "LG전자",
     "035420": "NAVER",
     "035720": "카카오",
     "051910": "LG화학",
-    "005490": "POSCO홀딩스",
     "000270": "기아",
-    "105560": "KB금융",
     "006400": "삼성SDI",
-    "051900": "LG생활건강",
     "068270": "셀트리온",
     "207940": "삼성바이오로직스",
-    "323410": "카카오뱅크",
     "373220": "LG에너지솔루션",
-    "086790": "하나금융지주",
   };
   return stockNames[code] || code;
 };
