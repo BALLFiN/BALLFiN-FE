@@ -31,12 +31,7 @@ export default function ChatPage() {
         <ChatMessages messages={messages} />
       </div>
       <div className="border-t">
-        <ChatInput
-          message={input}
-          onChange={setInput}
-          onSubmit={handleSend}
-          onToggleMenu={() => {}}
-        />
+        <ChatInput message={input} onChange={setInput} onSubmit={handleSend} />
       </div>
     </div>
   );

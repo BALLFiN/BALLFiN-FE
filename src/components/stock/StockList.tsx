@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { StockItem } from "./types";
+import { StockItem } from "@/api/stock";
 import { Star } from "lucide-react";
 
 interface StockListProps {

@@ -36,7 +36,12 @@ export default defineConfig({
     },
     proxy: {
       "/chat": {
-        target: "http://44.207.10.254",
+        target: process.env.VITE_API_BASE_URL,
+        changeOrigin: true,
+        secure: false,
+      },
+      "/stock": {
+        target: process.env.VITE_API_BASE_URL,
         changeOrigin: true,
         secure: false,
       },
