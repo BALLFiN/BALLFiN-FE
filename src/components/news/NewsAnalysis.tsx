@@ -9,9 +9,50 @@ interface NewsAnalysisProps {
   onClose: () => void;
 }
 
+// Impact Score 컴포넌트
+const ImpactScore = ({ score }: { score?: number }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  if (!score) return null;
+
+  const getScoreColor = (score: number) => {
+    if (score >= 8) return "text-red-600";
+    if (score >= 6) return "text-orange-600";
+    if (score >= 4) return "text-yellow-600";
+    return "text-green-600";
+  };
+
+  const getScoreText = (score: number) => {
+    if (score >= 8) return "매우 높음";
+    if (score >= 6) return "높음";
+    if (score >= 4) return "보통";
+    return "낮음";
+  };
+
+  return (
+    <div className="relative">
+      <div
+        className={`text-sm ${getScoreColor(score)}`}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <span className="text-gray-600">Impact Score</span>{" "}
+        <span className="font-bold">{score}</span>
+      </div>
+
+      {showTooltip && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-10">
+          Impact Score: {score}/10 ({getScoreText(score)})
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
   const [isAnalyzing, setIsAnalyzing] = useState<{ [key: string]: boolean }>(
-    {},
+    {}
   );
   const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({});
   const [displayNews, setDisplayNews] = useState<NewsItem | null>(null);
@@ -77,7 +118,7 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
           <span>•</span>
           <span>
             {new Date(
-              displayNews?.published_at || news.published_at,
+              displayNews?.published_at || news.published_at
             ).toLocaleDateString()}
           </span>
           <span>•</span>
@@ -89,6 +130,10 @@ export default function NewsAnalysis({ news, onClose }: NewsAnalysisProps) {
           >
             원문 보기
           </a>
+          <span>•</span>
+          <ImpactScore
+            score={displayNews?.impact_score || news.impact_score || 5}
+          />
         </div>
 
         <div className="transition-all duration-500 ease-in-out">
