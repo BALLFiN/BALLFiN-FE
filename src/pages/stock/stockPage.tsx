@@ -1,11 +1,13 @@
 import { useState } from "react";
 import StockSearchBar from "@/components/stock/StockSearchBar";
 import StockList from "@/components/stock/StockList";
+import StockListSkeleton from "@/components/stock/StockListSkeleton";
+import StockListError from "@/components/stock/StockListError";
 import AutoTradingSection from "@/components/stock/AutoTradingSection";
 import LivePriceIndicator from "@/components/stock/LivePriceIndicator";
 import { useStockList } from "@/features/stock/hooks";
 import { StockItem } from "@/api/stock";
-import { Filter, SortAsc, Star, Loader2 } from "lucide-react";
+import { Filter, SortAsc, Star } from "lucide-react";
 
 export default function StockPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,7 +16,7 @@ export default function StockPage() {
   const [favoriteStocks, setFavoriteStocks] = useState<number[]>([]);
 
   // API에서 주식 데이터 가져오기
-  const { data: stockResponse, isLoading, error } = useStockList();
+  const { data: stockResponse, isLoading, error, refetch } = useStockList();
   const allStocks: StockItem[] =
     stockResponse?.data?.map((stock) => ({
       ...stock,
@@ -55,37 +57,6 @@ export default function StockPage() {
       const comparison = a.change - b.change;
       return sortOrder === "asc" ? comparison : -comparison;
     });
-
-  // 로딩 상태 처리
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <Loader2 className="animate-spin text-blue-600" size={24} />
-          <span className="text-gray-600">주식 데이터를 불러오는 중...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 에러 상태 처리
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 mb-2">
-            데이터를 불러오는데 실패했습니다.
-          </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            다시 시도
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,17 +136,23 @@ export default function StockPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
                 {mainFilter === "all" ? "전체 종목" : "관심종목"} (
-                {filteredAndSortedStocks.length}개)
+                {isLoading ? "..." : filteredAndSortedStocks.length}개)
               </h2>
               <LivePriceIndicator />
             </div>
           </div>
 
-          <StockList
-            stocks={filteredAndSortedStocks}
-            favoriteStocks={favoriteStocks}
-            onToggleFavorite={toggleFavorite}
-          />
+          {isLoading ? (
+            <StockListSkeleton />
+          ) : error ? (
+            <StockListError onRetry={() => refetch()} />
+          ) : (
+            <StockList
+              stocks={filteredAndSortedStocks}
+              favoriteStocks={favoriteStocks}
+              onToggleFavorite={toggleFavorite}
+            />
+          )}
         </div>
 
         {/* 자동거래 시작하기 - 우측 하단 고정 */}
