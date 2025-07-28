@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, Clock, TrendingUp, X } from "lucide-react";
 import { StockItem } from "@/api/stock";
-import { useStockSearch } from "@/features/stock/hooks";
 
 interface StockSearchBarProps {
   onSearch?: (query: string) => void;
@@ -20,15 +19,15 @@ export default function StockSearchBar({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [filteredStocks, setFilteredStocks] = useState<StockItem[]>([]);
-  const [searchParams, setSearchParams] = useState<{
+  const [_searchParams, setSearchParams] = useState<{
     stock_codes: string;
   } | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // 실제 API 검색 (현재는 사용하지 않음, 향후 확장용)
-  const { data: searchResponse } = useStockSearch(
-    searchParams || { stock_codes: "" }
-  );
+  // const { data: searchResponse } = useStockSearch(
+  //   searchParams || { stock_codes: "" }
+  // );
 
   // 컴포넌트 마운트 시 로컬스토리지에서 최근 검색어 불러오기
   useEffect(() => {
