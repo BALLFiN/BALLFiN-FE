@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   Send,
@@ -9,7 +9,6 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { NewMessagePT } from "../features/chat/types";
 import { useChatManager } from "../features/chat/hooks/useChatUI";
 import { useCreateChat } from "../features/chat/hooks/chatList/useChatMutation";
 import {
