@@ -67,7 +67,7 @@ export default function ChatInput({
             placeholder="메시지를 입력하세요..."
             disabled={isLoading}
             rows={Math.min(3, Math.max(1, message.split("\n").length))}
-            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20 focus:border-[#0A5C2B] disabled:bg-gray-50 disabled:cursor-not-allowed resize-none text-sm sm:text-base placeholder-gray-400 transition-all duration-200 shadow-sm"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20 focus:border-[#0A5C2B] disabled:bg-gray-50 disabled:cursor-not-allowed resize-none text-sm sm:text-base placeholder-gray-400 transition-all duration-200 shadow-sm"
             style={{ minHeight: "44px", maxHeight: "120px" }}
           />
           {message && (
@@ -87,6 +87,7 @@ export default function ChatInput({
             disabled={isLoading}
             className="p-3 sm:p-3.5 text-gray-500 hover:text-[#0A5C2B] hover:bg-[#0A5C2B]/5 rounded-2xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             title="파일 첨부"
+            style={{ height: "44px", width: "44px" }}
           >
             <Paperclip size={18} className="sm:w-5 sm:h-5" />
           </button>
@@ -94,6 +95,7 @@ export default function ChatInput({
             type="submit"
             disabled={isLoading}
             className="p-3 sm:p-3.5 bg-[#0A5C2B] text-white rounded-2xl hover:bg-[#0A5C2B]/90 active:scale-95 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            style={{ height: "44px", width: "44px" }}
           >
             <Send size={18} className="sm:w-5 sm:h-5" />
           </button>

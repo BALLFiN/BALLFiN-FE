@@ -58,6 +58,17 @@ export const ChatMessages = ({
     return processedText;
   };
 
+  // 한국 시간으로 포맷팅하는 함수
+  const formatKoreanTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Seoul",
+    });
+  };
+
   return (
     <div className="space-y-4 overflow-y-auto h-full p-4">
       {messages.map((msg) => {
@@ -95,6 +106,13 @@ export const ChatMessages = ({
                   <div className="text-sm whitespace-pre-wrap leading-relaxed">
                     {newsInfo.question}
                   </div>
+                  <p
+                    className={`text-xs mt-3 opacity-70 ${
+                      isUser ? "text-green-50" : "text-gray-500"
+                    }`}
+                  >
+                    {formatKoreanTime(msg.ts)}
+                  </p>
                 </div>
               </div>
             ) : (
@@ -111,6 +129,13 @@ export const ChatMessages = ({
                     __html: processMessageContent(msg.content),
                   }}
                 />
+                <p
+                  className={`text-xs mt-3 opacity-70 ${
+                    isUser ? "text-green-50" : "text-gray-500"
+                  }`}
+                >
+                  {formatKoreanTime(msg.ts)}
+                </p>
               </div>
             )}
             {isUser && null}
