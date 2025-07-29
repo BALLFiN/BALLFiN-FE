@@ -134,13 +134,27 @@ export default function ChatPage() {
 
   // 한국 시간으로 포맷팅하는 함수
   const formatKoreanTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Seoul",
-    });
+    try {
+      const date = new Date(timestamp);
+
+      // UTC 시간을 한국 시간으로 변환 (UTC+9)
+      const koreanTime = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+
+      return koreanTime.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Seoul",
+      });
+    } catch (error) {
+      console.error("시간 포맷팅 오류:", error);
+      return new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Seoul",
+      });
+    }
   };
 
   return (
