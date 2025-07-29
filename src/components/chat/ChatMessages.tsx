@@ -43,13 +43,13 @@ export const ChatMessages = ({
 
     // 링크를 HTML로 변환
     let processedText = text.replace(linkPattern, (_match, linkText, url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-[#0A5C2B] hover:text-[#0A5C2B]/80 underline font-medium">${linkText}</a>`;
     });
 
     // ### 헤딩을 bold 처리
     processedText = processedText.replace(
       /^### (.*)$/gm,
-      '<span class="font-bold">$1</span>'
+      '<span class="font-bold text-[#0A5C2B]">$1</span>'
     );
 
     // ** 제거 (링크 변환 후)
@@ -59,7 +59,7 @@ export const ChatMessages = ({
   };
 
   return (
-    <div className="space-y-4 overflow-y-auto h-full">
+    <div className="space-y-4 overflow-y-auto h-full p-4">
       {messages.map((msg) => {
         const isUser = msg.role === "user";
         const newsInfo = parseNewsInfo(msg.content);
@@ -67,11 +67,11 @@ export const ChatMessages = ({
         return (
           <div
             key={msg.msg_id}
-            className={`flex items-end gap-2 justify-start`}
+            className={`flex items-end gap-3 justify-start`}
           >
             {newsInfo ? (
               <div
-                className={`flex flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}
+                className={`flex flex-col gap-3 ${isUser ? "items-end" : "items-start"}`}
               >
                 {/* 뉴스 정보 카드 - 말풍선 외부 */}
                 <div className="max-w-[85%]">
@@ -86,27 +86,27 @@ export const ChatMessages = ({
 
                 {/* 질문 말풍선 */}
                 <div
-                  className={`max-w-[65%] rounded-lg p-3 mr-2 ${
+                  className={`max-w-[65%] rounded-2xl p-4 mr-2 shadow-sm ${
                     isUser
-                      ? "bg-[#0A5C2B] text-white rounded-br-none ml-auto"
-                      : "bg-gray-100 text-gray-800 rounded-bl-none"
+                      ? "bg-[#0A5C2B] text-white rounded-br-md ml-auto"
+                      : "bg-gray-50 text-gray-800 rounded-bl-md border border-gray-100"
                   }`}
                 >
-                  <div className="text-sm whitespace-pre-wrap">
+                  <div className="text-sm whitespace-pre-wrap leading-relaxed">
                     {newsInfo.question}
                   </div>
                 </div>
               </div>
             ) : (
               <div
-                className={`max-w-[80%] w-fit rounded-lg p-3 text-left ${
+                className={`max-w-[80%] w-fit rounded-2xl p-4 text-left shadow-sm ${
                   isUser
-                    ? "bg-[#0A5C2B] text-white rounded-br-none ml-auto"
-                    : "bg-gray-100 text-gray-800 rounded-bl-none mr-auto"
+                    ? "bg-[#0A5C2B] text-white rounded-br-md ml-auto"
+                    : "bg-gray-50 text-gray-800 rounded-bl-md mr-auto border border-gray-100"
                 }`}
               >
                 <div
-                  className="text-sm whitespace-pre-wrap mr-2"
+                  className="text-sm whitespace-pre-wrap mr-2 leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html: processMessageContent(msg.content),
                   }}
@@ -118,20 +118,20 @@ export const ChatMessages = ({
         );
       })}
       {isLoading && (
-        <div className="flex items-end gap-2 justify-start">
-          <div className="max-w-[80%] rounded-lg p-3 bg-gray-100 text-gray-800 rounded-bl-none">
+        <div className="flex items-end gap-3 justify-start">
+          <div className="max-w-[80%] rounded-2xl p-4 bg-gray-50 text-gray-800 rounded-bl-md border border-gray-100 shadow-sm">
             <div className="flex items-center gap-2">
               <div className="flex space-x-1">
                 <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-[#0A5C2B] rounded-full animate-bounce"
                   style={{ animationDelay: "0ms" }}
                 ></div>
                 <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-[#0A5C2B] rounded-full animate-bounce"
                   style={{ animationDelay: "150ms" }}
                 ></div>
                 <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-[#0A5C2B] rounded-full animate-bounce"
                   style={{ animationDelay: "300ms" }}
                 ></div>
               </div>
