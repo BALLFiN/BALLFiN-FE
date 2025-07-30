@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getNewsDetail } from "@/api/news/detail";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImageOff } from "lucide-react";
 import ImpactScore from "@/components/news/ImpactScore";
 
 export default function NewsDetailPage() {
@@ -10,16 +10,22 @@ export default function NewsDetailPage() {
   const [news, setNews] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
     setError(null);
+    setImageError(false);
     getNewsDetail(id)
       .then(setNews)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   if (loading) {
     return (
@@ -98,11 +104,19 @@ export default function NewsDetailPage() {
             {/* 뉴스 이미지 */}
             {news.image_url && (
               <div className="mb-4">
-                <img
-                  src={news.image_url}
-                  alt={news.title}
-                  className="w-full rounded-xl object-cover"
-                />
+                {imageError ? (
+                  <div className="w-full aspect-video bg-white rounded-xl border border-gray-200 flex flex-col items-center justify-center">
+                    <ImageOff className="w-12 h-12 text-gray-400 mb-3" />
+                    <span className="text-sm text-gray-500">이미지 없음</span>
+                  </div>
+                ) : (
+                  <img
+                    src={news.image_url}
+                    alt={news.title}
+                    className="w-full rounded-xl object-cover"
+                    onError={handleImageError}
+                  />
+                )}
               </div>
             )}
           </div>

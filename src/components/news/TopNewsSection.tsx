@@ -1,5 +1,6 @@
-import { Clock } from "lucide-react";
+import { Clock, ImageOff } from "lucide-react";
 import { NewsItem } from "../../api/news/index";
+import { useState } from "react";
 
 interface TopNewsSectionProps {
   topNews: NewsItem[];
@@ -12,6 +13,8 @@ export default function TopNewsSection({
   onNewsClick,
   isLoading = false,
 }: TopNewsSectionProps) {
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+
   // 드래그 앤 드롭 기능
   const handleDragStart = (e: React.DragEvent, news: NewsItem) => {
     e.stopPropagation();
@@ -25,6 +28,10 @@ export default function TopNewsSection({
     };
     e.dataTransfer.setData("application/json", JSON.stringify(newsData));
     e.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleImageError = (newsId: string) => {
+    setImageErrors((prev) => new Set(prev).add(newsId));
   };
 
   if (isLoading) {
@@ -89,11 +96,19 @@ export default function TopNewsSection({
               {index + 1}
             </div>
             <div className="aspect-video relative overflow-hidden">
-              <img
-                src={news.image_url || "https://via.placeholder.com/400x225"}
-                alt={news.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+              {!news.image_url || imageErrors.has(news.id) ? (
+                <div className="w-full h-full bg-white flex flex-col items-center justify-center">
+                  <ImageOff className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-xs text-gray-500">이미지 없음</span>
+                </div>
+              ) : (
+                <img
+                  src={news.image_url}
+                  alt={news.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={() => handleImageError(news.id)}
+                />
+              )}
             </div>
             <div className="p-4">
               <div className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
