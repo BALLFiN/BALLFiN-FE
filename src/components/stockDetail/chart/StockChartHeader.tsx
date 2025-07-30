@@ -1,3 +1,4 @@
+import { dayTable, miniteTable } from '@/config/chart';
 import { TimeRangePT } from '.';
 
 interface StockChartHeader {
@@ -54,13 +55,7 @@ export default function StockChartHeader({ showMA, timeRange, onTimeRangeChange,
       <div className="flex gap-2 mb-6">
         {/* 분봉 */}
         <div className="flex gap-1">
-          {[
-            { key: '1m', label: '1분' },
-            { key: '5m', label: '5분' },
-            { key: '15m', label: '15분' },
-            { key: '30m', label: '30분' },
-            { key: '1h', label: '1시간' },
-          ].map(({ key, label }) => (
+          {miniteTable.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => onTimeRangeChange(key as any)}
@@ -75,16 +70,10 @@ export default function StockChartHeader({ showMA, timeRange, onTimeRangeChange,
 
         {/* 일봉 이상 */}
         <div className="flex gap-1 ml-2">
-          {[
-            { key: '1d', label: '일봉' },
-            { key: '1w', label: '주봉' },
-            { key: '1m', label: '월봉' },
-            { key: '3m', label: '3개월' },
-            { key: '1y', label: '연봉' },
-          ].map(({ key, label }) => (
+          {dayTable.map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => onTimeRangeChange(key as any)}
+              onClick={() => onTimeRangeChange(key)}
               className={`px-2 py-1 rounded text-xs transition-colors ${
                 timeRange === key ? 'bg-[#0A5C2B] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
