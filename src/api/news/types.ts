@@ -9,6 +9,7 @@ export interface NewsItem {
   views: number;
   summary: string;
   impact: "positive" | "negative" | "neutral";
+  impact_score?: number; // 1-10점 범위의 영향도 점수
   analysis: string;
   content: string;
 }

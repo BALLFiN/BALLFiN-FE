@@ -1,10 +1,12 @@
 import { useState } from "react";
 import StockSearchBar from "@/components/stock/StockSearchBar";
 import StockList from "@/components/stock/StockList";
+import StockListSkeleton from "@/components/stock/StockListSkeleton";
+import StockListError from "@/components/stock/StockListError";
 import AutoTradingSection from "@/components/stock/AutoTradingSection";
-
 import LivePriceIndicator from "@/components/stock/LivePriceIndicator";
-import { StockItem } from "@/components/stock/types";
+import { useStockList } from "@/features/stock/hooks";
+import { StockItem } from "@/api/stock";
 import { Filter, SortAsc, Star } from "lucide-react";
 
 export default function StockPage() {
@@ -13,209 +15,13 @@ export default function StockPage() {
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [favoriteStocks, setFavoriteStocks] = useState<number[]>([]);
 
-  // 임의 데이터 10개
-  const allStocks: StockItem[] = [
-    {
-      id: 1,
-      name: "삼성전자",
-      code: "005930",
-      price: 75000,
-      close: 75000,
-      high: 76000,
-      low: 74000,
-      change: 2.5,
-      changePercent: 3.45,
-      volume: 15000000,
-      score: 85,
-      sentiment: "positive",
-      newsCount: 12,
-      prediction: {
-        targetPrice: 82000,
-        confidence: 0.78,
-        recommendation: "buy",
-      },
-    },
-    {
-      id: 2,
-      name: "현대자동차",
-      code: "005380",
-      price: 185000,
-      close: 185000,
-      high: 187000,
-      low: 183000,
-      change: -1.2,
-      changePercent: -0.65,
-      volume: 8000000,
-      score: 35,
-      sentiment: "negative",
-      newsCount: 8,
-      prediction: {
-        targetPrice: 170000,
-        confidence: 0.65,
-        recommendation: "sell",
-      },
-    },
-    {
-      id: 3,
-      name: "SK하이닉스",
-      code: "000660",
-      price: 120000,
-      close: 120000,
-      high: 122000,
-      low: 118000,
-      change: 1.8,
-      changePercent: 1.52,
-      volume: 12000000,
-      score: 75,
-      sentiment: "positive",
-      newsCount: 10,
-      prediction: {
-        targetPrice: 135000,
-        confidence: 0.72,
-        recommendation: "buy",
-      },
-    },
-    {
-      id: 4,
-      name: "LG전자",
-      code: "066570",
-      price: 95000,
-      close: 95000,
-      high: 96000,
-      low: 94000,
-      change: -0.5,
-      changePercent: -0.52,
-      volume: 6000000,
-      score: 45,
-      sentiment: "negative",
-      newsCount: 6,
-      prediction: {
-        targetPrice: 90000,
-        confidence: 0.58,
-        recommendation: "hold",
-      },
-    },
-    {
-      id: 5,
-      name: "NAVER",
-      code: "035420",
-      price: 220000,
-      close: 220000,
-      high: 225000,
-      low: 218000,
-      change: 3.2,
-      changePercent: 1.47,
-      volume: 5000000,
-      score: 90,
-      sentiment: "positive",
-      newsCount: 15,
-      prediction: {
-        targetPrice: 240000,
-        confidence: 0.85,
-        recommendation: "buy",
-      },
-    },
-    {
-      id: 6,
-      name: "카카오",
-      code: "035720",
-      price: 45000,
-      close: 45000,
-      high: 46000,
-      low: 44000,
-      change: -2.1,
-      changePercent: -4.46,
-      volume: 18000000,
-      score: 30,
-      sentiment: "negative",
-      newsCount: 7,
-      prediction: {
-        targetPrice: 42000,
-        confidence: 0.62,
-        recommendation: "sell",
-      },
-    },
-    {
-      id: 7,
-      name: "LG화학",
-      code: "051910",
-      price: 550000,
-      close: 550000,
-      high: 555000,
-      low: 545000,
-      change: 1.5,
-      changePercent: 0.27,
-      volume: 3000000,
-      score: 70,
-      sentiment: "positive",
-      newsCount: 9,
-      prediction: {
-        targetPrice: 580000,
-        confidence: 0.75,
-        recommendation: "buy",
-      },
-    },
-    {
-      id: 8,
-      name: "POSCO홀딩스",
-      code: "005490",
-      price: 450000,
-      close: 450000,
-      high: 452000,
-      low: 448000,
-      change: -0.8,
-      changePercent: -0.18,
-      volume: 4000000,
-      score: 55,
-      sentiment: "neutral",
-      newsCount: 5,
-      prediction: {
-        targetPrice: 445000,
-        confidence: 0.68,
-        recommendation: "hold",
-      },
-    },
-    {
-      id: 9,
-      name: "기아",
-      code: "000270",
-      price: 85000,
-      close: 85000,
-      high: 87000,
-      low: 84000,
-      change: 4.2,
-      changePercent: 5.2,
-      volume: 10000000,
-      score: 88,
-      sentiment: "positive",
-      newsCount: 11,
-      prediction: {
-        targetPrice: 92000,
-        confidence: 0.82,
-        recommendation: "buy",
-      },
-    },
-    {
-      id: 10,
-      name: "KB금융",
-      code: "105560",
-      price: 65000,
-      close: 65000,
-      high: 65500,
-      low: 64500,
-      change: 0.5,
-      changePercent: 0.77,
-      volume: 7000000,
-      score: 60,
-      sentiment: "neutral",
-      newsCount: 4,
-      prediction: {
-        targetPrice: 66000,
-        confidence: 0.7,
-        recommendation: "hold",
-      },
-    },
-  ];
+  // API에서 주식 데이터 가져오기
+  const { data: stockResponse, isLoading, error, refetch } = useStockList();
+  const allStocks: StockItem[] =
+    stockResponse?.data?.map((stock) => ({
+      ...stock,
+      changePercent: stock.change_percent || stock.changePercent || 0,
+    })) || [];
 
   // 즐겨찾기 토글 함수
   const toggleFavorite = (stockId: number) => {
@@ -330,17 +136,23 @@ export default function StockPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
                 {mainFilter === "all" ? "전체 종목" : "관심종목"} (
-                {filteredAndSortedStocks.length}개)
+                {isLoading ? "..." : filteredAndSortedStocks.length}개)
               </h2>
               <LivePriceIndicator />
             </div>
           </div>
 
-          <StockList
-            stocks={filteredAndSortedStocks}
-            favoriteStocks={favoriteStocks}
-            onToggleFavorite={toggleFavorite}
-          />
+          {isLoading ? (
+            <StockListSkeleton />
+          ) : error ? (
+            <StockListError onRetry={() => refetch()} />
+          ) : (
+            <StockList
+              stocks={filteredAndSortedStocks}
+              favoriteStocks={favoriteStocks}
+              onToggleFavorite={toggleFavorite}
+            />
+          )}
         </div>
 
         {/* 자동거래 시작하기 - 우측 하단 고정 */}

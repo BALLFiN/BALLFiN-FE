@@ -1,6 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, Clock, TrendingUp, X } from "lucide-react";
-import { StockItem, StockSearchBarProps } from "./types";
+import { StockItem } from "@/api/stock";
+
+interface StockSearchBarProps {
+  onSearch?: (query: string) => void;
+  placeholder?: string;
+  className?: string;
+  allStocks?: StockItem[];
+}
 
 export default function StockSearchBar({
   onSearch,
@@ -11,70 +18,16 @@ export default function StockSearchBar({
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [popularStocks] = useState<StockItem[]>([
-    {
-      id: 1,
-      name: "삼성전자",
-      code: "005930",
-      price: 75000,
-      close: 75000,
-      high: 76000,
-      low: 74000,
-      change: 2.5,
-      changePercent: 3.45,
-      volume: 15000000,
-    },
-    {
-      id: 2,
-      name: "현대자동차",
-      code: "005380",
-      price: 185000,
-      close: 185000,
-      high: 187000,
-      low: 183000,
-      change: -1.2,
-      changePercent: -0.65,
-      volume: 8000000,
-    },
-    {
-      id: 3,
-      name: "SK하이닉스",
-      code: "000660",
-      price: 120000,
-      close: 120000,
-      high: 122000,
-      low: 118000,
-      change: 1.8,
-      changePercent: 1.52,
-      volume: 12000000,
-    },
-    {
-      id: 4,
-      name: "LG전자",
-      code: "066570",
-      price: 95000,
-      close: 95000,
-      high: 96000,
-      low: 94000,
-      change: -0.5,
-      changePercent: -0.52,
-      volume: 6000000,
-    },
-    {
-      id: 5,
-      name: "NAVER",
-      code: "035420",
-      price: 220000,
-      close: 220000,
-      high: 225000,
-      low: 218000,
-      change: 3.2,
-      changePercent: 1.47,
-      volume: 5000000,
-    },
-  ]);
   const [filteredStocks, setFilteredStocks] = useState<StockItem[]>([]);
+  const [_searchParams, setSearchParams] = useState<{
+    stock_codes: string;
+  } | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // 실제 API 검색 (현재는 사용하지 않음, 향후 확장용)
+  // const { data: searchResponse } = useStockSearch(
+  //   searchParams || { stock_codes: "" }
+  // );
 
   // 컴포넌트 마운트 시 로컬스토리지에서 최근 검색어 불러오기
   useEffect(() => {
@@ -87,6 +40,7 @@ export default function StockSearchBar({
   // 검색어 변경 시 필터링
   useEffect(() => {
     if (searchQuery.trim()) {
+      // 로컬 필터링 (기존 allStocks에서 검색)
       const filtered = allStocks.filter(
         (stock) =>
           stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -94,9 +48,27 @@ export default function StockSearchBar({
       );
       setFilteredStocks(filtered.slice(0, 5)); // 최대 5개만 표시
       setIsDropdownOpen(true);
+
+      // 실제 API 검색도 수행 (선택적)
+      if (searchQuery.length >= 2) {
+        // 검색어가 2글자 이상일 때만 API 검색
+        const matchingStocks = allStocks.filter(
+          (stock) =>
+            stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            stock.code.includes(searchQuery)
+        );
+
+        if (matchingStocks.length > 0) {
+          const stockCodes = matchingStocks
+            .map((stock) => stock.code)
+            .join(",");
+          setSearchParams({ stock_codes: stockCodes });
+        }
+      }
     } else {
       setFilteredStocks([]);
       setIsDropdownOpen(false);
+      setSearchParams(null);
     }
   }, [searchQuery, allStocks]);
 
@@ -253,23 +225,25 @@ export default function StockSearchBar({
           )}
 
           {/* 인기 종목: 최근 검색어가 없을 때만 노출 */}
-          {!searchQuery && recentSearches.length === 0 && (
-            <div className="p-3">
-              <div className="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1">
-                <TrendingUp size={12} />
-                인기 종목
-              </div>
-              {popularStocks.map((stock) => (
-                <div
-                  key={stock.id}
-                  onClick={() => handleStockSelect(stock)}
-                  className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
-                >
-                  <div className="font-medium">{stock.name}</div>
+          {!searchQuery &&
+            recentSearches.length === 0 &&
+            allStocks.length > 0 && (
+              <div className="p-3">
+                <div className="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1">
+                  <TrendingUp size={12} />
+                  인기 종목
                 </div>
-              ))}
-            </div>
-          )}
+                {allStocks.slice(0, 5).map((stock) => (
+                  <div
+                    key={stock.id}
+                    onClick={() => handleStockSelect(stock)}
+                    className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                  >
+                    <div className="font-medium">{stock.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
           {/* 검색 결과가 없을 때 */}
           {searchQuery && filteredStocks.length === 0 && (

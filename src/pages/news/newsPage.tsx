@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import NewsList from "../../components/news/NewsList";
 import NewsAnalysis from "../../components/news/NewsAnalysis";
 import { NewsItem, searchNews, getMyFeed } from "../../api/news/index";
 import NewsTimeline from "../../components/news/NewsTimeline";
 import TopNewsSection from "../../components/news/TopNewsSection";
 import { motion } from "framer-motion";
+import BotButton from "@/components/chat/BotButton";
 
 export default function NewsPage() {
+  const navigate = useNavigate();
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [topNews, setTopNews] = useState<NewsItem[]>([]);
   const [myFeedNews, setMyFeedNews] = useState<NewsItem[]>([]);
@@ -87,6 +90,10 @@ export default function NewsPage() {
     }
   };
 
+  const handleNavigateToDetail = (newsId: string) => {
+    navigate(`/news/${newsId}`);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -160,18 +167,18 @@ export default function NewsPage() {
         </div>
         {/* 뉴스 상세 */}
         <div
-          className={`z-10 p-2 fixed top-0 right-0 bg-white w-1/3 transition-all duration-500 ease-in-out transform rounded-lg shadow-lg ${
-            selectedNews
-              ? "translate-x-0 mt-20 mr-10 border border-gray-200"
-              : "translate-x-full"
+          className={`z-10 fixed top-0 right-0 w-1/3 transition-all duration-500 ease-in-out transform ${
+            selectedNews ? "translate-x-0 mt-20 mr-10 " : "translate-x-full"
           }`}
         >
           <NewsAnalysis
             news={selectedNews}
             onClose={() => setSelectedNews(null)}
+            onNavigateToDetail={handleNavigateToDetail}
           />
         </div>
       </div>
+      <BotButton />
     </motion.div>
   );
 }

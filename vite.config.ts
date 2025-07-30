@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  base: "/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -33,6 +34,18 @@ export default defineConfig({
   server: {
     hmr: {
       overlay: false,
+    },
+    proxy: {
+      "/chat": {
+        target: process.env.VITE_API_BASE_URL,
+        changeOrigin: true,
+        secure: false,
+      },
+      "/stock": {
+        target: process.env.VITE_API_BASE_URL,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

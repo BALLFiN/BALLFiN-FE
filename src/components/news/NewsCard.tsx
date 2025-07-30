@@ -1,5 +1,6 @@
-import { TrendingUp, TrendingDown, MoveRight } from "lucide-react";
+import { TrendingUp, TrendingDown, MoveRight, ImageOff } from "lucide-react";
 import { NewsCardProps } from "./types";
+import { useRef, useState } from "react";
 
 const getImpactIcon = (impact: "positive" | "negative" | "neutral") => {
   switch (impact) {
@@ -15,15 +16,44 @@ const getImpactIcon = (impact: "positive" | "negative" | "neutral") => {
 };
 
 export default function NewsCard({ item, isSelected, onClick }: NewsCardProps) {
+  const dragRef = useRef<HTMLDivElement>(null);
+  const [imageError, setImageError] = useState(false);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    e.stopPropagation();
+    const newsData = {
+      id: item.id,
+      title: item.title,
+      press: item.press,
+      published_at: item.published_at,
+      summary: item.summary,
+      impact: item.impact,
+    };
+    e.dataTransfer.setData("application/json", JSON.stringify(newsData));
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClick(item);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div
+      ref={dragRef}
       id={`news-card-${item.id}`}
-      onClick={() => onClick(item)}
+      draggable
+      onDragStart={handleDragStart}
+      onClick={handleClick}
       className={`p-4 rounded-lg transition-all duration-300 border ${
         isSelected
           ? "border-[#0A5C2B] shadow-md"
           : "border-gray-200 hover:border-[#0A5C2B] hover:shadow-md cursor-pointer"
-      }`}
+      } hover:scale-[1.02] active:scale-[0.98]`}
     >
       <div className="flex flex-col h-full">
         <div className="flex items-start gap-3 mb-2">
@@ -40,6 +70,25 @@ export default function NewsCard({ item, isSelected, onClick }: NewsCardProps) {
             </div>
           </div>
         </div>
+
+        {/* 이미지 영역 추가 */}
+        {item.image_url && (
+          <div className="mt-3 aspect-video rounded-lg overflow-hidden">
+            {imageError ? (
+              <div className="w-full h-full bg-white flex flex-col items-center justify-center">
+                <ImageOff className="w-6 h-6 text-gray-400 mb-1" />
+                <span className="text-xs text-gray-500">이미지 없음</span>
+              </div>
+            ) : (
+              <img
+                src={item.image_url}
+                alt={item.title}
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

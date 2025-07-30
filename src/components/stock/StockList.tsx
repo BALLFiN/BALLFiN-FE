@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { StockItem } from "./types";
+import { StockItem } from "@/api/stock";
 import { Star } from "lucide-react";
 
 interface StockListProps {
@@ -131,11 +131,13 @@ export default function StockList({
             <div className="col-span-1 text-right">
               <div
                 className={`font-semibold ${
-                  stock.changePercent >= 0 ? "text-red-600" : "text-blue-600"
+                  (stock.changePercent ?? 0) >= 0
+                    ? "text-red-600"
+                    : "text-blue-600"
                 }`}
               >
-                {stock.changePercent >= 0 ? "+" : ""}
-                {stock.changePercent.toFixed(2)}%
+                {(stock.changePercent ?? 0) >= 0 ? "+" : ""}
+                {(stock.changePercent ?? 0).toFixed(2)}%
               </div>
             </div>
 
@@ -205,13 +207,13 @@ export default function StockList({
                   </div>
                   <div
                     className={`text-sm font-medium ${
-                      stock.changePercent >= 0
+                      (stock.changePercent ?? 0) >= 0
                         ? "text-red-600"
                         : "text-blue-600"
                     }`}
                   >
-                    {stock.changePercent >= 0 ? "+" : ""}
-                    {stock.changePercent.toFixed(2)}%
+                    {(stock.changePercent ?? 0) >= 0 ? "+" : ""}
+                    {(stock.changePercent ?? 0).toFixed(2)}%
                   </div>
                 </div>
               </div>

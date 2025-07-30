@@ -3,8 +3,18 @@ interface LoginRequest {
   password: string;
 }
 
+interface User {
+  _id: string;
+  email: string;
+  name: string;
+  favorites: string[];
+  created_at: string;
+  last_login_at: string;
+}
+
 interface LoginResponse {
   access_token: string;
+  user?: User;
 }
 
 interface ValidationError {
@@ -17,7 +27,9 @@ interface ErrorResponse {
   detail: ValidationError[];
 }
 
-export const login = async (data: LoginRequest): Promise<string> => {
+export const login = async (
+  data: LoginRequest
+): Promise<{ token: string; user?: User }> => {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
@@ -52,15 +64,23 @@ export const login = async (data: LoginRequest): Promise<string> => {
     }
 
     const responseData: LoginResponse = await response.json();
-    return responseData.access_token.startsWith("Bearer ")
+    const token = responseData.access_token.startsWith("Bearer ")
       ? responseData.access_token
       : `Bearer ${responseData.access_token}`;
+
+    return {
+      token,
+      user: responseData.user,
+    };
   } catch (error) {
     throw error;
   }
 };
 
-export const verifyAuth = async (): Promise<{ message: string }> => {
+export const verifyAuth = async (): Promise<{
+  message: string;
+  user?: User;
+}> => {
   try {
     let token = localStorage.getItem("access_token");
     if (!token) {
