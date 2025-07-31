@@ -163,7 +163,7 @@ export default function NewsAnalysis({
                   </button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto pr-2">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                     {displayNews?.analysis}
                   </p>
                 </div>
