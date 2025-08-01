@@ -1,4 +1,4 @@
-# BALLFiN 🚀
+# BALLFiN 
 
 **AI-Powered Intelligent Financial Investment Platform**
 
@@ -8,7 +8,7 @@ BALLFiN은 최첨단 AI 기술을 활용한 지능형 금융 투자 플랫폼입
 
 --- 
 
-## ✨ 핵심 기능
+##  핵심 기능
 
 ### 📊 **실시간 시장 지표 및 주가 모니터링**
 
@@ -48,7 +48,7 @@ BALLFiN은 최첨단 AI 기술을 활용한 지능형 금융 투자 플랫폼입
 
 ---
 
-## 🛠 기술 스택
+##  기술 스택
 
 | 분야               | 기술                                               |
 | ------------------ | -------------------------------------------------- |
@@ -57,7 +57,6 @@ BALLFiN은 최첨단 AI 기술을 활용한 지능형 금융 투자 플랫폼입
 | **AI/ML**          | Transformers (Hugging Face), Scikit-learn, PyTorch |
 | **Database**       | MongoDB, Redis                                     |
 | **Infrastructure** | Docker, AWS/GCP                                    |
-| **Real-time**      | WebSocket, SSE                                     |
 | **Analytics**      | Highcharts, Chart.js                               |
 
 ---
@@ -94,12 +93,6 @@ npm run dev
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
----
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
 
 ---
 
