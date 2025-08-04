@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import Pagination from "@/components/news/Pagination";
 
 interface RelatedCompany {
   id: number;
@@ -99,10 +101,44 @@ const mockRelatedCompanies: RelatedCompany[] = [
     changeAmount: -3000,
     changePercent: -0.71,
   },
+  {
+    id: 12,
+    name: "삼성바이오로직스",
+    code: "207940",
+    currentPrice: 850000,
+    changeAmount: 15000,
+    changePercent: 1.8,
+  },
+  {
+    id: 13,
+    name: "삼성생명",
+    code: "032830",
+    currentPrice: 65000,
+    changeAmount: -800,
+    changePercent: -1.22,
+  },
+  {
+    id: 14,
+    name: "KB금융",
+    code: "105560",
+    currentPrice: 52000,
+    changeAmount: 600,
+    changePercent: 1.17,
+  },
+  {
+    id: 15,
+    name: "신한지주",
+    code: "055550",
+    currentPrice: 38000,
+    changeAmount: -400,
+    changePercent: -1.04,
+  },
 ];
 
 export default function RelatedCompanies() {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const handleCompanyClick = (code: string) => {
     navigate(`/stock/${code}`);
@@ -119,12 +155,22 @@ export default function RelatedCompanies() {
     return num.toLocaleString();
   };
 
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(mockRelatedCompanies.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCompanies = mockRelatedCompanies.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h3 className="text-xl font-semibold text-gray-900 mb-4">관련기업</h3>
 
       <div className="space-y-3">
-        {mockRelatedCompanies.map((company) => (
+        {currentCompanies.map((company) => (
           <div
             key={company.id}
             onClick={() => handleCompanyClick(company.code)}
@@ -184,6 +230,17 @@ export default function RelatedCompanies() {
           </div>
         ))}
       </div>
+
+      {/* 페이지네이션 */}
+      {totalPages > 1 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
