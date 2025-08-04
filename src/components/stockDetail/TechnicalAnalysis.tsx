@@ -304,9 +304,9 @@ export default function TechnicalAnalysis({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden h-[650px] flex flex-col">
       {/* 헤더 */}
-      <div className="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+      <div className="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-2 border-b border-gray-100 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">기술적 분석</h3>
           <div className="flex items-center space-x-2">
@@ -317,7 +317,7 @@ export default function TechnicalAnalysis({
       </div>
 
       {/* 탭 네비게이션 */}
-      <div className="px-6 py-3 border-b border-gray-100">
+      <div className="px-6 py-1 border-b border-gray-100 flex-shrink-0">
         <div className="flex space-x-1 justify-center">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -347,7 +347,7 @@ export default function TechnicalAnalysis({
       </div>
 
       {/* 탭 콘텐츠 */}
-      <div className="p-6 min-h-[400px] bg-gray-50/30">
+      <div className="p-6 flex-1 bg-gray-50/30 overflow-y-auto">
         {renderTabContent()}
       </div>
     </div>

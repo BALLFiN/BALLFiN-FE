@@ -190,10 +190,9 @@ export default function StockDetailPage() {
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 mb-24">
         {/* 차트와 기술적 분석 영역 */}
-        <div className="flex gap-4">
-          {/* 차트 영역 */}
+        <div className="flex gap-6">
           <div className="flex-1">
             <StockChartPrice data={historicalData} />
           </div>
@@ -205,7 +204,7 @@ export default function StockDetailPage() {
         </div>
 
         {/* 하단 섹션들 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
           {/* 관련 뉴스 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
