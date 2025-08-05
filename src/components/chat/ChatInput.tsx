@@ -1,14 +1,6 @@
 import { Send, X, Paperclip } from "lucide-react";
 import NewsInfoCard from "./NewsInfoCard";
-
-interface NewsInfo {
-  id: string;
-  title: string;
-  press?: string;
-  published_at?: string;
-  summary?: string;
-  impact?: string;
-}
+import { NewsInfo } from "@/features/chat/types";
 
 interface ChatInputProps {
   message: string;

@@ -13,13 +13,25 @@ export interface NewMessagePT {
 export interface ChatListItem {
   id: string;
   title: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // 기존 ChatHistory는 messages 포함한 전체형
-export interface ChatHistory extends ChatListItem {
-  messages: Message[];
+export interface ChatHistory {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewsInfo {
+  id?: string;
+  title: string;
+  press?: string;
+  published_at?: string;
+  summary?: string;
+  impact?: "positive" | "negative" | "neutral";
 }
 
 export interface ChatWindowProps {
