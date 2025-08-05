@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, User, Settings } from "lucide-react";
 import { logout } from "../../api/auth/logoutApi";
 import { verifyAuth } from "../../api/auth/loginApi";
 import Toast from "@/components/common/Toast";
@@ -33,6 +33,8 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [showUserTooltip, setShowUserTooltip] = useState(false);
   const [toast, setToast] = useState<{
     show: boolean;
     message: string;
@@ -54,6 +56,7 @@ const Header = () => {
             const user = JSON.parse(storedUserInfo);
             if (user.name) {
               setUserName(user.name);
+              setUserEmail(user.email || "");
               return; // 사용자 정보가 있으면 API 호출하지 않음
             }
           } catch (error) {
@@ -66,6 +69,7 @@ const Header = () => {
           const response = await verifyAuth();
           if (response.user?.name) {
             setUserName(response.user.name);
+            setUserEmail(response.user.email || "");
             // API에서 받은 사용자 정보를 localStorage에 저장
             localStorage.setItem("user_info", JSON.stringify(response.user));
           }
@@ -76,10 +80,12 @@ const Header = () => {
           localStorage.removeItem("user_info");
           setIsLoggedIn(false);
           setUserName("");
+          setUserEmail("");
         }
       } else {
         setIsLoggedIn(false);
         setUserName("");
+        setUserEmail("");
       }
     };
 
@@ -120,6 +126,7 @@ const Header = () => {
       await logout();
       setIsLoggedIn(false);
       setUserName("");
+      setUserEmail("");
       localStorage.removeItem("user_info"); // 사용자 정보도 제거
       setToast({
         show: true,
@@ -205,7 +212,48 @@ const Header = () => {
             {/* 데스크톱 로그인/회원가입 또는 사용자명 + 로그아웃 버튼 */}
             <div className="hidden md:flex items-center space-x-4">
               {isLoggedIn && userName && (
-                <span className="text-gray-700 font-medium">{userName}님</span>
+                <div className="relative">
+                  <span
+                    className="text-gray-700 font-medium cursor-pointer hover:text-[#0A5C2B] transition-colors"
+                    onMouseEnter={() => setShowUserTooltip(true)}
+                  >
+                    {userName}님
+                  </span>
+
+                  {/* 사용자 툴팁 */}
+                  {showUserTooltip && (
+                    <div
+                      className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50"
+                      onMouseEnter={() => setShowUserTooltip(true)}
+                      onMouseLeave={() => setShowUserTooltip(false)}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-[#0A5C2B] rounded-full flex items-center justify-center">
+                          <User className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {userName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {userEmail}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-gray-100 pt-3">
+                        <Link
+                          to="/mypage"
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                          onClick={() => setShowUserTooltip(false)}
+                        >
+                          <Settings className="w-4 h-4" />
+                          마이페이지
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
               {authItems.map((item, index) =>
                 isAuthLink(item) ? (
