@@ -167,8 +167,8 @@ export default function NewsPage() {
         </div>
         {/* 뉴스 상세 */}
         <div
-          className={`z-10 fixed top-0 right-0 w-1/3 transition-all duration-500 ease-in-out transform ${
-            selectedNews ? "translate-x-0 mt-20 mr-10 " : "translate-x-full"
+          className={`z-10 fixed top-0 left-0 w-2/5 transition-all duration-500 ease-in-out transform ${
+            selectedNews ? "translate-x-0 mt-20 ml-10" : "-translate-x-full"
           }`}
         >
           <NewsAnalysis

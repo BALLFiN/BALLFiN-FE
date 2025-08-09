@@ -41,7 +41,7 @@ export default function Toast({
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <div
-        className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+        className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 flex-nowrap whitespace-nowrap ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
         } ${type === "success" ? "bg-[#0A5C2B]" : "bg-red-500"} text-white`}
       >
@@ -50,7 +50,7 @@ export default function Toast({
         ) : (
           <XCircle className="w-5 h-5" />
         )}
-        <span>{message}</span>
+        <span className="whitespace-nowrap">{message}</span>
       </div>
     </div>
   );
