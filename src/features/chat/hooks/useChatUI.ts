@@ -12,16 +12,22 @@ export const useChatManager = () => {
   const { data: chatList = [] } = useChatList();
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("ko-KR", {
-      timeZone: "Asia/Seoul",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
+    try {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    } catch {
+      return "";
+    }
   };
 
   const loadChat = (history: ChatHistory) => {
@@ -37,7 +43,7 @@ export const useChatManager = () => {
 
   const saveEdit = (id: string) => {
     const updated = chatList.map((history) =>
-      history.id === id ? { ...history, title: editTitle } : history,
+      history.id === id ? { ...history, title: editTitle } : history
     );
     localStorage.setItem("chatHistories", JSON.stringify(updated));
     setEditingId(null);
