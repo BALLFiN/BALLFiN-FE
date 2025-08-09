@@ -38,10 +38,8 @@ export default function ChatDropZone({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`fixed bottom-4 sm:bottom-8 md:bottom-24 right-2 sm:right-4 md:right-8 w-[95vw] sm:w-[80vw] md:w-[60vw] lg:w-[40vw] xl:w-[30vw] h-[70vh] sm:h-[550px] md:h-[600px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100/50 flex flex-col z-999 max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl transition-all duration-300 ${
-        isDragOver
-          ? "border-[#0A5C2B] bg-[#0A5C2B]/5 shadow-[#0A5C2B]/20"
-          : "border-gray-100/50"
+      className={`fixed bottom-4 sm:bottom-8 md:bottom-24 right-2 sm:right-4 md:right-8 w-[95vw] sm:w-[80vw] md:w-[60vw] lg:w-[40vw] xl:w-[30vw] h-[70vh] sm:h-[550px] md:h-[600px] bg-white/90 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/80 ring-1 ring-black/5 flex flex-col z-50 max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl transition-all duration-300 ${
+        isDragOver ? "ring-[#000]/10 bg-white/95 shadow-2xl" : ""
       }`}
     >
       {children}
