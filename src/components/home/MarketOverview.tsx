@@ -12,7 +12,7 @@ import {
   Filler,
 } from "chart.js";
 import Modal from "@/components/common/Modal";
-import Loading from "@/components/common/Loading";
+// Loading skeleton은 이 컴포넌트에서 간단히 렌더링합니다.
 import { getAllMarketInfo, MarketAllResponse } from "@/api/market";
 
 ChartJS.register(
@@ -297,7 +297,7 @@ export default function MarketOverview() {
   };
 
   const buildSparkline = (
-    items: Array<{ date: string; price?: number; rate?: number }>
+    items: Array<{ date: string; price?: number; rate?: number }> = []
   ) => {
     const sorted = [...items].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -309,6 +309,14 @@ export default function MarketOverview() {
   };
 
   const mapResponseToStats = (resp: MarketAllResponse): MarketStat[] => {
+    if (
+      !resp ||
+      typeof resp !== "object" ||
+      !resp.data ||
+      typeof resp.data !== "object"
+    ) {
+      throw new Error("잘못된 응답 형식");
+    }
     const result: MarketStat[] = [];
     const { data } = resp;
 
@@ -320,7 +328,9 @@ export default function MarketOverview() {
       const valueNumber: number = quote.price;
       const changeNumber: number = quote.change;
       const changePercentNumber: number = quote.change_percent;
-      const sparkline = buildSparkline(quote.historical_data);
+      const sparkline = buildSparkline(
+        Array.isArray(quote.historical_data) ? quote.historical_data : []
+      );
 
       result.push({
         id: meta.id,
@@ -342,7 +352,10 @@ export default function MarketOverview() {
     const ir = data["interest_rate"] as any;
     if (ir) {
       const meta = STAT_METADATA["interest_rate"];
-      const sorted = [...ir.historical_data].sort(
+      const history = Array.isArray(ir.historical_data)
+        ? ir.historical_data
+        : [];
+      const sorted = [...history].sort(
         (a: any, b: any) =>
           new Date(a.date).getTime() - new Date(b.date).getTime()
       );
@@ -350,7 +363,7 @@ export default function MarketOverview() {
       const prev = sorted[sorted.length - 2]?.rate ?? last;
       const change = last - prev;
       const changePct = prev !== 0 ? (change / prev) * 100 : 0;
-      const sparkline = buildSparkline(ir.historical_data);
+      const sparkline = buildSparkline(history);
 
       result.push({
         id: meta.id,
@@ -371,26 +384,31 @@ export default function MarketOverview() {
     return result;
   };
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const resp = await getAllMarketInfo();
-        if (cancelled) return;
-        const mapped = mapResponseToStats(resp);
-        setStats(mapped);
-      } catch (e: any) {
-        if (cancelled) return;
-        setError("시세 정보를 불러오지 못했습니다.");
-      } finally {
-        if (!cancelled) setLoading(false);
+  const fetchAll = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const resp = await getAllMarketInfo();
+      // eslint-disable-next-line no-console
+      console.debug("[MarketOverview] /info/all 응답:", resp);
+      const mapped = mapResponseToStats(resp);
+      if (!mapped.length) {
+        throw new Error("데이터 항목이 비어있음");
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+      setStats(mapped);
+      // eslint-disable-next-line no-console
+      console.debug("[MarketOverview] 매핑된 카드 수:", mapped.length);
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error("[MarketOverview] /info/all 요청 실패:", e?.response ?? e);
+      setError("시세 정보를 불러오지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
   }, []);
 
   const handleCardClick = (stat: MarketStat) => {
@@ -405,16 +423,49 @@ export default function MarketOverview() {
 
   const content = useMemo(() => {
     if (loading) {
+      const LOADING_KEYS = [
+        "kospi",
+        "nasdaq",
+        "usd_krw",
+        "oil",
+        "vix",
+        "interest_rate",
+      ] as const;
       return (
-        <div className="h-40 flex items-center justify-center">
-          <Loading />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {LOADING_KEYS.map((key) => {
+            const meta = STAT_METADATA[key];
+            return (
+              <div
+                key={meta.id}
+                className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-100 min-w-0"
+              >
+                <div className="text-xs text-gray-500 mb-2 truncate">
+                  {meta.title}
+                </div>
+                <div className="mb-2 animate-pulse">
+                  <div className="h-5 w-24 bg-gray-200 rounded" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
+            );
+          })}
         </div>
       );
     }
     if (error) {
       return (
-        <div className="p-4 text-sm text-red-600 bg-red-50 rounded-lg">
-          {error}
+        <div className="p-4 bg-red-50 rounded-lg">
+          <div className="text-sm text-red-600 mb-2">{error}</div>
+          <button
+            type="button"
+            onClick={fetchAll}
+            className="text-xs px-3 py-1.5 bg-red-600 text-white rounded"
+          >
+            다시 시도
+          </button>
         </div>
       );
     }
