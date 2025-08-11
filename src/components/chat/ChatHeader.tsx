@@ -20,13 +20,13 @@ export default function ChatHeader({
 
   return (
     <div className="flex items-center justify-between p-2 sm:p-4 bg-white/90 backdrop-blur-xl border-b border-white/80 ring-1 ring-black/5">
-      <h3 className="text-[17px] font-semibold text-gray-900 tracking-tight">
+      <h3 className="text-[17px] font-semibold text-[#0A5C2B] tracking-tight">
         BALLFiN 챗봇
       </h3>
       <div className="flex items-center gap-2">
         <button
           onClick={handleChatPageClick}
-          className="text-gray-700 hover:text-black transition-colors p-2 rounded-2xl hover:bg-gray-100 relative group active:scale-95"
+          className="text-gray-700 hover:text-[#0A5C2B] transition-colors p-2 rounded-2xl hover:bg-[#0A5C2B]/5 relative group active:scale-95"
           title="전체 채팅 페이지로 이동"
         >
           <MessageSquare size={20} className="sm:w-5 sm:h-5" />
@@ -38,7 +38,7 @@ export default function ChatHeader({
         {onClickHistory && (
           <button
             onClick={onClickHistory}
-            className="text-gray-700 hover:text-black transition-colors p-2 rounded-2xl hover:bg-gray-100 relative group active:scale-95"
+            className="text-gray-700 hover:text-[#0A5C2B] transition-colors p-2 rounded-2xl hover:bg-[#0A5C2B]/5 relative group active:scale-95"
             title="채팅 기록 보기"
           >
             <History size={20} className="sm:w-5 sm:h-5" />
@@ -51,7 +51,7 @@ export default function ChatHeader({
         {onCreateNewChat && (
           <button
             onClick={onCreateNewChat}
-            className="text-gray-700 hover:text-black transition-colors p-2 rounded-2xl hover:bg-gray-100 relative group active:scale-95"
+            className="text-gray-700 hover:text-[#0A5C2B] transition-colors p-2 rounded-2xl hover:bg-[#0A5C2B]/5 relative group active:scale-95"
             title="새로운 채팅방 만들기"
           >
             <Plus size={20} className="sm:w-5 sm:h-5" />
@@ -63,7 +63,7 @@ export default function ChatHeader({
         )}
         <button
           onClick={onClose}
-          className="text-gray-600 hover:text-black transition-colors p-2 rounded-2xl hover:bg-gray-100 relative group active:scale-95"
+          className="text-gray-600 hover:text-[#0A5C2B] transition-colors p-2 rounded-2xl hover:bg-[#0A5C2B]/5 relative group active:scale-95"
           title="채팅창 닫기"
         >
           <X size={20} className="sm:w-5 sm:h-5" />

@@ -59,7 +59,7 @@ export default function ChatInput({
             placeholder="메시지를 입력하세요..."
             disabled={isLoading}
             rows={Math.min(3, Math.max(1, message.split("\n").length))}
-            className="w-full px-4 py-3 border border-white/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 disabled:bg-gray-50 disabled:cursor-not-allowed resize-none text-[15px] placeholder-gray-400 transition-all duration-200 shadow-sm ring-1 ring-black/5"
+            className="w-full px-4 py-3 border border-white/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20 focus:border-[#0A5C2B] disabled:bg-gray-50 disabled:cursor-not-allowed resize-none text-[15px] placeholder-gray-400 transition-all duration-200 shadow-sm ring-1 ring-black/5"
             style={{ minHeight: "44px", maxHeight: "120px" }}
           />
           {message && (
@@ -77,7 +77,7 @@ export default function ChatInput({
             type="button"
             onClick={onFileAttach}
             disabled={isLoading}
-            className="p-3 sm:p-3.5 text-gray-700 hover:text-black hover:bg-gray-100 rounded-2xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 border border-white/80 ring-1 ring-black/5"
+            className="p-3 sm:p-3.5 text-gray-700 hover:text-[#0A5C2B] hover:bg-[#0A5C2B]/5 rounded-2xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 border border-white/80 ring-1 ring-black/5"
             title="파일 첨부"
             style={{ height: "44px", width: "44px" }}
           >
@@ -86,7 +86,7 @@ export default function ChatInput({
           <button
             type="submit"
             disabled={isLoading}
-            className="p-3 sm:p-3.5 bg-black text-white rounded-2xl hover:bg-black/90 active:scale-95 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="p-3 sm:p-3.5 bg-[#0A5C2B] text-white rounded-2xl hover:bg-[#0A5C2B]/90 active:scale-95 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             style={{ height: "44px", width: "44px" }}
           >
             <Send size={18} className="sm:w-5 sm:h-5" />
