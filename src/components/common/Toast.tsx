@@ -39,18 +39,24 @@ export default function Toast({
   }, [duration, onClose]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+      role="status"
+      aria-live="polite"
+    >
       <div
-        className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+        className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl shadow-lg transition-all duration-300 flex-nowrap whitespace-nowrap backdrop-blur-xl border border-white/20 ring-1 ring-white/10 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-        } ${type === "success" ? "bg-[#0A5C2B]" : "bg-red-500"} text-white`}
+        } bg-black/80 text-white`}
       >
         {type === "success" ? (
-          <CheckCircle2 className="w-5 h-5" />
+          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
         ) : (
-          <XCircle className="w-5 h-5" />
+          <XCircle className="w-5 h-5 text-red-400" />
         )}
-        <span>{message}</span>
+        <span className="whitespace-nowrap text-[13px] font-medium">
+          {message}
+        </span>
       </div>
     </div>
   );

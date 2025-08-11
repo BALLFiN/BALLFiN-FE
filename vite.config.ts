@@ -38,6 +38,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        "/info": {
+          target: process.env.VITE_API_BASE_URL,
+          changeOrigin: true,
+          secure: false,
+        },
         "/stock": {
           target: process.env.VITE_API_BASE_URL,
           changeOrigin: true,

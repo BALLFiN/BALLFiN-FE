@@ -61,25 +61,25 @@ export default function NewsAnalysis({
   return (
     <div className="relative">
       <div
-        className={`p-6 animate-slide-in max-w-2xl mx-auto transition-all duration-500 ease-in-out bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 ${
+        className={`p-5 md:p-6 animate-slide-in max-w-2xl mx-auto transition-all duration-500 ease-in-out bg-white/90 backdrop-blur-xl rounded-3xl shadow-sm border border-white/80 ring-1 ring-black/5 ${
           !isAnalyzing[news.id] && !isLoading[news.id]
             ? "min-h-[400px]"
             : "min-h-[200px]"
         }`}
       >
-        <div className="flex justify-between items-start mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 leading-tight pr-4">
+        <div className="flex justify-between items-start mb-5">
+          <h2 className="text-[17px] font-semibold text-gray-900 leading-snug pr-4">
             {displayNews?.title || news.title}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-50 rounded-full transition-colors flex-shrink-0"
+            className="p-2 rounded-2xl transition-colors flex-shrink-0 border border-gray-100 hover:bg-gray-100/70 active:scale-95"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100">
+        <div className="flex items-center gap-3 text-[12px] text-gray-500 mb-5 pb-4 border-b border-gray-100">
           <span className="font-medium text-gray-700">
             {displayNews?.press || news.press}
           </span>
@@ -94,14 +94,14 @@ export default function NewsAnalysis({
             href={displayNews?.link || news.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600 transition-colors font-medium"
+            className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
           >
             원문 보기
           </a>
           {onNavigateToDetail && (
             <button
               onClick={() => onNavigateToDetail(news.id)}
-              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="px-2 py-1 hover:bg-gray-100 rounded-xl transition-colors border border-gray-100 text-gray-600"
               title="뉴스 상세 페이지로 이동"
             >
               <ExternalLink className="w-4.5 h-4.5 text-gray-500" />
@@ -119,51 +119,52 @@ export default function NewsAnalysis({
               <Loading />
             </div>
           ) : (
-            <div className="space-y-5 animate-fade-in">
-              <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+            <div className="space-y-4 md:space-y-5 animate-fade-in">
+              <div className="bg-white/90 backdrop-blur rounded-2xl p-4 border border-white/70 ring-1 ring-black/5 shadow-sm">
                 <ImpactScore
                   score={displayNews?.impact_score || news.impact_score || 9}
                 />
               </div>
-              <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-gray-900 text-lg">요약</h3>
+              <div className="bg-white/90 backdrop-blur rounded-2xl p-4 border border-white/70 ring-1 ring-black/5 shadow-sm">
+                <div className="flex justify-between items-center mb-2.5">
+                  <h3 className="font-semibold text-gray-900 text-[16px]">
+                    요약
+                  </h3>
                   <button
                     onClick={() =>
                       handleCopy(displayNews?.summary || "", "summary")
                     }
-                    className="p-2 hover:bg-gray-200/50 rounded-full transition-colors"
+                    className="px-2 py-1 rounded-xl border border-gray-100 text-gray-600 hover:bg-gray-100 transition-colors"
                     title="복사하기"
                   >
                     <Copy
-                      className={`w-4 h-4 ${copyStatus["summary"] ? "text-blue-500" : "text-gray-400"}`}
+                      className={`w-4 h-4 ${copyStatus["summary"] ? "text-blue-600" : "text-gray-500"}`}
                     />
                   </button>
                 </div>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-[15px] text-gray-700 leading-relaxed">
                   {displayNews?.summary}
                 </p>
               </div>
-
-              <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-gray-900 text-lg">
+              <div className="bg-white/90 backdrop-blur rounded-2xl p-4 border border-white/70 ring-1 ring-black/5 shadow-sm">
+                <div className="flex justify-between items-center mb-2.5">
+                  <h3 className="font-semibold text-gray-900 text-[16px]">
                     상세 분석
                   </h3>
                   <button
                     onClick={() =>
                       handleCopy(displayNews?.analysis || "", "analysis")
                     }
-                    className="p-2 hover:bg-gray-200/50 rounded-full transition-colors"
+                    className="px-2 py-1 rounded-xl border border-gray-100 text-gray-600 hover:bg-gray-100 transition-colors"
                     title="복사하기"
                   >
                     <Copy
-                      className={`w-4 h-4 ${copyStatus["analysis"] ? "text-blue-500" : "text-gray-400"}`}
+                      className={`w-4 h-4 ${copyStatus["analysis"] ? "text-blue-600" : "text-gray-500"}`}
                     />
                   </button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto pr-2">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  <p className="text-[15px] text-gray-700 leading-relaxed whitespace-pre-line">
                     {displayNews?.analysis}
                   </p>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,6 +12,8 @@ import {
   Filler,
 } from "chart.js";
 import Modal from "@/components/common/Modal";
+// Loading skeleton은 이 컴포넌트에서 간단히 렌더링합니다.
+import { getAllMarketInfo, MarketAllResponse } from "@/api/market";
 
 ChartJS.register(
   CategoryScale,
@@ -38,25 +40,19 @@ interface MarketStat {
   description: string;
   detailedInfo?: {
     currentMeaning: string;
-    ranges: Array<{
+    ranges: ReadonlyArray<{
       range: string;
       meaning: string;
     }>;
   };
 }
 
-const marketStats: MarketStat[] = [
-  {
+// API 키와 화면 메타데이터 매핑
+const STAT_METADATA = {
+  kospi: {
     id: "korean-market",
     title: "한국 주식시장",
-    value: "3,104.28",
     unit: "pt (KOSPI)",
-    change: {
-      value: "+36.78",
-      percentage: "+1.2%",
-      isPositive: true,
-    },
-    sparklineData: [3067.5, 3080.2, 3095.8, 3104.3, 3104.28],
     description:
       "한국 종합주가지수(KOSPI)와 기술주 중심의 KOSDAQ 지수를 포함한 한국 주식시장의 전반적인 움직임을 나타냅니다. KOSPI는 대형주 중심, KOSDAQ은 IT, 바이오 등 혁신기업들의 성과를 반영합니다.",
     detailedInfo: {
@@ -70,17 +66,10 @@ const marketStats: MarketStat[] = [
       ],
     },
   },
-  {
+  nasdaq: {
     id: "nasdaq",
     title: "나스닥 지수",
-    value: "16,742.38",
     unit: "pt",
-    change: {
-      value: "+128.45",
-      percentage: "+0.8%",
-      isPositive: true,
-    },
-    sparklineData: [16613.9, 16680.5, 16720.8, 16735.2, 16742.38],
     description:
       "미국 기술주 중심의 주가지수로 글로벌 IT 기업들의 성과를 나타냅니다.",
     detailedInfo: {
@@ -94,40 +83,10 @@ const marketStats: MarketStat[] = [
       ],
     },
   },
-  {
-    id: "interest-rate",
-    title: "한국은행 기준금리",
-    value: "3.50",
-    unit: "%",
-    change: {
-      value: "0.00",
-      percentage: "0.0%",
-      isPositive: true,
-    },
-    sparklineData: [3.5, 3.5, 3.5, 3.5, 3.5],
-    description:
-      "한국은행이 설정하는 기준금리로 통화정책의 방향성을 나타냅니다.",
-    detailedInfo: {
-      currentMeaning: "금리 동결로 안정적 통화정책 유지, 인플레이션 관리 중점",
-      ranges: [
-        { range: "3.0% 이하", meaning: "확장적 통화정책, 투자/소비 촉진" },
-        { range: "3.0~3.5%", meaning: "중립적 통화정책, 경제 안정" },
-        { range: "3.5~4.0%", meaning: "긴축적 통화정책, 인플레이션 억제" },
-        { range: "4.0% 이상", meaning: "강력한 긴축, 경제 침체 우려" },
-      ],
-    },
-  },
-  {
+  usd_krw: {
     id: "exchange-rate",
     title: "원/달러 환율",
-    value: "1,328.50",
     unit: "원",
-    change: {
-      value: "-3.75",
-      percentage: "-0.3%",
-      isPositive: false,
-    },
-    sparklineData: [1332.25, 1330.8, 1329.4, 1328.9, 1328.5],
     description:
       "원화 대비 달러화의 가치를 나타내며, 수출입과 자본이동에 영향을 줍니다.",
     detailedInfo: {
@@ -140,17 +99,10 @@ const marketStats: MarketStat[] = [
       ],
     },
   },
-  {
+  oil: {
     id: "wti",
     title: "WTI 원유",
-    value: "78.45",
     unit: "$",
-    change: {
-      value: "+1.23",
-      percentage: "+1.6%",
-      isPositive: true,
-    },
-    sparklineData: [77.22, 77.85, 78.12, 78.38, 78.45],
     description:
       "서부텍사스산 원유 가격으로 글로벌 에너지 시장의 동향을 반영합니다.",
     detailedInfo: {
@@ -166,17 +118,10 @@ const marketStats: MarketStat[] = [
       ],
     },
   },
-  {
+  vix: {
     id: "vix",
     title: "VIX 지수",
-    value: "18.45",
     unit: "",
-    change: {
-      value: "-0.85",
-      percentage: "-4.4%",
-      isPositive: false,
-    },
-    sparklineData: [19.3, 19.1, 18.8, 18.6, 18.45],
     description: "변동성 지수로 시장의 불확실성과 투자자 심리를 나타냅니다.",
     detailedInfo: {
       currentMeaning:
@@ -193,7 +138,23 @@ const marketStats: MarketStat[] = [
       ],
     },
   },
-];
+  interest_rate: {
+    id: "interest-rate",
+    title: "한국은행 기준금리",
+    unit: "%",
+    description:
+      "한국은행이 설정하는 기준금리로 통화정책의 방향성을 나타냅니다.",
+    detailedInfo: {
+      currentMeaning: "금리 동결로 안정적 통화정책 유지, 인플레이션 관리 중점",
+      ranges: [
+        { range: "3.0% 이하", meaning: "확장적 통화정책, 투자/소비 촉진" },
+        { range: "3.0~3.5%", meaning: "중립적 통화정책, 경제 안정" },
+        { range: "3.5~4.0%", meaning: "긴축적 통화정책, 인플레이션 억제" },
+        { range: "4.0% 이상", meaning: "강력한 긴축, 경제 침체 우려" },
+      ],
+    },
+  },
+} as const;
 
 interface MarketModalContentProps {
   data: MarketStat;
@@ -315,6 +276,140 @@ const MarketModalContent = ({ data }: MarketModalContentProps) => {
 export default function MarketOverview() {
   const [selectedStat, setSelectedStat] = useState<MarketStat | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [stats, setStats] = useState<MarketStat[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const formatNumber = (num: number, fractionDigits = 2) =>
+    num.toLocaleString("ko-KR", {
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
+
+  const formatSigned = (num: number, fractionDigits = 2) => {
+    const sign = num > 0 ? "+" : num < 0 ? "-" : "";
+    return `${sign}${formatNumber(Math.abs(num), fractionDigits)}`;
+  };
+
+  const formatPercent = (num: number) => {
+    const sign = num > 0 ? "+" : num < 0 ? "-" : "";
+    return `${sign}${Math.abs(num).toFixed(2)}%`;
+  };
+
+  const buildSparkline = (
+    items: Array<{ date: string; price?: number; rate?: number }> = []
+  ) => {
+    const sorted = [...items].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const lastFive = sorted.slice(-5);
+    return lastFive.map((d) =>
+      typeof d.price === "number" ? d.price : (d.rate ?? 0)
+    );
+  };
+
+  const mapResponseToStats = (resp: MarketAllResponse): MarketStat[] => {
+    if (
+      !resp ||
+      typeof resp !== "object" ||
+      !resp.data ||
+      typeof resp.data !== "object"
+    ) {
+      throw new Error("잘못된 응답 형식");
+    }
+    const result: MarketStat[] = [];
+    const { data } = resp;
+
+    // 주가지수/환율/원유/VIX
+    (["kospi", "nasdaq", "usd_krw", "oil", "vix"] as const).forEach((key) => {
+      const quote = data[key] as any;
+      if (!quote) return;
+      const meta = STAT_METADATA[key];
+      const valueNumber: number = quote.price;
+      const changeNumber: number = quote.change;
+      const changePercentNumber: number = quote.change_percent;
+      const sparkline = buildSparkline(
+        Array.isArray(quote.historical_data) ? quote.historical_data : []
+      );
+
+      result.push({
+        id: meta.id,
+        title: meta.title,
+        unit: meta.unit,
+        value: formatNumber(valueNumber, key === "usd_krw" ? 2 : 2),
+        change: {
+          value: formatSigned(changeNumber, 2),
+          percentage: formatPercent(changePercentNumber),
+          isPositive: changeNumber >= 0,
+        },
+        sparklineData: sparkline,
+        description: meta.description,
+        detailedInfo: meta.detailedInfo,
+      });
+    });
+
+    // 기준금리
+    const ir = data["interest_rate"] as any;
+    if (ir) {
+      const meta = STAT_METADATA["interest_rate"];
+      const history = Array.isArray(ir.historical_data)
+        ? ir.historical_data
+        : [];
+      const sorted = [...history].sort(
+        (a: any, b: any) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      const last = sorted[sorted.length - 1]?.rate ?? 0;
+      const prev = sorted[sorted.length - 2]?.rate ?? last;
+      const change = last - prev;
+      const changePct = prev !== 0 ? (change / prev) * 100 : 0;
+      const sparkline = buildSparkline(history);
+
+      result.push({
+        id: meta.id,
+        title: meta.title,
+        unit: meta.unit,
+        value: formatNumber(last, 2),
+        change: {
+          value: formatSigned(change, 2),
+          percentage: formatPercent(changePct),
+          isPositive: change >= 0,
+        },
+        sparklineData: sparkline,
+        description: meta.description,
+        detailedInfo: meta.detailedInfo,
+      });
+    }
+
+    return result;
+  };
+
+  const fetchAll = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const resp = await getAllMarketInfo();
+      // eslint-disable-next-line no-console
+      console.debug("[MarketOverview] /info/all 응답:", resp);
+      const mapped = mapResponseToStats(resp);
+      if (!mapped.length) {
+        throw new Error("데이터 항목이 비어있음");
+      }
+      setStats(mapped);
+      // eslint-disable-next-line no-console
+      console.debug("[MarketOverview] 매핑된 카드 수:", mapped.length);
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error("[MarketOverview] /info/all 요청 실패:", e?.response ?? e);
+      setError("시세 정보를 불러오지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
   const handleCardClick = (stat: MarketStat) => {
     setSelectedStat(stat);
@@ -326,10 +421,57 @@ export default function MarketOverview() {
     setSelectedStat(null);
   };
 
-  return (
-    <>
+  const content = useMemo(() => {
+    if (loading) {
+      const LOADING_KEYS = [
+        "kospi",
+        "nasdaq",
+        "usd_krw",
+        "oil",
+        "vix",
+        "interest_rate",
+      ] as const;
+      return (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {LOADING_KEYS.map((key) => {
+            const meta = STAT_METADATA[key];
+            return (
+              <div
+                key={meta.id}
+                className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-100 min-w-0"
+              >
+                <div className="text-xs text-gray-500 mb-2 truncate">
+                  {meta.title}
+                </div>
+                <div className="mb-2 animate-pulse">
+                  <div className="h-5 w-24 bg-gray-200 rounded" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className="p-4 bg-red-50 rounded-lg">
+          <div className="text-sm text-red-600 mb-2">{error}</div>
+          <button
+            type="button"
+            onClick={fetchAll}
+            className="text-xs px-3 py-1.5 bg-red-600 text-white rounded"
+          >
+            다시 시도
+          </button>
+        </div>
+      );
+    }
+    return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {marketStats.map((stat) => (
+        {stats.map((stat) => (
           <div
             key={stat.id}
             className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 hover:shadow-md transition-all duration-300 border border-gray-100 cursor-pointer min-w-0"
@@ -358,6 +500,12 @@ export default function MarketOverview() {
           </div>
         ))}
       </div>
+    );
+  }, [loading, error, stats]);
+
+  return (
+    <>
+      {content}
 
       <Modal
         isOpen={isModalOpen}

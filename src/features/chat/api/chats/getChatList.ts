@@ -16,8 +16,8 @@ export const getChatList = async (limit = 10): Promise<ChatListItem[]> => {
     (item): ChatListItem => ({
       id: item.chat_id,
       title: item.title,
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
-    }),
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+    })
   );
 };

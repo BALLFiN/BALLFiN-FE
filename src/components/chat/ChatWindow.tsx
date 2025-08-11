@@ -4,10 +4,7 @@ import ChatBody from "./ChatBody";
 import ChatDropZone from "./ChatDropZone";
 import { ChatWindowProps, NewsInfo } from "@/features/chat/types";
 import { useChatManager } from "@/features/chat/hooks/useChatUI";
-import {
-  useCreateChat,
-  useDeleteChat,
-} from "@/features/chat/hooks/chatList/useChatMutation";
+import { useCreateChat } from "@/features/chat/hooks/chatList/useChatMutation";
 import {
   useChatMessages,
   useSendMessage,
@@ -18,7 +15,6 @@ import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const { mutate: createChat } = useCreateChat();
-  const { mutate: deleteChat } = useDeleteChat();
   const { data: chatList = [] } = useChatList();
   const [newsInfo, setNewsInfo] = useState<NewsInfo | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -26,6 +22,14 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const [newlyCreatedChatId, setNewlyCreatedChatId] = useState<string | null>(
     null
   );
+  const [isClosing, setIsClosing] = useState(false);
+
+  // isOpen이 true로 변경될 때 isClosing 상태를 리셋
+  useEffect(() => {
+    if (isOpen) {
+      setIsClosing(false);
+    }
+  }, [isOpen]);
 
   const generateKoreanTimestamp = () => {
     const now = new Date();
@@ -240,11 +244,21 @@ ${newsInfo.impact ? `영향도: ${newsInfo.impact === "positive" ? "긍정" : ne
     setShowMenu(!showMenu);
   };
 
+  const handleClose = () => {
+    setIsClosing(true);
+    // 애니메이션 완료 후 실제로 닫기
+    setTimeout(() => {
+      onClose();
+      // 닫기 완료 후 상태 정리
+      setIsClosing(false);
+    }, 700);
+  };
+
   return (
     <ErrorBoundary>
-      <ChatDropZone onDrop={handleDrop} isOpen={isOpen}>
+      <ChatDropZone onDrop={handleDrop} isOpen={isOpen} isClosing={isClosing}>
         <ChatHeader
-          onClose={onClose}
+          onClose={handleClose}
           onClickHistory={handleToggleHistory}
           onCreateNewChat={handleCreateNewChat}
         />

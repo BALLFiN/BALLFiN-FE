@@ -51,7 +51,7 @@ export default function ChatBody({
       )}
 
       {showHistory ? (
-        <div className="flex-1 overflow-y-auto bg-gray-50/30">
+        <div className="flex-1 overflow-y-auto bg-gray-50/40">
           <ChatHistoryList
             histories={chatList}
             currentId={currentChatId}
@@ -66,7 +66,7 @@ export default function ChatBody({
           />
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto bg-gray-50/30">
+        <div className="flex-1 overflow-y-auto bg-gray-50/40">
           <ChatMessages messages={messages} isLoading={isSending} />
         </div>
       )}

@@ -8,7 +8,7 @@ const BotButton = () => {
   return (
     <>
       <button
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-[#0A5C2B] text-white shadow-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center justify-center cursor-pointer"
+        className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-[#0A5C2B] text-white shadow-lg hover:bg-[#0A5C2B]/90 transition-all duration-300 flex items-center justify-center cursor-pointer active:scale-95 z-50"
         onClick={() => setIsOpen(!isOpen)}
       >
         <Bot size={24} />
