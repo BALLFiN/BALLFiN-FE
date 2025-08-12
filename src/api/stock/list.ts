@@ -28,17 +28,36 @@ export interface StockListResponse {
   status: number;
 }
 
-export const getStockList = async (): Promise<StockListResponse> => {
+// 정렬 기준 타입 정의
+export type SortBy =
+  | "market_cap_desc"
+  | "market_cap_asc"
+  | "change_percent_desc"
+  | "change_percent_asc"
+  | "volume_desc"
+  | "volume_asc";
+
+// 새로운 API 응답 인터페이스
+interface CompanyData {
+  corp_name: string;
+  stock_code: string;
+  current_price: number;
+  change: number;
+  change_percent: number;
+  week_52_high: number;
+  week_52_low: number;
+  volume: number;
+  market_cap_billion: number;
+}
+
+export const getStockList = async (
+  sortBy: SortBy = "market_cap_desc"
+): Promise<StockListResponse> => {
   try {
-    // /stock/search API를 사용해서 거래량 상위 주식 데이터 가져오기
-    // 실제로 데이터가 있는 주요 종목들만 사용
-    const response = await axiosInstance.get("/stock/search", {
+    // 새로운 /info/companies API 사용
+    const response = await axiosInstance.get("/info/companies", {
       params: {
-        stock_codes:
-          "005930,000660,035420,035720,051910,000270,006400,068270,207940,373220", // 실제 데이터가 있는 종목들만
-        period: "D",
-        count: 30,
-        sort_by: "volume", // 거래량 순으로 정렬
+        sort_by: sortBy,
       },
     });
 
@@ -46,59 +65,36 @@ export const getStockList = async (): Promise<StockListResponse> => {
     console.log("API 응답 데이터:", response.data);
 
     // API 응답을 StockItem 형태로 변환
-    // 실제 API 응답 구조: response.data.stocks (객체)
-    const stocksData = response.data?.stocks;
-    if (!stocksData || typeof stocksData !== "object") {
+    const companiesData: CompanyData[] = response.data;
+    if (!Array.isArray(companiesData)) {
       console.warn("API 응답 데이터가 예상과 다릅니다:", response.data);
       throw new Error("API 응답 데이터가 올바르지 않습니다.");
     }
 
-    // 각 종목별로 최신 데이터 추출 (거래량 순으로 정렬됨)
-    const stockItems: StockItem[] = [];
-    let id = 1;
-
-    Object.entries(stocksData).forEach(([code, stockData]: [string, any]) => {
-      // 에러가 있는 종목은 건너뛰기
-      if (stockData.error) {
-        console.warn(`종목 ${code} 데이터 없음:`, stockData.error);
-        return;
-      }
-
-      // candles 배열에서 최신 데이터 가져오기
-      if (
-        stockData.candles &&
-        Array.isArray(stockData.candles) &&
-        stockData.candles.length > 0
-      ) {
-        const latestCandle = stockData.candles[0]; // 거래량 순으로 정렬된 최신 데이터
-
-        stockItems.push({
-          id: id++,
-          name: getStockNameByCode(code),
-          code: code,
-          price: latestCandle.close,
-          close: latestCandle.close,
-          high: latestCandle.high,
-          low: latestCandle.low,
-          change: latestCandle.change || 0,
-          changePercent: latestCandle.change_percent || 0,
-          volume: latestCandle.volume,
-          score: Math.floor(Math.random() * 100), // 임시 점수
-          sentiment: getRandomSentiment(),
-          newsCount: Math.floor(Math.random() * 20),
-          prediction: {
-            targetPrice: Math.floor(
-              latestCandle.close * (1 + (Math.random() - 0.5) * 0.2)
-            ),
-            confidence: Math.random(),
-            recommendation: getRandomRecommendation(),
-          },
-        });
-      }
-    });
-
-    // 거래량 순으로 정렬 (API에서 이미 정렬되어 있지만 확실히 하기 위해)
-    stockItems.sort((a, b) => b.volume - a.volume);
+    // 각 회사 데이터를 StockItem 형태로 변환
+    const stockItems: StockItem[] = companiesData.map((company, index) => ({
+      id: index + 1,
+      name: company.corp_name,
+      code: company.stock_code,
+      price: company.current_price,
+      close: company.current_price,
+      high: company.week_52_high,
+      low: company.week_52_low,
+      change: company.change,
+      changePercent: company.change_percent,
+      change_percent: company.change_percent,
+      volume: company.volume,
+      score: Math.floor(Math.random() * 100), // 임시 점수
+      sentiment: getRandomSentiment(),
+      newsCount: Math.floor(Math.random() * 20),
+      prediction: {
+        targetPrice: Math.floor(
+          company.current_price * (1 + (Math.random() - 0.5) * 0.2)
+        ),
+        confidence: Math.random(),
+        recommendation: getRandomRecommendation(),
+      },
+    }));
 
     return {
       data: stockItems,
@@ -116,23 +112,6 @@ export const getStockList = async (): Promise<StockListResponse> => {
     });
     throw error;
   }
-};
-
-// 주식 코드별 이름 매핑
-const getStockNameByCode = (code: string): string => {
-  const stockNames: { [key: string]: string } = {
-    "005930": "삼성전자",
-    "000660": "SK하이닉스",
-    "035420": "NAVER",
-    "035720": "카카오",
-    "051910": "LG화학",
-    "000270": "기아",
-    "006400": "삼성SDI",
-    "068270": "셀트리온",
-    "207940": "삼성바이오로직스",
-    "373220": "LG에너지솔루션",
-  };
-  return stockNames[code] || code;
 };
 
 // 랜덤 감정 생성
