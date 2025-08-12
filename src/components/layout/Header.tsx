@@ -193,7 +193,7 @@ const Header = () => {
               </Link>
             </div>
 
-            <nav className="hidden md:flex space-x-2">
+            <nav className="hidden md:flex space-x-8">
               {navItems.map((item) => (
                 <Link
                   key={item.to}
@@ -272,7 +272,7 @@ const Header = () => {
                   <button
                     key={index}
                     onClick={item.onClick}
-                    className="flex items-center gap-2 border border-black/10 text-gray-800 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 border border-black/10 text-gray-800 px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-black/5 active:bg-black/10"
                   >
                     {item.icon}
                     {item.label}
@@ -344,7 +344,7 @@ const Header = () => {
                       item.onClick();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center justify-center gap-2 w-full border border-black/10 text-gray-800 px-4 py-2 rounded-full text-base font-medium transition-colors"
+                    className="flex items-center justify-center gap-2 w-full border border-black/10 text-gray-800 px-4 py-2 rounded-full text-base font-medium transition-colors hover:bg-black/5 active:bg-black/10"
                   >
                     {item.icon}
                     {item.label}
