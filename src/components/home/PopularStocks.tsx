@@ -1,6 +1,7 @@
 import { useState } from "react";
+import type { KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, ExternalLink } from "lucide-react";
+import { Heart, ChevronRight } from "lucide-react";
 
 interface Stock {
   id: string;
@@ -129,181 +130,114 @@ export default function PopularStocks() {
     }
   };
 
+  const handleRowKeyDown = (
+    event: KeyboardEvent<HTMLDivElement>,
+    stockCode: string
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      navigate(`/stock/${stockCode}`);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-            실시간 인기 종목 Top 5
-          </h2>
-        </div>
+    <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm">
+      <div className="flex items-center justify-between px-4 py-3">
+        <h2 className="text-[17px] font-semibold text-gray-900">
+          실시간 인기 종목 Top 5
+        </h2>
         <button
           onClick={() => navigate("/stock")}
-          className="text-sm text-[#0A5C2B] hover:underline cursor-pointer"
+          className="text-[13px] font-medium text-[#0A5C2B] px-3 py-1.5 rounded-full hover:bg-[#0A5C2B]/10 active:bg-[#0A5C2B]/15 transition-colors"
         >
           더보기
         </button>
       </div>
 
-      <div className="space-y-3">
-        {popularStocks.map((stock) => (
+      <div className="border-t border-black/10">
+        {popularStocks.map((stock, index) => (
           <div
             key={stock.id}
-            className="bg-gradient-to-r from-gray-50 to-white rounded-lg p-3 border border-gray-100 hover:shadow-md transition-all duration-300"
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate(`/stock/${stock.code}`)}
+            onKeyDown={(e) => handleRowKeyDown(e, stock.code)}
+            className="group relative flex items-center gap-3 px-4 py-3 cursor-pointer select-none transition-colors hover:bg-black/5 active:bg-black/10"
           >
-            {/* 데스크톱 레이아웃 */}
-            <div className="hidden sm:flex items-center justify-between">
-              {/* 순위 및 종목 정보 */}
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                {/* 순위 배지 */}
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${getRankColor(stock.rank)} flex-shrink-0`}
-                >
-                  {stock.rank}
-                </div>
+            {/* Rank */}
+            <div
+              className={`h-7 w-7 sm:h-8 sm:w-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold ${getRankColor(
+                stock.rank
+              )} shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]`}
+            >
+              {stock.rank}
+            </div>
 
-                {/* 종목 기본 정보 */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-gray-900 truncate">
-                      {stock.name}
-                    </h3>
-                    <span className="text-xs text-gray-500 flex-shrink-0">
-                      {stock.code}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    {stock.sector} • {stock.marketCap}
-                  </div>
-                </div>
+            {/* Main info */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="truncate text-[15px] font-semibold text-gray-900">
+                  {stock.name}
+                </h3>
+                <span className="flex-shrink-0 text-[12px] text-gray-500">
+                  {stock.code}
+                </span>
               </div>
-
-              {/* 가격 정보 */}
-              <div className="flex items-center gap-3 mr-3 flex-shrink-0">
-                <div className="text-right">
-                  <div className="text-base font-bold text-gray-900">
-                    {formatPrice(stock.currentPrice)}원
-                  </div>
-                  <div
-                    className={`flex items-center gap-1 text-xs font-medium ${
-                      stock.change.isPositive
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {stock.change.isPositive ? (
-                      <div className="w-0 h-0 border-l-[2px] border-l-transparent border-b-[4px] border-b-green-600 border-r-[2px] border-r-transparent"></div>
-                    ) : (
-                      <div className="w-0 h-0 border-l-[2px] border-l-transparent border-t-[4px] border-t-red-600 border-r-[2px] border-r-transparent"></div>
-                    )}
-                    <span>{formatChange(stock.change.value)}</span>
-                    <span>({formatPercentage(stock.change.percentage)})</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 액션 버튼들 */}
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  onClick={() => toggleFavorite(stock.id)}
-                  className={`p-1.5 rounded-full transition-colors ${
-                    favorites.includes(stock.id)
-                      ? "text-red-500 bg-red-50"
-                      : "text-gray-400 hover:text-red-500 hover:bg-red-50"
-                  }`}
-                >
-                  <Heart
-                    size={16}
-                    fill={
-                      favorites.includes(stock.id) ? "currentColor" : "none"
-                    }
-                  />
-                </button>
-                <button
-                  onClick={() => navigate(`/stock/${stock.code}`)}
-                  className="bg-[#0A5C2B] text-white text-xs py-1.5 px-3 rounded-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center gap-1"
-                >
-                  <ExternalLink size={12} />
-                  <span className="hidden md:inline">상세 보기</span>
-                  <span className="md:hidden">보기</span>
-                </button>
+              <div className="mt-0.5 text-[12px] text-gray-500 truncate">
+                {stock.sector} • {stock.marketCap}
               </div>
             </div>
 
-            {/* 모바일 레이아웃 */}
-            <div className="sm:hidden">
-              {/* 첫 번째 줄: 순위, 종목명, 가격 */}
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getRankColor(stock.rank)} flex-shrink-0`}
-                  >
-                    {stock.rank}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1">
-                      <h3 className="font-bold text-gray-900 truncate text-sm">
-                        {stock.name}
-                      </h3>
-                      <span className="text-xs text-gray-500 flex-shrink-0">
-                        {stock.code}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-bold text-gray-900">
-                    {formatPrice(stock.currentPrice)}원
-                  </div>
-                </div>
+            {/* Price & change */}
+            <div className="text-right mr-1 hidden sm:block">
+              <div className="text-[15px] font-semibold text-gray-900">
+                {formatPrice(stock.currentPrice)}원
               </div>
-
-              {/* 두 번째 줄: 섹터, 시가총액, 등락률 */}
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-xs text-gray-500 truncate flex-1">
-                  {stock.sector} • {stock.marketCap}
-                </div>
-                <div
-                  className={`flex items-center gap-1 text-xs font-medium flex-shrink-0 ${
-                    stock.change.isPositive ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {stock.change.isPositive ? (
-                    <div className="w-0 h-0 border-l-[2px] border-l-transparent border-b-[4px] border-b-green-600 border-r-[2px] border-r-transparent"></div>
-                  ) : (
-                    <div className="w-0 h-0 border-l-[2px] border-l-transparent border-t-[4px] border-t-red-600 border-r-[2px] border-r-transparent"></div>
-                  )}
-                  <span>{formatChange(stock.change.value)}</span>
-                  <span>({formatPercentage(stock.change.percentage)})</span>
-                </div>
-              </div>
-
-              {/* 세 번째 줄: 액션 버튼들 */}
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => toggleFavorite(stock.id)}
-                  className={`p-1 rounded-full transition-colors ${
-                    favorites.includes(stock.id)
-                      ? "text-red-500 bg-red-50"
-                      : "text-gray-400 hover:text-red-500 hover:bg-red-50"
-                  }`}
-                >
-                  <Heart
-                    size={14}
-                    fill={
-                      favorites.includes(stock.id) ? "currentColor" : "none"
-                    }
-                  />
-                </button>
-                <button
-                  onClick={() => navigate(`/stock/${stock.code}`)}
-                  className="bg-[#0A5C2B] text-white text-xs py-1 px-2 rounded-lg hover:bg-[#0A5C2B]/90 transition-colors flex items-center gap-1"
-                >
-                  <ExternalLink size={12} />
-                  보기
-                </button>
+              <div
+                className={`flex items-center justify-end gap-1 text-[12px] font-medium ${
+                  stock.change.isPositive ? "text-emerald-600" : "text-red-600"
+                }`}
+              >
+                {stock.change.isPositive ? (
+                  <div className="w-0 h-0 border-l-[2px] border-l-transparent border-b-[4px] border-b-emerald-600 border-r-[2px] border-r-transparent"></div>
+                ) : (
+                  <div className="w-0 h-0 border-l-[2px] border-l-transparent border-t-[4px] border-t-red-600 border-r-[2px] border-r-transparent"></div>
+                )}
+                <span>{formatChange(stock.change.value)}</span>
+                <span>({formatPercentage(stock.change.percentage)})</span>
               </div>
             </div>
+
+            {/* Accessories */}
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                aria-pressed={favorites.includes(stock.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(stock.id);
+                }}
+                className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
+                  favorites.includes(stock.id)
+                    ? "text-red-500 bg-red-50"
+                    : "text-gray-400 hover:bg-black/5 active:bg-black/10"
+                }`}
+              >
+                <Heart
+                  size={18}
+                  strokeWidth={1.75}
+                  className={favorites.includes(stock.id) ? "text-red-500" : ""}
+                  fill={favorites.includes(stock.id) ? "currentColor" : "none"}
+                />
+              </button>
+              <span className="pointer-events-none h-8 w-8 rounded-full flex items-center justify-center text-gray-400 group-hover:text-gray-500">
+                <ChevronRight size={18} strokeWidth={2} />
+              </span>
+            </div>
+
+            {/* Hairline divider for compact screens between rows */}
+            {index < popularStocks.length - 1 ? (
+              <div className="absolute inset-x-4 bottom-0 h-px bg-black/10" />
+            ) : null}
           </div>
         ))}
       </div>
