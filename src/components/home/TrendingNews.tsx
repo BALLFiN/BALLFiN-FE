@@ -254,42 +254,45 @@ export default function TrendingNews() {
           </button>
         </div>
       </div>
-      {/* 뉴스 목록  */}
-      {isHovered && (
-        <div
-          className="absolute left-0 right-0 bg-white rounded-xl shadow-lg p-6 transition-all duration-300 z-50 max-h-96 overflow-y-auto border border-gray-100"
-          style={{ minWidth: 400, top: "100%" }}
-        >
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-            {newsList.map((news, idx) => (
-              <div
-                key={news.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, news)}
-                className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
-                onClick={() => navigate(`/news/${news.id}`)}
-                onMouseEnter={() => setHoveredIndex(idx)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                <div className="flex items-center min-w-0">
-                  <span className="text-lg font-semibold text-gray-900 w-6 text-left">
-                    {news.rank ?? idx + 1}
-                  </span>
-                  <span className="ml-2 text-base text-gray-900 truncate max-w-[100px]">
-                    {news.title}
-                  </span>
-                  <span className="text-xs text-gray-500 ml-2">
-                    {news.press || "언론사 미상"}
-                  </span>
-                </div>
-                <div className="flex-shrink-0 flex items-center">
-                  {getRankChangeIcon(news)}
-                </div>
+      {/* 뉴스 목록 (부드러운 토글 애니메이션) */}
+      <div
+        className={`absolute left-0 right-0 bg-white rounded-xl shadow-lg p-6 border border-gray-100 max-h-96 overflow-y-auto origin-top will-change-transform transition-all duration-200 ${
+          isHovered
+            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-[0.98] -translate-y-1 pointer-events-none"
+        } z-50`}
+        style={{ minWidth: 400, top: "100%" }}
+        aria-hidden={!isHovered}
+      >
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+          {newsList.map((news, idx) => (
+            <div
+              key={news.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, news)}
+              className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
+              onClick={() => navigate(`/news/${news.id}`)}
+              onMouseEnter={() => setHoveredIndex(idx)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <div className="flex items-center min-w-0">
+                <span className="text-lg font-semibold text-gray-900 w-6 text-left">
+                  {news.rank ?? idx + 1}
+                </span>
+                <span className="ml-2 text-base text-gray-900 truncate max-w-[100px]">
+                  {news.title}
+                </span>
+                <span className="text-xs text-gray-500 ml-2">
+                  {news.press || "언론사 미상"}
+                </span>
               </div>
-            ))}
-          </div>
+              <div className="flex-shrink-0 flex items-center">
+                {getRankChangeIcon(news)}
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
