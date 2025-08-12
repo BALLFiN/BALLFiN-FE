@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, ChevronRight } from "lucide-react";
+import { Star, ChevronRight } from "lucide-react";
 
 interface Stock {
   id: string;
@@ -141,32 +141,32 @@ export default function PopularStocks() {
   };
 
   return (
-    <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm">
+    <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3">
         <h2 className="text-[17px] font-semibold text-gray-900">
           실시간 인기 종목 Top 5
         </h2>
         <button
           onClick={() => navigate("/stock")}
-          className="text-[13px] font-medium text-[#0A5C2B] px-3 py-1.5 rounded-full hover:bg-[#0A5C2B]/10 active:bg-[#0A5C2B]/15 transition-colors"
+          className="text-[13px] font-medium text-[#0A5C2B] px-3 py-1.5 rounded-full hover:font-bold transition-colors"
         >
           더보기
         </button>
       </div>
 
-      <div className="border-t border-black/10">
-        {popularStocks.map((stock, index) => (
+      <div className="border-y border-black/10 divide-y divide-black/10">
+        {popularStocks.map((stock) => (
           <div
             key={stock.id}
             role="button"
             tabIndex={0}
             onClick={() => navigate(`/stock/${stock.code}`)}
             onKeyDown={(e) => handleRowKeyDown(e, stock.code)}
-            className="group relative flex items-center gap-3 px-4 py-3 cursor-pointer select-none transition-colors hover:bg-black/5 active:bg-black/10"
+            className="group flex items-center gap-3 px-4 py-4 sm:py-5 cursor-pointer select-none transition-colors hover:bg-black/5 active:bg-black/10"
           >
             {/* Rank */}
             <div
-              className={`h-7 w-7 sm:h-8 sm:w-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold ${getRankColor(
+              className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold ${getRankColor(
                 stock.rank
               )} shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]`}
             >
@@ -218,14 +218,16 @@ export default function PopularStocks() {
                 }}
                 className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
                   favorites.includes(stock.id)
-                    ? "text-red-500 bg-red-50"
-                    : "text-gray-400 hover:bg-black/5 active:bg-black/10"
+                    ? "text-amber-500"
+                    : "text-gray-400 hover:bg-black/10"
                 }`}
               >
-                <Heart
+                <Star
                   size={18}
                   strokeWidth={1.75}
-                  className={favorites.includes(stock.id) ? "text-red-500" : ""}
+                  className={
+                    favorites.includes(stock.id) ? "text-amber-500" : ""
+                  }
                   fill={favorites.includes(stock.id) ? "currentColor" : "none"}
                 />
               </button>
@@ -234,10 +236,7 @@ export default function PopularStocks() {
               </span>
             </div>
 
-            {/* Hairline divider for compact screens between rows */}
-            {index < popularStocks.length - 1 ? (
-              <div className="absolute inset-x-4 bottom-0 h-px bg-black/10" />
-            ) : null}
+            {/* row divider handled by parent using divide-y */}
           </div>
         ))}
       </div>
