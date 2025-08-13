@@ -38,7 +38,7 @@ export default function Pagination({
         className={`p-2 rounded-lg transition-colors ${
           currentPage === 1
             ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-600 hover:bg-gray-100"
+            : "text-gray-600 hover:bg-gray-100 cursor-pointer"
         }`}
         aria-label="맨 앞 페이지"
       >
@@ -52,7 +52,7 @@ export default function Pagination({
         className={`p-2 rounded-lg transition-colors ${
           currentPage === 1
             ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-600 hover:bg-gray-100"
+            : "text-gray-600 hover:bg-gray-100 cursor-pointer"
         }`}
         aria-label="이전 페이지"
       >
@@ -63,7 +63,7 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`px-4 py-2 rounded-lg transition-colors ${
+          className={`px-4 py-2 rounded-lg transition-colors cursor-pointer ${
             currentPage === page
               ? "bg-[#0A5C2B] text-white font-medium"
               : "text-gray-600 hover:bg-gray-100"
@@ -80,7 +80,7 @@ export default function Pagination({
         className={`p-2 rounded-lg transition-colors ${
           currentPage === totalPages
             ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-600 hover:bg-gray-100"
+            : "text-gray-600 hover:bg-gray-100 cursor-pointer"
         }`}
         aria-label="다음 페이지"
       >
@@ -94,7 +94,7 @@ export default function Pagination({
         className={`p-2 rounded-lg transition-colors ${
           currentPage === totalPages
             ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-600 hover:bg-gray-100"
+            : "text-gray-600 hover:bg-gray-100 cursor-pointer"
         }`}
         aria-label="맨 뒤 페이지"
       >
