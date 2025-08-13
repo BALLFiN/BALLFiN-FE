@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStockList } from "@/api/stock";
+import { getStockList, SortBy } from "@/api/stock";
 
-export const useStockList = () => {
+export const useStockList = (sortBy: SortBy = "market_cap_desc") => {
   return useQuery({
-    queryKey: ["stockList"],
-    queryFn: getStockList,
+    queryKey: ["stockList", sortBy],
+    queryFn: () => getStockList(sortBy),
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
   });

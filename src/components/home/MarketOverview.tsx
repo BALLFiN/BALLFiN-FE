@@ -280,18 +280,28 @@ export default function MarketOverview() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const formatNumber = (num: number, fractionDigits = 2) =>
-    num.toLocaleString("ko-KR", {
+  const formatNumber = (num: number | undefined | null, fractionDigits = 2) => {
+    if (num === undefined || num === null || isNaN(num)) {
+      return "0.00";
+    }
+    return num.toLocaleString("ko-KR", {
       minimumFractionDigits: fractionDigits,
       maximumFractionDigits: fractionDigits,
     });
+  };
 
-  const formatSigned = (num: number, fractionDigits = 2) => {
+  const formatSigned = (num: number | undefined | null, fractionDigits = 2) => {
+    if (num === undefined || num === null || isNaN(num)) {
+      return "0.00";
+    }
     const sign = num > 0 ? "+" : num < 0 ? "-" : "";
     return `${sign}${formatNumber(Math.abs(num), fractionDigits)}`;
   };
 
-  const formatPercent = (num: number) => {
+  const formatPercent = (num: number | undefined | null) => {
+    if (num === undefined || num === null || isNaN(num)) {
+      return "0.00%";
+    }
     const sign = num > 0 ? "+" : num < 0 ? "-" : "";
     return `${sign}${Math.abs(num).toFixed(2)}%`;
   };
@@ -324,6 +334,48 @@ export default function MarketOverview() {
     (["kospi", "nasdaq", "usd_krw", "oil", "vix"] as const).forEach((key) => {
       const quote = data[key] as any;
       if (!quote) return;
+
+      // 에러 필드가 있는 경우 처리
+      if (quote.error) {
+        console.warn(
+          `[MarketOverview] ${key} 데이터 에러: ${quote.error}`,
+          quote
+        );
+
+        // 에러 상태 카드 생성 (VIX의 경우)
+        if (key === "vix") {
+          const meta = STAT_METADATA[key];
+          result.push({
+            id: meta.id,
+            title: meta.title,
+            unit: meta.unit,
+            value: "데이터 없음",
+            change: {
+              value: "0.00",
+              percentage: "0.00%",
+              isPositive: false,
+            },
+            sparklineData: [],
+            description: meta.description,
+            detailedInfo: meta.detailedInfo,
+          });
+        }
+        return;
+      }
+
+      // 필수 데이터 검증
+      if (
+        typeof quote.price !== "number" ||
+        typeof quote.change !== "number" ||
+        typeof quote.change_percent !== "number" ||
+        isNaN(quote.price) ||
+        isNaN(quote.change) ||
+        isNaN(quote.change_percent)
+      ) {
+        console.warn(`[MarketOverview] ${key} 데이터가 유효하지 않음:`, quote);
+        return;
+      }
+
       const meta = STAT_METADATA[key];
       const valueNumber: number = quote.price;
       const changeNumber: number = quote.change;
@@ -350,7 +402,7 @@ export default function MarketOverview() {
 
     // 기준금리
     const ir = data["interest_rate"] as any;
-    if (ir) {
+    if (ir && typeof ir.rate === "number" && !isNaN(ir.rate)) {
       const meta = STAT_METADATA["interest_rate"];
       const history = Array.isArray(ir.historical_data)
         ? ir.historical_data

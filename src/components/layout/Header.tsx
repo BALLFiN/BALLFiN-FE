@@ -176,7 +176,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 bg-white shadow-md z-[9999] transition-transform duration-300 ${
+        className={`fixed top-0 left-0 right-0 bg-white sm:bg-white/80 backdrop-blur-md border-b border-black/10 shadow-sm z-[9999] transition-transform duration-300 ${
           isVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -198,10 +198,10 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-2 rounded-md text-sm transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                     isActiveRoute(item.to)
-                      ? "text-[#0A5C2B] font-bold"
-                      : "text-gray-700 hover:text-[#0A5C2B] font-medium"
+                      ? "text-[#0A5C2B] font-semibold "
+                      : "text-gray-700 font-medium"
                   }`}
                 >
                   {item.label}
@@ -263,8 +263,8 @@ const Header = () => {
                     className={`${
                       item.isPrimary
                         ? "bg-[#0A5C2B] text-white hover:bg-[#0A5C2B]/90"
-                        : "text-gray-700 hover:text-[#0A5C2B]"
-                    } px-4 py-2 rounded-md text-sm font-medium`}
+                        : "border border-black/10 text-gray-800 hover:bg-black/5"
+                    } px-4 py-2 rounded-full text-sm font-medium transition-colors`}
                   >
                     {item.label}
                   </Link>
@@ -272,7 +272,7 @@ const Header = () => {
                   <button
                     key={index}
                     onClick={item.onClick}
-                    className="flex items-center gap-2 text-gray-700 hover:text-[#0A5C2B] px-4 py-2 rounded-md text-sm font-medium"
+                    className="flex items-center gap-2 border border-black/10 text-gray-800 px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-black/5 active:bg-black/10"
                   >
                     {item.icon}
                     {item.label}
@@ -298,9 +298,9 @@ const Header = () => {
 
           {/* 모바일 메뉴 */}
           <div
-            className={`md:hidden transition-all duration-300 ease-in-out absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 ${
+            className={`md:hidden transition-all duration-300 ease-in-out absolute top-full left-0 right-0 bg-white sm:bg-white/85 backdrop-blur-md shadow-lg border-t border-gray-200 ${
               isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            } overflow-hidden z-9999`}
+            } overflow-hidden z-[9999]`}
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               {isLoggedIn && userName && (
@@ -312,10 +312,10 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`block px-3 py-2 rounded-md text-m transition-colors ${
+                  className={`block px-3 py-2 rounded-full text-base transition-colors ${
                     isActiveRoute(item.to)
-                      ? "text-[#0A5C2B] font-bold"
-                      : "text-gray-700 hover:text-[#0A5C2B] font-medium"
+                      ? "text-[#0A5C2B] font-semibold"
+                      : "text-gray-800 font-medium"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -331,8 +331,8 @@ const Header = () => {
                     className={`block ${
                       item.isPrimary
                         ? "bg-[#0A5C2B] text-white hover:bg-[#0A5C2B]/90"
-                        : "text-gray-700 hover:text-[#0A5C2B]"
-                    } px-4 py-2 rounded-md text-base font-medium text-center`}
+                        : "border border-black/10 text-gray-800 "
+                    } px-4 py-2 rounded-full text-base font-medium text-center transition-colors`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.label}
@@ -344,7 +344,7 @@ const Header = () => {
                       item.onClick();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center justify-center gap-2 w-full text-gray-700 hover:text-[#0A5C2B] px-4 py-2 rounded-md text-base font-medium"
+                    className="flex items-center justify-center gap-2 w-full border border-black/10 text-gray-800 px-4 py-2 rounded-full text-base font-medium transition-colors hover:bg-black/5 active:bg-black/10"
                   >
                     {item.icon}
                     {item.label}
