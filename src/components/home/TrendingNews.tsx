@@ -265,32 +265,65 @@ export default function TrendingNews() {
         aria-hidden={!isHovered}
       >
         <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-          {newsList.map((news, idx) => (
-            <div
-              key={news.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, news)}
-              className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
-              onClick={() => navigate(`/news/${news.id}`)}
-              onMouseEnter={() => setHoveredIndex(idx)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              <div className="flex items-center min-w-0">
-                <span className="text-lg font-semibold text-gray-900 w-6 text-left">
-                  {news.rank ?? idx + 1}
-                </span>
-                <span className="ml-2 text-base text-gray-900 truncate max-w-[100px]">
-                  {news.title}
-                </span>
-                <span className="text-xs text-gray-500 ml-2">
-                  {news.press || "언론사 미상"}
-                </span>
+          {/* 왼쪽: 1-5위 */}
+          <div className="space-y-2">
+            {newsList.slice(0, 5).map((news, idx) => (
+              <div
+                key={news.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, news)}
+                className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
+                onClick={() => navigate(`/news/${news.id}`)}
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <div className="flex items-center min-w-0">
+                  <span className="text-lg font-semibold text-gray-900 w-6 text-left">
+                    {news.rank ?? idx + 1}
+                  </span>
+                  <span className="ml-2 text-base text-gray-900 truncate max-w-[100px]">
+                    {news.title}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-2">
+                    {news.press || "언론사 미상"}
+                  </span>
+                </div>
+                <div className="flex-shrink-0 flex items-center">
+                  {getRankChangeIcon(news)}
+                </div>
               </div>
-              <div className="flex-shrink-0 flex items-center">
-                {getRankChangeIcon(news)}
+            ))}
+          </div>
+
+          {/* 오른쪽: 6-10위 */}
+          <div className="space-y-2">
+            {newsList.slice(5, 10).map((news, idx) => (
+              <div
+                key={news.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, news)}
+                className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded cursor-pointer transition-colors"
+                onClick={() => navigate(`/news/${news.id}`)}
+                onMouseEnter={() => setHoveredIndex(idx + 5)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <div className="flex items-center min-w-0">
+                  <span className="text-lg font-semibold text-gray-900 w-6 text-left">
+                    {news.rank ?? idx + 6}
+                  </span>
+                  <span className="ml-2 text-base text-gray-900 truncate max-w-[100px]">
+                    {news.title}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-2">
+                    {news.press || "언론사 미상"}
+                  </span>
+                </div>
+                <div className="flex-shrink-0 flex items-center">
+                  {getRankChangeIcon(news)}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
