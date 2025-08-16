@@ -1,245 +1,325 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter } from "lucide-react";
+import { ResponsiveTreeMap } from "@nivo/treemap";
 
-interface Keyword {
-  id: string;
-  text: string;
-  count: number;
-  category: "daily" | "weekly";
-  relatedStocks?: string[];
-  sentiment: "positive" | "negative" | "neutral";
+interface CompanyInfo {
+  corp_name: string;
+  stock_code: string;
+  current_price: number;
+  change: number;
+  change_percent: number;
+  week_52_high: number;
+  week_52_low: number;
+  volume: number;
+  market_cap_billion: number;
 }
 
-const trendingKeywords: Keyword[] = [
-  // 금일 급등 키워드
-  {
-    id: "ai-chip",
-    text: "AI 반도체",
-    count: 156,
-    category: "daily",
-    relatedStocks: ["삼성전자", "SK하이닉스", "엔비디아"],
-    sentiment: "positive",
-  },
-  {
-    id: "battery",
-    text: "배터리",
-    count: 142,
-    category: "daily",
-    relatedStocks: ["LG에너지솔루션", "삼성SDI", "SK온"],
-    sentiment: "positive",
-  },
-  {
-    id: "biotech",
-    text: "바이오",
-    count: 98,
-    category: "daily",
-    relatedStocks: ["셀트리온", "삼성바이오로직스"],
-    sentiment: "neutral",
-  },
-  {
-    id: "metaverse",
-    text: "메타버스",
-    count: 87,
-    category: "daily",
-    relatedStocks: ["네이버", "카카오", "페이스북"],
-    sentiment: "positive",
-  },
-  {
-    id: "crypto",
-    text: "가상화폐",
-    count: 76,
-    category: "daily",
-    relatedStocks: ["업비트", "빗썸"],
-    sentiment: "negative",
-  },
-  // 주간 누적 인기 키워드
-  {
-    id: "inflation",
-    text: "인플레이션",
-    count: 234,
-    category: "weekly",
-    relatedStocks: ["한국은행", "금리"],
-    sentiment: "negative",
-  },
-  {
-    id: "fed",
-    text: "연준",
-    count: 198,
-    category: "weekly",
-    relatedStocks: ["달러", "환율"],
-    sentiment: "neutral",
-  },
-  {
-    id: "china",
-    text: "중국",
-    count: 167,
-    category: "weekly",
-    relatedStocks: ["원자재", "수출입"],
-    sentiment: "negative",
-  },
-  {
-    id: "energy",
-    text: "에너지",
-    count: 145,
-    category: "weekly",
-    relatedStocks: ["원유", "가스", "전력"],
-    sentiment: "positive",
-  },
-  {
-    id: "esg",
-    text: "ESG",
-    count: 123,
-    category: "weekly",
-    relatedStocks: ["친환경", "탄소중립"],
-    sentiment: "positive",
-  },
-];
+type SortBy =
+  | "market_cap_desc"
+  | "market_cap_asc"
+  | "change_percent_desc"
+  | "change_percent_asc"
+  | "volume_desc"
+  | "volume_asc";
 
-type FilterType = "daily" | "weekly" | "all";
+// API 호출 함수
+const getCompanies = async (
+  sortBy: SortBy = "market_cap_desc"
+): Promise<CompanyInfo[]> => {
+  try {
+    const response = await fetch(`/info/companies?sort_by=${sortBy}`);
 
-// 커스텀 태그 클라우드 컴포넌트
-function TagCloud({
-  keywords,
-  onWordClick,
-}: {
-  keywords: Keyword[];
-  onWordClick: (keyword: Keyword) => void;
-}) {
-  const maxCount = Math.max(...keywords.map((k) => k.count));
-  const minCount = Math.min(...keywords.map((k) => k.count));
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-  const getFontSize = (count: number) => {
-    const minSize = 14;
-    const maxSize = 32;
-    const ratio = (count - minCount) / (maxCount - minCount);
-    return minSize + (maxSize - minSize) * ratio;
-  };
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+    throw error;
+  }
+};
 
-  const getColor = (sentiment: string) => {
-    switch (sentiment) {
-      case "positive":
-        return "#10B981"; // green-600
-      case "negative":
-        return "#EF4444"; // red-600
-      default:
-        return "#3B82F6"; // blue-600
+// 감정에 따른 색상 매핑
+const getSentimentColor = (sentiment: string) => {
+  switch (sentiment) {
+    case "positive":
+      return "#FCA5A5"; // 연한 빨강 (양수)
+    case "negative":
+      return "#93C5FD"; // 연한 파랑 (음수)
+    default:
+      return "rgba(255, 255, 255, 0.3)"; // 투명한 흰색 (변화 미비)
+  }
+};
+
+// 커스텀 툴팁 컴포넌트
+const CustomTooltip = ({ node }: any) => {
+  return (
+    <div className="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-gray-200/50 min-w-[280px] animate-fadeIn">
+      {/* 헤더 */}
+      <div className="border-b border-gray-100 pb-3 mb-3">
+        <div className="font-bold text-lg text-gray-900">{node.data.name}</div>
+        <div className="text-sm text-gray-500">
+          종목코드: {node.data.stockCode}
+        </div>
+      </div>
+
+      {/* 가격 정보 */}
+      <div className="grid grid-cols-2 gap-4 mb-3">
+        <div className="text-center">
+          <div className="text-xs text-gray-500 mb-1">현재가</div>
+          <div className="font-semibold text-lg text-gray-900">
+            {node.data.currentPrice?.toLocaleString()}원
+          </div>
+        </div>
+        <div className="text-center">
+          <div className="text-xs text-gray-500 mb-1">등락률</div>
+          <div
+            className={`font-semibold text-lg ${
+              node.data.changePercent > 0
+                ? "text-emerald-600"
+                : node.data.changePercent < 0
+                  ? "text-red-600"
+                  : "text-gray-600"
+            }`}
+          >
+            {node.data.changePercent > 0 ? "+" : ""}
+            {node.data.changePercent?.toFixed(2)}%
+          </div>
+        </div>
+      </div>
+
+      {/* 상태 표시 */}
+      <div className="flex items-center justify-center gap-2 pt-2 border-t border-gray-100">
+        <div
+          className="w-4 h-4 rounded-full"
+          style={{ backgroundColor: getSentimentColor(node.data.sentiment) }}
+        ></div>
+        <span className="text-sm font-medium text-gray-700">
+          {node.data.sentiment === "positive"
+            ? "상승"
+            : node.data.sentiment === "negative"
+              ? "하락"
+              : "변동없음"}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export default function TrendingKeywords() {
+  const navigate = useNavigate();
+  const [filter, setFilter] = useState<SortBy>("market_cap_desc");
+  const [companies, setCompanies] = useState<CompanyInfo[]>([]);
+  const [allCompanies, setAllCompanies] = useState<
+    Record<SortBy, CompanyInfo[]>
+  >({
+    market_cap_desc: [],
+    market_cap_asc: [],
+    change_percent_desc: [],
+    change_percent_asc: [],
+    volume_desc: [],
+    volume_asc: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAllCompanies = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 3가지 필터링 상태에 대한 데이터를 병렬로 로딩
+        const [marketCapData, changePercentData, volumeData] =
+          await Promise.all([
+            getCompanies("market_cap_desc"),
+            getCompanies("change_percent_desc"),
+            getCompanies("volume_desc"),
+          ]);
+
+        setAllCompanies({
+          market_cap_desc: marketCapData,
+          market_cap_asc: marketCapData,
+          change_percent_desc: changePercentData,
+          change_percent_asc: changePercentData,
+          volume_desc: volumeData,
+          volume_asc: volumeData,
+        });
+
+        // 초기 필터에 맞는 데이터 설정
+        setCompanies(marketCapData);
+      } catch (err) {
+        setError("데이터를 불러오는 중 오류가 발생했습니다.");
+        console.error("Error fetching companies:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllCompanies();
+  }, []);
+
+  // 필터 변경 시 해당 데이터로 업데이트
+  useEffect(() => {
+    if (allCompanies[filter] && allCompanies[filter].length > 0) {
+      setCompanies(allCompanies[filter]);
+    }
+  }, [filter, allCompanies]);
+
+  const treeMapData = useMemo(() => {
+    if (companies.length === 0) return null;
+
+    // 등락률 변동 기준일 때는 절댓값으로 정렬
+    let sortedCompanies = [...companies];
+    if (filter === "change_percent_desc") {
+      sortedCompanies.sort(
+        (a, b) => Math.abs(b.change_percent) - Math.abs(a.change_percent)
+      );
+    }
+
+    return {
+      name: "주식",
+      children: sortedCompanies.slice(0, 20).map((company) => ({
+        name: company.corp_name,
+        loc: company.market_cap_billion,
+        sentiment:
+          company.change_percent > 0
+            ? "positive"
+            : company.change_percent < 0
+              ? "negative"
+              : "neutral",
+        stockCode: company.stock_code,
+        currentPrice: company.current_price,
+        changePercent: company.change_percent,
+        volume: company.volume,
+      })),
+    };
+  }, [companies, filter]);
+
+  const handleNodeClick = (node: any) => {
+    if (node.data.stockCode) {
+      navigate(`/stock/${node.data.stockCode}`);
     }
   };
 
   return (
-    <div className="flex flex-wrap justify-center items-center gap-3 p-4 h-full">
-      {keywords.map((keyword) => (
-        <button
-          key={keyword.id}
-          onClick={() => onWordClick(keyword)}
-          className="hover:scale-110 transition-transform duration-200 cursor-pointer"
-          style={{
-            fontSize: `${getFontSize(keyword.count)}px`,
-            color: getColor(keyword.sentiment),
-            fontWeight: keyword.count > maxCount * 0.7 ? "bold" : "normal",
-          }}
-          title={`${keyword.text} (${keyword.count}회 언급)\n관련 종목: ${keyword.relatedStocks?.join(", ") || "없음"}`}
-        >
-          {keyword.text}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export default function TrendingKeywords() {
-  const navigate = useNavigate();
-  const [filter, setFilter] = useState<FilterType>("daily");
-
-  const filteredKeywords = useMemo(
-    () =>
-      trendingKeywords.filter((keyword) =>
-        filter === "all" ? true : keyword.category === filter
-      ),
-    [filter]
-  );
-
-  const handleWordClick = (keyword: Keyword) => {
-    navigate(`/news/search?keyword=${encodeURIComponent(keyword.text)}`);
-  };
-
-  return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl font-bold text-gray-900">
-            실시간 인기뉴스 키워드
-          </h2>
-        </div>
+    <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 my-2">
+        <h2 className="text-[17px] font-semibold text-gray-900">
+          주식 시장 현황
+        </h2>
       </div>
 
       {/* 필터 버튼 */}
-      <div className="flex items-center gap-2 mb-6">
-        <Filter className="w-4 h-4 text-gray-500" />
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilter("daily")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filter === "daily"
-                ? "bg-[#0A5C2B] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            금일 급등
-          </button>
-          <button
-            onClick={() => setFilter("weekly")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filter === "weekly"
-                ? "bg-[#0A5C2B] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            주간 누적
-          </button>
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filter === "all"
-                ? "bg-[#0A5C2B] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            전체
-          </button>
+      <div className="px-4 pb-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Filter className="w-4 h-4 text-gray-500" />
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFilter("market_cap_desc")}
+              className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
+                filter === "market_cap_desc"
+                  ? "bg-[#0A5C2B] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              시가총액 높은순
+            </button>
+            <button
+              onClick={() => setFilter("change_percent_desc")}
+              className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
+                filter === "change_percent_desc"
+                  ? "bg-[#0A5C2B] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              등락률 변동 큰순
+            </button>
+            <button
+              onClick={() => setFilter("volume_desc")}
+              className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
+                filter === "volume_desc"
+                  ? "bg-[#0A5C2B] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              거래량 많은순
+            </button>
+          </div>
+        </div>
+
+        {/* TreeMap */}
+        <div className="h-64 [&_g]:cursor-pointer">
+          {loading ? (
+            <div className="h-full p-4">
+              {/* 스켈레톤 헤더 */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-32"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
+              </div>
+
+              {/* 스켈레톤 그리드 */}
+              <div className="bg-gray-200 rounded-lg animate-pulse h-48"></div>
+            </div>
+          ) : error ? (
+            <div className="h-full flex items-center justify-center text-red-500 text-center">
+              <div>
+                <p>{error}</p>
+              </div>
+            </div>
+          ) : treeMapData && companies.length > 0 ? (
+            <ResponsiveTreeMap
+              data={treeMapData}
+              identity="name"
+              value="loc"
+              valueFormat=".0f"
+              margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+              labelSkipSize={12}
+              labelTextColor={{ from: "color", modifiers: [["darker", 1.2]] }}
+              parentLabelPosition="left"
+              parentLabelTextColor={{
+                from: "color",
+                modifiers: [["darker", 2]],
+              }}
+              borderColor={{ from: "color", modifiers: [["darker", 0.1]] }}
+              colors={(node: any) => getSentimentColor(node.data.sentiment)}
+              nodeOpacity={0.8}
+              borderWidth={1}
+              animate={true}
+              tooltip={CustomTooltip}
+              onClick={handleNodeClick}
+              enableParentLabel={false}
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center text-gray-500 text-center">
+              <div>
+                <p>데이터가 없습니다.</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 태그 클라우드 */}
-      <div className="h-64 flex items-center justify-center">
-        {filteredKeywords.length > 0 ? (
-          <TagCloud keywords={filteredKeywords} onWordClick={handleWordClick} />
-        ) : (
-          <div className="text-gray-500 text-center">
-            <p>선택된 필터에 해당하는 키워드가 없습니다.</p>
-            <p className="text-sm mt-1">다른 필터를 선택해보세요.</p>
-          </div>
-        )}
-      </div>
-
       {/* 설명 */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-500">
-          키워드를 클릭하면 관련 뉴스와 종목 분석을 확인할 수 있습니다
+      <div className="px-4 py-3 border-t border-black/10">
+        <p className="text-[12px] text-gray-500 text-center">
+          주식을 클릭하면 상세 정보를 확인할 수 있습니다
         </p>
-        <div className="flex justify-center gap-4 mt-2 text-xs text-gray-400">
+        <div className="flex justify-center gap-4 mt-2 text-[11px] text-gray-400">
           <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            긍정적
+            <div className="w-3 h-3 rounded-full bg-[#FCA5A5]"></div>
+            상승
           </span>
           <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            부정적
+            <div className="w-3 h-3 rounded-full bg-[#93C5FD]"></div>
+            하락
           </span>
           <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-            중립적
+            <div className="w-3 h-3 rounded-full bg-white/30"></div>
+            변동없음
           </span>
         </div>
       </div>

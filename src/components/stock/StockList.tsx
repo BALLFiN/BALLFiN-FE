@@ -66,7 +66,7 @@ export default function StockList({
                     onToggleFavorite(stock.id);
                   }}
                   aria-pressed={favoriteStocks.includes(stock.id)}
-                  className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
+                  className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                     favoriteStocks.includes(stock.id)
                       ? "text-amber-500"
                       : "text-gray-400 hover:bg-black/10"
@@ -185,7 +185,7 @@ export default function StockList({
                 onToggleFavorite(stock.id);
               }}
               aria-pressed={favoriteStocks.includes(stock.id)}
-              className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
+              className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                 favoriteStocks.includes(stock.id)
                   ? "text-amber-500"
                   : "text-gray-400 hover:bg-black/10"
