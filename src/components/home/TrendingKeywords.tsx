@@ -57,7 +57,7 @@ const getSentimentColor = (sentiment: string) => {
 // 커스텀 툴팁 컴포넌트
 const CustomTooltip = ({ node }: any) => {
   return (
-    <div className="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-gray-200/50 min-w-[280px] animate-fadeIn">
+    <div className="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-gray-200/50 min-w-[280px] animate-fadeIn z-50 relative">
       {/* 헤더 */}
       <div className="border-b border-gray-100 pb-3 mb-3">
         <div className="font-bold text-lg text-gray-900">{node.data.name}</div>
@@ -206,7 +206,7 @@ export default function TrendingKeywords() {
   };
 
   return (
-    <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm overflow-hidden">
+    <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm">
       <div className="flex items-center justify-between px-4 py-3 my-2">
         <h2 className="text-[17px] font-semibold text-gray-900">
           주식 시장 현황
@@ -241,7 +241,7 @@ export default function TrendingKeywords() {
             <button
               onClick={() => setFilter("volume_desc")}
               className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
-                filter === "volume_desc"
+                filter === "change_percent_desc"
                   ? "bg-[#0A5C2B] text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
@@ -252,7 +252,7 @@ export default function TrendingKeywords() {
         </div>
 
         {/* TreeMap */}
-        <div className="h-64 [&_g]:cursor-pointer">
+        <div className="h-64 [&_g]:cursor-pointer relative">
           {loading ? (
             <div className="h-full p-4">
               {/* 스켈레톤 헤더 */}
