@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Filter, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Filter } from "lucide-react";
 import { ResponsiveTreeMap } from "@nivo/treemap";
 
 interface CompanyInfo {
