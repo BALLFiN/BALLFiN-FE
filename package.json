@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
+    "@nivo/treemap": "^0.99.0",
     "@tanstack/react-query": "^5.75.2",
     "@tanstack/react-query-devtools": "^5.67.1",
     "autoprefixer": "^10.4.20",
