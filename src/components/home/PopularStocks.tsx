@@ -216,7 +216,7 @@ export default function PopularStocks() {
                   e.stopPropagation();
                   toggleFavorite(stock.id);
                 }}
-                className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
+                className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                   favorites.includes(stock.id)
                     ? "text-amber-500"
                     : "text-gray-400 hover:bg-black/10"
