@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import type { KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, ChevronRight } from "lucide-react";
+import {
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+} from "../../api/user/favoritesApi";
 
 interface CompanyInfo {
   corp_name: string;
@@ -61,6 +66,7 @@ export default function PopularStocks() {
   const [popularStocks, setPopularStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
 
   useEffect(() => {
     const fetchPopularStocks = async () => {
@@ -95,15 +101,99 @@ export default function PopularStocks() {
       }
     };
 
+    const fetchFavorites = async () => {
+      try {
+        const favoritesData = await getFavorites();
+
+        // API 응답 형식에 맞게 처리
+        if (
+          favoritesData &&
+          typeof favoritesData === "object" &&
+          "favorites" in favoritesData
+        ) {
+          // {favorites: Array} 형식
+          const favoritesArray = favoritesData.favorites;
+          if (Array.isArray(favoritesArray)) {
+            setFavorites(favoritesArray);
+          } else {
+            setFavorites([]);
+          }
+        } else if (Array.isArray(favoritesData)) {
+          // 직접 배열 형식
+          setFavorites(favoritesData);
+        } else {
+          setFavorites([]);
+        }
+      } catch (err) {
+        // 즐겨찾기 로딩 실패는 전체 컴포넌트에 영향을 주지 않도록 함
+        setFavorites([]);
+      }
+    };
+
     fetchPopularStocks();
+    fetchFavorites();
   }, []);
 
-  const toggleFavorite = (stockId: string) => {
-    setFavorites((prev) =>
-      prev.includes(stockId)
-        ? prev.filter((id) => id !== stockId)
-        : [...prev, stockId]
-    );
+  const toggleFavorite = async (stockId: string) => {
+    try {
+      setFavoritesLoading(true);
+
+      if (Array.isArray(favorites) && favorites.includes(stockId)) {
+        // 즐겨찾기 제거
+        await removeFavorite(stockId);
+
+        // 제거 성공 후 최신 즐겨찾기 목록을 다시 가져옴
+        try {
+          const updatedFavorites = await getFavorites();
+          if (
+            updatedFavorites &&
+            typeof updatedFavorites === "object" &&
+            "favorites" in updatedFavorites
+          ) {
+            const favoritesArray = updatedFavorites.favorites;
+            if (Array.isArray(favoritesArray)) {
+              setFavorites(favoritesArray);
+            }
+          } else if (Array.isArray(updatedFavorites)) {
+            setFavorites(updatedFavorites);
+          }
+        } catch (err) {
+          // 폴백: 로컬 상태 업데이트
+          setFavorites((prev) =>
+            Array.isArray(prev) ? prev.filter((id) => id !== stockId) : []
+          );
+        }
+      } else {
+        // 즐겨찾기 추가
+        await addFavorite(stockId);
+
+        // 추가 성공 후 최신 즐겨찾기 목록을 다시 가져옴
+        try {
+          const updatedFavorites = await getFavorites();
+          if (
+            updatedFavorites &&
+            typeof updatedFavorites === "object" &&
+            "favorites" in updatedFavorites
+          ) {
+            const favoritesArray = updatedFavorites.favorites;
+            if (Array.isArray(favoritesArray)) {
+              setFavorites(favoritesArray);
+            }
+          } else if (Array.isArray(updatedFavorites)) {
+            setFavorites(updatedFavorites);
+          }
+        } catch (err) {
+          // 폴백: 로컬 상태 업데이트
+          setFavorites((prev) =>
+            Array.isArray(prev) ? [...prev, stockId] : [stockId]
+          );
+        }
+      }
+    } catch (err) {
+      // 에러 발생 시 사용자에게 알림 (선택사항)
+    } finally {
+      setFavoritesLoading(false);
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -166,10 +256,7 @@ export default function PopularStocks() {
                 <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded animate-pulse"></div>
               </div>
-              <div className="ml-auto flex items-center gap-1">
-                <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>
-                <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>
-              </div>
+              <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>
             </div>
           ))}
         </div>
@@ -263,24 +350,33 @@ export default function PopularStocks() {
             {/* Accessories */}
             <div className="ml-auto flex items-center gap-1">
               <button
-                aria-pressed={favorites.includes(stock.id)}
+                aria-pressed={
+                  Array.isArray(favorites) && favorites.includes(stock.id)
+                }
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleFavorite(stock.id);
                 }}
+                disabled={favoritesLoading}
                 className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                  favorites.includes(stock.id)
+                  Array.isArray(favorites) && favorites.includes(stock.id)
                     ? "text-amber-500"
                     : "text-gray-400 hover:bg-black/10"
-                }`}
+                } ${favoritesLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <Star
                   size={18}
                   strokeWidth={1.75}
                   className={
-                    favorites.includes(stock.id) ? "text-amber-500" : ""
+                    Array.isArray(favorites) && favorites.includes(stock.id)
+                      ? "text-amber-500"
+                      : ""
                   }
-                  fill={favorites.includes(stock.id) ? "currentColor" : "none"}
+                  fill={
+                    Array.isArray(favorites) && favorites.includes(stock.id)
+                      ? "currentColor"
+                      : "none"
+                  }
                 />
               </button>
               <span className="pointer-events-none h-8 w-8 rounded-full flex items-center justify-center text-gray-400 group-hover:text-gray-500">
