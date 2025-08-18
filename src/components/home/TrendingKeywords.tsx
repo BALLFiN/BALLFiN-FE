@@ -79,9 +79,9 @@ const CustomTooltip = ({ node }: any) => {
           <div
             className={`font-semibold text-lg ${
               node.data.changePercent > 0
-                ? "text-emerald-600"
+                ? "text-[#FCA5A5]"
                 : node.data.changePercent < 0
-                  ? "text-red-600"
+                  ? "text-[#93C5FD]"
                   : "text-gray-600"
             }`}
           >
@@ -241,7 +241,7 @@ export default function TrendingKeywords() {
             <button
               onClick={() => setFilter("volume_desc")}
               className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
-                filter === "change_percent_desc"
+                filter === "volume_desc"
                   ? "bg-[#0A5C2B] text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
