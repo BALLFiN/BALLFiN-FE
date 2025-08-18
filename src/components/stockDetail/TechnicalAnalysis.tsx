@@ -33,6 +33,7 @@ interface HistoricalData {
 interface TechnicalAnalysisProps {
   stock: StockDetail;
   historicalData: HistoricalData[];
+  analysis?: any; // /info/company/{code} 응답 전체 또는 필요한 섹션 포함 객체
 }
 
 type TabType = "summary" | "pattern" | "volatility" | "volume";
@@ -40,18 +41,46 @@ type TabType = "summary" | "pattern" | "volatility" | "volume";
 export default function TechnicalAnalysis({
   stock: _stock,
   historicalData: _historicalData,
+  analysis,
 }: TechnicalAnalysisProps) {
   const [activeTab, setActiveTab] = useState<TabType>("summary");
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
-  // 기술적 지표 계산 (실제로는 더 정확한 계산 필요)
-  const rsi = 28.4;
-  const dailyRange = 2.8;
-  const weeklyRange = 45.2;
-  const currentVolume = 15234567;
-  const avgVolume = 12456789;
-  const volumeRatio = (((currentVolume - avgVolume) / avgVolume) * 100).toFixed(
-    1
-  );
+  // API 데이터 매핑 헬퍼
+  const toNum = (v: any): number => {
+    if (typeof v === "number") return v;
+    if (typeof v === "string") {
+      const n = Number(v.replace(/,/g, ""));
+      return isNaN(n) ? 0 : n;
+    }
+    return 0;
+  };
+
+  const statusColor = (text?: string) => {
+    if (!text) return "text-gray-600";
+    if (/상승|매수|정배열/.test(text)) return "text-green-600";
+    if (/하락|매도|과매도/.test(text)) return "text-red-600";
+    return "text-blue-600";
+  };
+
+  const main = analysis?.main_analysis;
+  const vola = analysis?.volatility_analysis;
+  const vol = analysis?.volume_analysis;
+
+  // 기술적 지표 값 (없으면 기본값)
+  const rsi = main?.rsi?.value ?? 28.4;
+  const dailyRange = vola?.volatility?.value?.volatility_percent ?? 2.8;
+  const avgVolatility = vola?.volatility?.value?.avg_volatility_percent ?? 2.8;
+  const currentVolume = toNum(vol?.volume?.value?.volume) || 15234567;
+  const avgVolume = toNum(vol?.volume?.value?.avg_volume_20) || 12456789;
+  const volumeRatio = (
+    ((currentVolume - avgVolume) / (avgVolume || 1)) *
+    100
+  ).toFixed(1);
+  const mfiValue =
+    typeof vol?.mfi?.value === "number" ? vol.mfi.value : undefined;
+  const obvValue = toNum(vol?.obv?.value?.obv);
+  const obvMa20Value = toNum(vol?.obv?.value?.obv_ma20);
 
   const tabs = [
     { id: "summary", label: "주요 지표", icon: Target },
@@ -66,48 +95,102 @@ export default function TechnicalAnalysis({
         return (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("summary_ma")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
                 <div className="flex items-center mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">
                     이동평균선
                   </span>
                 </div>
-                <div className="text-lg font-bold text-green-600">상승</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  5일선 &gt; 20일선
+                <div
+                  className={`text-lg font-bold ${statusColor(main?.moving_average?.arrangement?.status)}`}
+                >
+                  {main?.moving_average?.arrangement?.status ?? "정보 없음"}
                 </div>
+                {hoveredKey === "summary_ma" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>
+                      {main?.moving_average?.arrangement?.description ??
+                        main?.moving_average?.price_vs_ma20?.description ??
+                        ""}
+                    </div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
               </div>
 
-              <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("summary_stoch")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
                 <div className="flex items-center mb-3">
                   <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">
                     스토캐스틱
                   </span>
                 </div>
-                <div className="text-lg font-bold text-red-600">하락</div>
-                <div className="text-xs text-gray-500 mt-1">과매도 구간</div>
+                <div
+                  className={`text-lg font-bold ${statusColor(main?.stochastic?.status)}`}
+                >
+                  {main?.stochastic?.status ?? "정보 없음"}
+                </div>
+                {hoveredKey === "summary_stoch" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>{main?.stochastic?.analysis ?? ""}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
               </div>
 
-              <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("summary_rsi")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
                 <div className="flex items-center mb-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                  <span className="text-sm font-medium text-gray-700">CCI</span>
+                  <span className="text-sm font-medium text-gray-700">RSI</span>
                 </div>
-                <div className="text-lg font-bold text-blue-600">중립</div>
-                <div className="text-xs text-gray-500 mt-1">-100 ~ +100</div>
+                <div
+                  className={`text-lg font-bold ${statusColor(main?.rsi?.status)}`}
+                >
+                  {main?.rsi?.status ?? "중립"}
+                </div>
+                {hoveredKey === "summary_rsi" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>RSI 값 {rsi}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
               </div>
 
-              <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("summary_total")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
                 <div className="flex items-center mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">
                     종합 신호
                   </span>
                 </div>
-                <div className="text-lg font-bold text-green-600">매수</div>
-                <div className="text-xs text-gray-500 mt-1">3/4 지표 매수</div>
+                <div
+                  className={`text-lg font-bold ${statusColor(main?.rsi?.status)}`}
+                >
+                  {main?.rsi?.status ?? "중립"}
+                </div>
+                {hoveredKey === "summary_total" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>{main?.macd?.analysis ?? ""}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -117,9 +200,7 @@ export default function TechnicalAnalysis({
                 <span className="font-medium text-blue-900">분석 요약</span>
               </div>
               <p className="text-sm text-blue-800 leading-relaxed">
-                이동평균선이 상승세를 보이고 있으며, 스토캐스틱은 과매도
-                구간에서 반등 신호를 보이고 있습니다. 종합적으로 매수 신호가
-                우세한 상황입니다.
+                {main?.total_analysis ?? "분석 정보를 불러오고 있습니다."}
               </p>
             </div>
           </div>
@@ -137,30 +218,57 @@ export default function TechnicalAnalysis({
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("pattern_rsi")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
                 <div className="text-sm font-medium text-gray-700 mb-2">
                   RSI
                 </div>
                 <div className="text-lg font-bold text-orange-600">{rsi}</div>
-                <div className="text-xs text-gray-500">과매도 구간</div>
+                {hoveredKey === "pattern_rsi" && (
+                  <div className="absolute z-50 pointer-events-none bottom-full left-0 right-0 mb-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>
+                      과매도/중립 구간 등 RSI 해석: {main?.rsi?.analysis ?? ""}
+                    </div>
+                    <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                <span className="text-sm font-medium text-gray-700">MACD</span>
-                <span className="text-sm font-bold text-blue-600">
-                  골든크로스 형성 중
-                </span>
+              <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-700">
+                    MACD
+                  </span>
+                  {main?.macd?.value != null && (
+                    <span className="text-xs font-medium text-gray-500">
+                      {main.macd.value}
+                    </span>
+                  )}
+                </div>
+                <div className="text-sm text-blue-700 leading-relaxed break-words whitespace-pre-line">
+                  {main?.macd?.analysis ?? "정보 없음"}
+                </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                <span className="text-sm font-medium text-gray-700">
-                  볼린저밴드
-                </span>
-                <span className="text-sm font-bold text-green-600">
-                  하단 밴드 근접
-                </span>
+              <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-700">
+                    스토캐스틱
+                  </span>
+                  <span
+                    className={`text-xs font-semibold ${statusColor(main?.stochastic?.status)}`}
+                  >
+                    {main?.stochastic?.status ?? ""}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-700 leading-relaxed break-words whitespace-pre-line">
+                  {main?.stochastic?.analysis ?? "정보 없음"}
+                </div>
               </div>
             </div>
 
@@ -181,7 +289,11 @@ export default function TechnicalAnalysis({
         return (
           <div className="space-y-4">
             {/* 일일 변동폭 */}
-            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div
+              className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+              onMouseEnter={() => setHoveredKey("vol_daily")}
+              onMouseLeave={() => setHoveredKey(null)}
+            >
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-medium text-gray-700">
                   일일 변동폭
@@ -196,31 +308,90 @@ export default function TechnicalAnalysis({
                   style={{ width: `${Math.min(dailyRange * 10, 100)}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>71,200원</span>
-                <span>73,500원</span>
-              </div>
+              {hoveredKey === "vol_daily" && (
+                <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                  <div>일일 변동성 관련 참고 값</div>
+                  <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                </div>
+              )}
             </div>
 
-            {/* 52주 변동폭 */}
-            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            {/* 평균 변동성 / ATR / RVI */}
+            <div
+              className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+              onMouseEnter={() => setHoveredKey("vol_avg")}
+              onMouseLeave={() => setHoveredKey(null)}
+            >
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-medium text-gray-700">
-                  52주 변동폭
+                  평균 변동성
                 </span>
                 <span className="text-lg font-bold text-gray-900">
-                  {weeklyRange}%
+                  {avgVolatility}%
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                 <div
                   className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(weeklyRange, 100)}%` }}
+                  style={{ width: `${Math.min(avgVolatility, 100)}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>최저: 58,400원</span>
-                <span>최고: 84,800원</span>
+              {hoveredKey === "vol_avg" && (
+                <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                  <div>
+                    RVI:{" "}
+                    {typeof vola?.rvi?.value?.rvi === "number"
+                      ? vola.rvi.value.rvi.toFixed(4)
+                      : "-"}{" "}
+                    | ATR: {vola?.atr?.value?.atr ?? "-"}
+                  </div>
+                  <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                </div>
+              )}
+            </div>
+
+            {/* 보조 지표 (ATR / RVI 상태) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("vol_atr")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
+                <div className="text-sm font-medium text-gray-700 mb-2">
+                  ATR
+                </div>
+                <div
+                  className={`text-base font-semibold ${statusColor(vola?.atr?.status)}`}
+                >
+                  {vola?.atr?.status ?? "정보 없음"}
+                </div>
+                {hoveredKey === "vol_atr" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>{vola?.atr?.analysis ?? ""}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("vol_rvi")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
+                <div className="text-sm font-medium text-gray-700 mb-2">
+                  RVI
+                </div>
+                <div
+                  className={`text-base font-semibold ${statusColor(vola?.rvi?.status)}`}
+                >
+                  {vola?.rvi?.status ?? "정보 없음"}
+                </div>
+                {hoveredKey === "vol_rvi" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>{vola?.rvi?.analysis ?? ""}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -231,9 +402,9 @@ export default function TechnicalAnalysis({
                 <span className="font-medium text-blue-900">변동성 분석</span>
               </div>
               <p className="text-sm text-blue-800 leading-relaxed">
-                일일 변동폭은 평균적인 수준이며, 52주 변동폭은 시장 평균 대비
-                높은 편입니다. 현재 가격은 52주 범위의 중간 지점에 위치하고 있어
-                안정적인 거래가 가능합니다.
+                {vola?.total_analysis ??
+                  vola?.volatility?.analysis ??
+                  "변동성 분석 정보를 불러오고 있습니다."}
               </p>
             </div>
           </div>
@@ -282,6 +453,60 @@ export default function TechnicalAnalysis({
               </div>
             </div>
 
+            {/* MFI / OBV */}
+            <div className="grid grid-cols-2 gap-4">
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("vol_mfi_card")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
+                <div className="text-sm font-medium text-gray-700 mb-1">
+                  MFI
+                </div>
+                <div
+                  className={`text-lg font-bold ${statusColor(vol?.mfi?.status)}`}
+                >
+                  {vol?.mfi?.status ?? "정보 없음"}
+                </div>
+                {hoveredKey === "vol_mfi_card" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>
+                      {typeof mfiValue === "number"
+                        ? `값 ${mfiValue.toFixed(2)}`
+                        : ""}
+                    </div>
+                    <div>{vol?.mfi?.analysis ?? ""}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("vol_obv_card")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
+                <div className="text-sm font-medium text-gray-700 mb-1">
+                  OBV
+                </div>
+                <div
+                  className={`text-lg font-bold ${statusColor(vol?.obv?.status)}`}
+                >
+                  {vol?.obv?.status ?? "정보 없음"}
+                </div>
+                {hoveredKey === "vol_obv_card" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>
+                      {obvValue ? obvValue.toLocaleString() : "-"} / MA20{" "}
+                      {obvMa20Value ? obvMa20Value.toLocaleString() : "-"}
+                    </div>
+                    <div>{vol?.obv?.analysis ?? ""}</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* 거래량 해석 */}
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
               <div className="flex items-center mb-2">
@@ -289,9 +514,9 @@ export default function TechnicalAnalysis({
                 <span className="font-medium text-blue-900">거래량 해석</span>
               </div>
               <p className="text-sm text-blue-800 leading-relaxed">
-                평균 대비 {volumeRatio}% 높은 거래량을 보이고 있어 매수세 유입이
-                감지되고 있습니다. 이는 가격 상승의 지지 요인으로 작용할 수
-                있습니다.
+                {vol?.total_analysis ??
+                  vol?.volume?.analysis ??
+                  `평균 대비 ${volumeRatio}% 수준의 거래량입니다.`}
               </p>
             </div>
           </div>

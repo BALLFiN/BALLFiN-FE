@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { DollarSign, TrendingUp, TrendingDown, Info } from "lucide-react";
-import { CompanyInfoResponse } from "@/api/stock";
 
 interface FinancialData {
   revenue: number;
@@ -15,7 +14,6 @@ interface FinancialData {
 interface FinancialStatementProps {
   data: FinancialData;
   analysis?: any; // /info/company/{code} 응답 객체 (company_analysis 포함)
-  companyName?: string;
 }
 
 interface FinancialIndicator {
@@ -32,7 +30,6 @@ interface FinancialIndicator {
 export default function FinancialStatement({
   data,
   analysis,
-  companyName,
 }: FinancialStatementProps) {
   const [hoveredIndicator, setHoveredIndicator] = useState<string | null>(null);
 
@@ -235,7 +232,7 @@ export default function FinancialStatement({
 
             {/* 툴팁 */}
             {hoveredIndicator === indicator.label && (
-              <div className="absolute z-10 bottom-full left-0 right-0 mb-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+              <div className="absolute z-50 pointer-events-none bottom-full left-0 right-0 mb-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
                 <div className="font-medium mb-1">{indicator.label}</div>
                 <div>{indicator.description}</div>
                 <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>

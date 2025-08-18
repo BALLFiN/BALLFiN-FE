@@ -83,7 +83,7 @@ export default function StockDetailPage() {
     null
   );
   const [companyAnalysis, setCompanyAnalysis] = useState<any | null>(null);
-  const [techSummary, setTechSummary] = useState<any | null>(null);
+  // const [techSummary, setTechSummary] = useState<any | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -151,7 +151,7 @@ export default function StockDetailPage() {
 
         // 기술적/재무 데이터 매핑
         if (!cancelled && companyInfo) {
-          setTechSummary(companyInfo.main_analysis ?? null);
+          // setTechSummary(companyInfo.main_analysis ?? null);
           setCompanyAnalysis(companyInfo);
           setFinancialData({
             revenue:
@@ -311,7 +311,6 @@ export default function StockDetailPage() {
               <FinancialStatement
                 data={financialData}
                 analysis={companyAnalysis}
-                companyName={stock?.name}
               />
             )}
           </div>
