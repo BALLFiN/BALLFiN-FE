@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DollarSign, TrendingUp, TrendingDown, Info } from "lucide-react";
+import { CompanyInfoResponse } from "@/api/stock";
 
 interface FinancialData {
   revenue: number;
@@ -13,6 +14,8 @@ interface FinancialData {
 
 interface FinancialStatementProps {
   data: FinancialData;
+  analysis?: any; // /info/company/{code} 응답 객체 (company_analysis 포함)
+  companyName?: string;
 }
 
 interface FinancialIndicator {
@@ -22,73 +25,163 @@ interface FinancialIndicator {
   description: string;
   trend: "up" | "down" | "neutral";
   color: string;
+  growthLabel?: string;
+  growthValue?: string | number;
 }
 
-export default function FinancialStatement({ data }: FinancialStatementProps) {
+export default function FinancialStatement({
+  data,
+  analysis,
+  companyName,
+}: FinancialStatementProps) {
   const [hoveredIndicator, setHoveredIndicator] = useState<string | null>(null);
 
-  const indicators: FinancialIndicator[] = [
-    {
-      label: "매출액",
-      value: (data.revenue / 1000000000000).toFixed(1),
-      unit: "조원",
-      description:
-        "회사의 총 매출액으로, 영업활동을 통해 벌어들인 수익의 총합입니다.",
-      trend: "up",
-      color: "text-green-600",
-    },
-    {
-      label: "순이익",
-      value: (data.netIncome / 1000000000000).toFixed(1),
-      unit: "조원",
-      description: "매출액에서 모든 비용을 차감한 후 남은 순수한 이익입니다.",
-      trend: "up",
-      color: "text-green-600",
-    },
-    {
-      label: "부채비율",
-      value: data.debtRatio.toFixed(1),
-      unit: "%",
-      description:
-        "총부채를 자기자본으로 나눈 비율로, 기업의 재무 건전성을 나타냅니다.",
-      trend: "down",
-      color: "text-blue-600",
-    },
-    {
-      label: "ROE",
-      value: data.roe.toFixed(1),
-      unit: "%",
-      description:
-        "자기자본수익률로, 투자한 자본 대비 얼마나 수익을 내는지 나타냅니다.",
-      trend: "up",
-      color: "text-green-600",
-    },
-    {
-      label: "PER",
-      value: data.per.toFixed(1),
-      unit: "배",
-      description:
-        "주가수익비율로, 현재 주가가 1주당 순이익의 몇 배인지 나타냅니다.",
-      trend: "neutral",
-      color: "text-gray-600",
-    },
-    {
-      label: "PBR",
-      value: data.pbr.toFixed(1),
-      unit: "배",
-      description:
-        "주가순자산비율로, 현재 주가가 1주당 순자산의 몇 배인지 나타냅니다.",
-      trend: "neutral",
-      color: "text-gray-600",
-    },
-  ];
+  const company = analysis?.company_analysis;
+
+  const safeText = (value: any): string =>
+    value === null || value === undefined || value === ""
+      ? "없음"
+      : String(value);
+
+  // 숫자에 천단위, 단위 접미사 적용 (억 단위 가정)
+  const formatEok = (value: any): string => {
+    if (typeof value !== "number") return "없음";
+    return `${value.toLocaleString()}억`;
+  };
+
+  const indicators: FinancialIndicator[] = company
+    ? [
+        {
+          label: "매출액",
+          value: formatEok(company["매출액"]),
+          unit: "",
+          description:
+            "회사의 총 매출액으로, 영업활동을 통해 벌어들인 수익의 총합입니다.",
+          trend: "up",
+          color: "text-green-600",
+          growthLabel: "증가율",
+          growthValue:
+            company["매출액 증가율"] != null
+              ? `${company["매출액 증가율"]}%`
+              : "없음",
+        },
+        {
+          label: "영업이익",
+          value: formatEok(company["영업이익"]),
+          unit: "",
+          description: "본업에서 얻은 이익입니다.",
+          trend: "up",
+          color: "text-green-600",
+          growthLabel: "증가율",
+          growthValue:
+            company["영업이익 증가율"] != null
+              ? `${company["영업이익 증가율"]}%`
+              : "없음",
+        },
+        {
+          label: "순이익",
+          value: formatEok(company["순이익"]),
+          unit: "",
+          description: "모든 비용을 차감하고 남은 최종 이익입니다.",
+          trend: "up",
+          color: "text-green-600",
+          growthLabel: "증가율",
+          growthValue:
+            company["순이익 증가율"] != null
+              ? `${company["순이익 증가율"]}%`
+              : "없음",
+        },
+        {
+          label: "ROE",
+          value: company["ROE"] ?? "없음",
+          unit: company["ROE"] != null ? "%" : "",
+          description:
+            "자기자본수익률로, 투자한 자본 대비 수익성을 나타냅니다.",
+          trend: "up",
+          color: "text-green-600",
+        },
+        {
+          label: "PER",
+          value: company["PER"] ?? "없음",
+          unit: company["PER"] != null ? "배" : "",
+          description:
+            "주가수익비율로, 현재 주가가 1주당 순이익의 몇 배인지 나타냅니다.",
+          trend: "neutral",
+          color: "text-gray-600",
+        },
+        {
+          label: "PBR",
+          value: company["PBR"] ?? "없음",
+          unit: company["PBR"] != null ? "배" : "",
+          description:
+            "주가순자산비율로, 현재 주가가 1주당 순자산의 몇 배인지 나타냅니다.",
+          trend: "neutral",
+          color: "text-gray-600",
+        },
+      ]
+    : [
+        {
+          label: "매출액",
+          value: (data.revenue / 1000000000000).toFixed(1),
+          unit: "억원",
+          description:
+            "회사의 총 매출액으로, 영업활동을 통해 벌어들인 수익의 총합입니다.",
+          trend: "up",
+          color: "text-green-600",
+        },
+        {
+          label: "순이익",
+          value: (data.netIncome / 1000000000000).toFixed(1),
+          unit: "억원",
+          description:
+            "매출액에서 모든 비용을 차감한 후 남은 순수한 이익입니다.",
+          trend: "up",
+          color: "text-green-600",
+        },
+        {
+          label: "부채비율",
+          value: data.debtRatio.toFixed(1),
+          unit: "%",
+          description:
+            "총부채를 자기자본으로 나눈 비율로, 기업의 재무 건전성을 나타냅니다.",
+          trend: "down",
+          color: "text-blue-600",
+        },
+        {
+          label: "ROE",
+          value: data.roe.toFixed(1),
+          unit: "%",
+          description:
+            "자기자본수익률로, 투자한 자본 대비 얼마나 수익을 내는지 나타냅니다.",
+          trend: "up",
+          color: "text-green-600",
+        },
+        {
+          label: "PER",
+          value: data.per.toFixed(1),
+          unit: "배",
+          description:
+            "주가수익비율로, 현재 주가가 1주당 순이익의 몇 배인지 나타냅니다.",
+          trend: "neutral",
+          color: "text-gray-600",
+        },
+        {
+          label: "PBR",
+          value: data.pbr.toFixed(1),
+          unit: "배",
+          description:
+            "주가순자산비율로, 현재 주가가 1주당 순자산의 몇 배인지 나타냅니다.",
+          trend: "neutral",
+          color: "text-gray-600",
+        },
+      ];
 
   const getTrendIcon = (trend: "up" | "down" | "neutral") => {
     switch (trend) {
       case "up":
-        return <TrendingUp className="w-4 h-4 text-green-500" />;
+        return <TrendingUp className="w-4 h-4 text-gray-400" />;
       case "down":
-        return <TrendingDown className="w-4 h-4 text-red-500" />;
+        return <TrendingDown className="w-4 h-4 text-gray-400" />;
       default:
         return <div className="w-4 h-4" />;
     }
@@ -103,9 +196,7 @@ export default function FinancialStatement({ data }: FinancialStatementProps) {
           <h4 className="font-semibold text-blue-800">종합 해석</h4>
         </div>
         <p className="text-sm text-blue-700 leading-relaxed">
-          삼성전자는 안정적인 매출과 수익 구조를 보유하고 있으며, 낮은
-          부채비율과 높은 ROE로 재무 건전성이 우수합니다. 현재 PER과 PBR이 적정
-          수준을 유지하고 있어 투자 가치가 있는 종목으로 평가됩니다.
+          {safeText(company?.total_analysis)}
         </p>
       </div>
 
@@ -129,13 +220,18 @@ export default function FinancialStatement({ data }: FinancialStatementProps) {
             </div>
 
             <div className="flex items-baseline">
-              <span className={`text-xl font-bold ${indicator.color}`}>
+              <span className="text-xl font-bold text-gray-900">
                 {indicator.value}
               </span>
               <span className="text-sm text-gray-500 ml-1">
                 {indicator.unit}
               </span>
             </div>
+            {indicator.growthValue !== undefined && (
+              <div className="text-xs text-gray-500 mt-1">
+                {indicator.growthLabel ?? "증가율"} {indicator.growthValue}
+              </div>
+            )}
 
             {/* 툴팁 */}
             {hoveredIndicator === indicator.label && (
@@ -155,19 +251,29 @@ export default function FinancialStatement({ data }: FinancialStatementProps) {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">총 자산:</span>
-            <span className="font-medium">약 400조원</span>
+            <span className="font-medium">
+              {formatEok(company?.["자산총계"])}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">총 부채:</span>
-            <span className="font-medium">약 94조원</span>
+            <span className="font-medium">
+              {formatEok(company?.["부채총계"])}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">자기자본:</span>
-            <span className="font-medium">약 306조원</span>
+            <span className="font-medium">
+              {formatEok(company?.["자본총계"])}
+            </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">영업이익률:</span>
-            <span className="font-medium text-green-600">15.2%</span>
+            <span className="text-gray-600">부채비율:</span>
+            <span className="font-medium text-gray-900">
+              {company?.["부채비율"] != null
+                ? `${company["부채비율"]}%`
+                : "없음"}
+            </span>
           </div>
         </div>
       </div>

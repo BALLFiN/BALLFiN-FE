@@ -6,7 +6,7 @@ import StockNews from "@/components/stockDetail/StockNews";
 import TechnicalAnalysis from "@/components/stockDetail/TechnicalAnalysis";
 import FinancialStatement from "@/components/stockDetail/FinancialStatement";
 // Loading 컴포넌트 대신 심플 스켈레톤을 사용합니다
-import { getStockInfoByCode } from "@/api/stock";
+import { getStockInfoByCode, getCompanyInfoByCode } from "@/api/stock";
 
 import StockChartPrice from "@/components/stockDetail/chart";
 import RelatedCompanies from "@/components/stockDetail/RelatedCompanies";
@@ -82,51 +82,89 @@ export default function StockDetailPage() {
   const [financialData, setFinancialData] = useState<FinancialData | null>(
     null
   );
+  const [companyAnalysis, setCompanyAnalysis] = useState<any | null>(null);
+  const [techSummary, setTechSummary] = useState<any | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
       try {
         if (!code) return;
-        const data = await getStockInfoByCode(code);
+        const [priceInfo, companyInfo] = await Promise.all([
+          getStockInfoByCode(code),
+          getCompanyInfoByCode(code),
+        ]);
 
         const mapped: StockDetail = {
           id: 0,
-          name: typeof data["기업명"] === "string" ? data["기업명"] : "",
+          name:
+            typeof priceInfo["기업명"] === "string" ? priceInfo["기업명"] : "",
           code,
-          price: typeof data["현재가"] === "number" ? data["현재가"] : 0,
-          change: typeof data["등락"] === "number" ? data["등락"] : 0,
+          price:
+            typeof priceInfo["현재가"] === "number" ? priceInfo["현재가"] : 0,
+          change: typeof priceInfo["등락"] === "number" ? priceInfo["등락"] : 0,
           changeAmount:
-            typeof data["전일대비"] === "number" ? data["전일대비"] : 0,
+            typeof priceInfo["전일대비"] === "number"
+              ? priceInfo["전일대비"]
+              : 0,
           score: 0,
           sentiment: "neutral",
           newsCount: 0,
           previousVolume:
-            typeof data["전일거래량"] === "number"
-              ? data["전일거래량"]
+            typeof priceInfo["전일거래량"] === "number"
+              ? priceInfo["전일거래량"]
               : undefined,
           currentVolume:
-            typeof data["거래량"] === "number" ? data["거래량"] : undefined,
+            typeof priceInfo["거래량"] === "number"
+              ? priceInfo["거래량"]
+              : undefined,
           tradingAmount:
-            typeof data["거래대금"] === "number"
-              ? data["거래대금"] * 100_000_000
+            typeof priceInfo["거래대금"] === "number"
+              ? priceInfo["거래대금"] * 100_000_000
               : undefined,
           week52High:
-            typeof data["52주최고"] === "number"
-              ? { price: data["52주최고"], date: data["최고일"] ?? "" }
+            typeof priceInfo["52주최고"] === "number"
+              ? {
+                  price: priceInfo["52주최고"],
+                  date: priceInfo["최고일"] ?? "",
+                }
               : undefined,
           week52Low:
-            typeof data["52주최저"] === "number"
-              ? { price: data["52주최저"], date: data["최저일"] ?? "" }
+            typeof priceInfo["52주최저"] === "number"
+              ? {
+                  price: priceInfo["52주최저"],
+                  date: priceInfo["최저일"] ?? "",
+                }
               : undefined,
           upperLimit:
-            typeof data["상한가"] === "number" ? data["상한가"] : undefined,
+            typeof priceInfo["상한가"] === "number"
+              ? priceInfo["상한가"]
+              : undefined,
           lowerLimit:
-            typeof data["하한가"] === "number" ? data["하한가"] : undefined,
+            typeof priceInfo["하한가"] === "number"
+              ? priceInfo["하한가"]
+              : undefined,
           prediction: { targetPrice: 0, confidence: 0, recommendation: "hold" },
         };
 
         if (!cancelled) setStock(mapped);
+
+        // 기술적/재무 데이터 매핑
+        if (!cancelled && companyInfo) {
+          setTechSummary(companyInfo.main_analysis ?? null);
+          setCompanyAnalysis(companyInfo);
+          setFinancialData({
+            revenue:
+              (companyInfo.company_analysis?.["매출액"] ?? 0) * 1_000_000_000,
+            netIncome:
+              (companyInfo.company_analysis?.["순이익"] ?? 0) * 1_000_000_000,
+            debtRatio: companyInfo.company_analysis?.["부채비율"] ?? 0,
+            roe: companyInfo.company_analysis?.ROE ?? 0,
+            per: companyInfo.company_analysis?.PER ?? 0,
+            pbr: companyInfo.company_analysis?.PBR ?? 0,
+            dividendYield: 0,
+          });
+        }
 
         // 아래는 차트/뉴스/재무는 당장 API 스펙이 없으므로 기존과 동일하게 더미 구성
         const mockHistoricalData: HistoricalData[] = Array.from(
@@ -173,7 +211,8 @@ export default function StockDetailPage() {
         if (!cancelled) {
           setHistoricalData(mockHistoricalData);
           setNews(mockNews);
-          setFinancialData(mockFinancialData);
+          // financialData는 company API에서 세팅됨 (실패 시에만 목데이터 유지)
+          if (!financialData) setFinancialData(mockFinancialData);
         }
       } catch {
         // 실패 시 기존 목데이터로 유지 (아래와 동일)
@@ -240,15 +279,12 @@ export default function StockDetailPage() {
 
           {/* 기술적 분석 사이드바 */}
           <div className="w-118">
-            {stock ? (
+            {stock && (
               <TechnicalAnalysis
                 stock={stock}
                 historicalData={historicalData}
+                analysis={companyAnalysis}
               />
-            ) : (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-[650px]">
-                <div className="w-full h-full bg-gray-100 rounded animate-pulse" />
-              </div>
             )}
           </div>
         </div>
@@ -271,7 +307,13 @@ export default function StockDetailPage() {
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               재무제표
             </h3>
-            {financialData && <FinancialStatement data={financialData} />}
+            {financialData && (
+              <FinancialStatement
+                data={financialData}
+                analysis={companyAnalysis}
+                companyName={stock?.name}
+              />
+            )}
           </div>
         </div>
       </div>
