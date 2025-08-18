@@ -4,14 +4,16 @@ import { Star, ChevronRight } from "lucide-react";
 
 interface StockListProps {
   stocks: StockItem[];
-  favoriteStocks: number[];
-  onToggleFavorite: (stockId: number) => void;
+  favoriteStocks: string[];
+  onToggleFavorite: (stockCode: string) => void;
+  favoritesLoading?: boolean;
 }
 
 export default function StockList({
   stocks,
   favoriteStocks,
   onToggleFavorite,
+  favoritesLoading = false,
 }: StockListProps) {
   const navigate = useNavigate();
 
@@ -63,23 +65,26 @@ export default function StockList({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onToggleFavorite(stock.id);
+                    onToggleFavorite(stock.code);
                   }}
-                  aria-pressed={favoriteStocks.includes(stock.id)}
+                  disabled={favoritesLoading}
+                  aria-pressed={favoriteStocks.includes(stock.code)}
                   className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                    favoriteStocks.includes(stock.id)
+                    favoriteStocks.includes(stock.code)
                       ? "text-amber-500"
                       : "text-gray-400 hover:bg-black/10"
-                  }`}
+                  } ${favoritesLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Star
                     size={18}
                     strokeWidth={1.75}
                     className={
-                      favoriteStocks.includes(stock.id) ? "text-amber-500" : ""
+                      favoriteStocks.includes(stock.code)
+                        ? "text-amber-500"
+                        : ""
                     }
                     fill={
-                      favoriteStocks.includes(stock.id)
+                      favoriteStocks.includes(stock.code)
                         ? "currentColor"
                         : "none"
                     }
@@ -182,23 +187,24 @@ export default function StockList({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleFavorite(stock.id);
+                onToggleFavorite(stock.code);
               }}
-              aria-pressed={favoriteStocks.includes(stock.id)}
+              disabled={favoritesLoading}
+              aria-pressed={favoriteStocks.includes(stock.code)}
               className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                favoriteStocks.includes(stock.id)
+                favoriteStocks.includes(stock.code)
                   ? "text-amber-500"
                   : "text-gray-400 hover:bg-black/10"
-              }`}
+              } ${favoritesLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <Star
                 size={18}
                 strokeWidth={1.75}
                 className={
-                  favoriteStocks.includes(stock.id) ? "text-amber-500" : ""
+                  favoriteStocks.includes(stock.code) ? "text-amber-500" : ""
                 }
                 fill={
-                  favoriteStocks.includes(stock.id) ? "currentColor" : "none"
+                  favoriteStocks.includes(stock.code) ? "currentColor" : "none"
                 }
               />
             </button>

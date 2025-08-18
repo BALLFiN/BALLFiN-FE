@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StockSearchBar from "@/components/stock/StockSearchBar";
 import StockList from "@/components/stock/StockList";
 import StockListSkeleton from "@/components/stock/StockListSkeleton";
@@ -9,12 +9,18 @@ import { useStockList } from "@/features/stock/hooks";
 import { StockItem, SortBy } from "@/api/stock";
 import { Filter, SortAsc, Star, ChevronDown, Check } from "lucide-react";
 import { Listbox, RadioGroup } from "@headlessui/react";
+import {
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+} from "@/api/user/favoritesApi";
 
 export default function StockPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mainFilter, setMainFilter] = useState<"all" | "favorite">("all");
   const [sortBy, setSortBy] = useState<SortBy>("market_cap_desc");
-  const [favoriteStocks, setFavoriteStocks] = useState<number[]>([]);
+  const [favoriteStocks, setFavoriteStocks] = useState<string[]>([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
 
   // API에서 주식 데이터 가져오기
   const {
@@ -29,15 +35,50 @@ export default function StockPage() {
       changePercent: stock.change_percent || stock.changePercent || 0,
     })) || [];
 
-  // 즐겨찾기 토글 함수
-  const toggleFavorite = (stockId: number) => {
-    setFavoriteStocks((prev) => {
-      if (prev.includes(stockId)) {
-        return prev.filter((id) => id !== stockId);
-      } else {
-        return [...prev, stockId];
+  // 즐겨찾기 로딩
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const favoritesData = await getFavorites();
+        if (
+          favoritesData &&
+          typeof favoritesData === "object" &&
+          "favorites" in favoritesData
+        ) {
+          const favoritesArray = favoritesData.favorites;
+          if (Array.isArray(favoritesArray)) {
+            setFavoriteStocks(favoritesArray);
+          }
+        } else if (Array.isArray(favoritesData)) {
+          setFavoriteStocks(favoritesData);
+        }
+      } catch (err) {
+        // 즐겨찾기 로딩 실패는 전체 컴포넌트에 영향을 주지 않도록 함
       }
-    });
+    };
+
+    fetchFavorites();
+  }, []);
+
+  // 즐겨찾기 토글 함수
+  const toggleFavorite = async (stockCode: string) => {
+    try {
+      setFavoritesLoading(true);
+
+      if (favoriteStocks.includes(stockCode)) {
+        // 즐겨찾기 제거
+        await removeFavorite(stockCode);
+        setFavoriteStocks((prev) => prev.filter((code) => code !== stockCode));
+      } else {
+        // 즐겨찾기 추가
+        await addFavorite(stockCode);
+        setFavoriteStocks((prev) => [...prev, stockCode]);
+      }
+    } catch (err) {
+      // 에러 발생 시 사용자에게 알림 (선택사항)
+    } finally {
+      setFavoritesLoading(false);
+    }
   };
 
   // 검색 처리 함수
@@ -59,7 +100,7 @@ export default function StockPage() {
   const filteredStocks = allStocks.filter((stock) => {
     // 메인 필터
     const matchesMain =
-      mainFilter === "all" ? true : favoriteStocks.includes(stock.id);
+      mainFilter === "all" ? true : favoriteStocks.includes(stock.code);
     // 검색어 필터
     const matchesSearch = searchQuery
       ? stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -205,6 +246,7 @@ export default function StockPage() {
               stocks={filteredStocks}
               favoriteStocks={favoriteStocks}
               onToggleFavorite={toggleFavorite}
+              favoritesLoading={favoritesLoading}
             />
           )}
         </div>
