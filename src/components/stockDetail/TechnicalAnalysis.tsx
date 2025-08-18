@@ -289,65 +289,68 @@ export default function TechnicalAnalysis({
         return (
           <div className="space-y-4">
             {/* 일일 변동폭 */}
-            <div
-              className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
-              onMouseEnter={() => setHoveredKey("vol_daily")}
-              onMouseLeave={() => setHoveredKey(null)}
-            >
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm font-medium text-gray-700">
-                  일일 변동폭
-                </span>
-                <span className="text-lg font-bold text-gray-900">
-                  {dailyRange}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(dailyRange * 10, 100)}%` }}
-                ></div>
-              </div>
-              {hoveredKey === "vol_daily" && (
-                <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                  <div>일일 변동성 관련 참고 값</div>
-                  <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 일일 변동폭 */}
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("vol_daily")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-medium text-gray-700">
+                    일일 변동폭
+                  </span>
+                  <span className="text-lg font-bold text-gray-900">
+                    {dailyRange}%
+                  </span>
                 </div>
-              )}
-            </div>
-
-            {/* 평균 변동성 / ATR / RVI */}
-            <div
-              className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
-              onMouseEnter={() => setHoveredKey("vol_avg")}
-              onMouseLeave={() => setHoveredKey(null)}
-            >
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm font-medium text-gray-700">
-                  평균 변동성
-                </span>
-                <span className="text-lg font-bold text-gray-900">
-                  {avgVolatility}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                <div
-                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(avgVolatility, 100)}%` }}
-                ></div>
-              </div>
-              {hoveredKey === "vol_avg" && (
-                <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                  <div>
-                    RVI:{" "}
-                    {typeof vola?.rvi?.value?.rvi === "number"
-                      ? vola.rvi.value.rvi.toFixed(4)
-                      : "-"}{" "}
-                    | ATR: {vola?.atr?.value?.atr ?? "-"}
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(dailyRange, 100)}%` }}
+                  ></div>
+                </div>
+                {hoveredKey === "vol_daily" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>일일 변동성 관련 참고 값</div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
-                  <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                )}
+              </div>
+
+              {/* 평균 변동성 */}
+              <div
+                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                onMouseEnter={() => setHoveredKey("vol_avg")}
+                onMouseLeave={() => setHoveredKey(null)}
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-medium text-gray-700">
+                    평균 변동성
+                  </span>
+                  <span className="text-lg font-bold text-gray-900">
+                    {avgVolatility}%
+                  </span>
                 </div>
-              )}
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                  <div
+                    className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(avgVolatility, 100)}%` }}
+                  ></div>
+                </div>
+                {hoveredKey === "vol_avg" && (
+                  <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
+                    <div>
+                      RVI:{" "}
+                      {typeof vola?.rvi?.value?.rvi === "number"
+                        ? vola.rvi.value.rvi.toFixed(4)
+                        : "-"}{" "}
+                      | ATR: {vola?.atr?.value?.atr ?? "-"}
+                    </div>
+                    <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* 보조 지표 (ATR / RVI 상태) */}
