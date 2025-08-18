@@ -15,7 +15,8 @@ export default function PriceVolumeChart({
   data,
   timeRange,
 }: PriceVolumeChartProps) {
-  const [ready, setReady] = useState(false);
+  // 초기부터 렌더링하여 차트가 안 보이는 문제 방지
+  const [ready, setReady] = useState(true);
 
   // Annotations 모듈 안전 로딩 (환경별 export 방식 대응)
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function PriceVolumeChart({
       } catch (_) {
         // 실패해도 치명적이지 않음
       } finally {
+        // 모듈 로딩 실패/성공과 무관하게 이미 렌더링 중
         setReady(true);
       }
     })();
@@ -167,10 +169,13 @@ export default function PriceVolumeChart({
     };
   }, [priceData, volumeData]);
 
-  if (!ready) return null;
+  if (!ready) {
+    return <div className="h-[500px] bg-gray-100 rounded" />;
+  }
 
   return (
     <HighchartsReact
+      key={`${timeRange}-${priceData.length}`}
       highcharts={Highcharts}
       constructorType="stockChart"
       options={options}

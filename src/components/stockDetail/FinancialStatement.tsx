@@ -34,6 +34,12 @@ export default function FinancialStatement({
   const [hoveredIndicator, setHoveredIndicator] = useState<string | null>(null);
 
   const company = analysis?.company_analysis;
+  const isAnalysisLoading = !company;
+
+  // 간단 스켈레톤 텍스트
+  const SkeletonText = ({ widthClass = "w-5/6" }: { widthClass?: string }) => (
+    <div className={`h-4 rounded bg-gray-200 animate-pulse ${widthClass}`} />
+  );
 
   const safeText = (value: any): string =>
     value === null || value === undefined || value === ""
@@ -192,9 +198,16 @@ export default function FinancialStatement({
           <DollarSign className="w-5 h-5 text-blue-600 mr-2" />
           <h4 className="font-semibold text-blue-800">종합 해석</h4>
         </div>
-        <p className="text-sm text-blue-700 leading-relaxed">
-          {safeText(company?.total_analysis)}
-        </p>
+        {isAnalysisLoading ? (
+          <div className="space-y-2">
+            <SkeletonText widthClass="w-10/12" />
+            <SkeletonText widthClass="w-6/12" />
+          </div>
+        ) : (
+          <p className="text-sm text-blue-700 leading-relaxed">
+            {safeText(company?.total_analysis)}
+          </p>
+        )}
       </div>
 
       {/* 재무 지표 그리드 */}
@@ -248,29 +261,45 @@ export default function FinancialStatement({
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">총 자산:</span>
-            <span className="font-medium">
-              {formatEok(company?.["자산총계"])}
-            </span>
+            {isAnalysisLoading ? (
+              <SkeletonText widthClass="w-24" />
+            ) : (
+              <span className="font-medium">
+                {formatEok(company?.["자산총계"])}
+              </span>
+            )}
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">총 부채:</span>
-            <span className="font-medium">
-              {formatEok(company?.["부채총계"])}
-            </span>
+            {isAnalysisLoading ? (
+              <SkeletonText widthClass="w-24" />
+            ) : (
+              <span className="font-medium">
+                {formatEok(company?.["부채총계"])}
+              </span>
+            )}
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">자기자본:</span>
-            <span className="font-medium">
-              {formatEok(company?.["자본총계"])}
-            </span>
+            {isAnalysisLoading ? (
+              <SkeletonText widthClass="w-24" />
+            ) : (
+              <span className="font-medium">
+                {formatEok(company?.["자본총계"])}
+              </span>
+            )}
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">부채비율:</span>
-            <span className="font-medium text-gray-900">
-              {company?.["부채비율"] != null
-                ? `${company["부채비율"]}%`
-                : "없음"}
-            </span>
+            {isAnalysisLoading ? (
+              <SkeletonText widthClass="w-16" />
+            ) : (
+              <span className="font-medium text-gray-900">
+                {company?.["부채비율"] != null
+                  ? `${company["부채비율"]}%`
+                  : "없음"}
+              </span>
+            )}
           </div>
         </div>
       </div>

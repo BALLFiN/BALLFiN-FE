@@ -85,6 +85,25 @@ export default function StockDetailPage() {
   const [companyAnalysis, setCompanyAnalysis] = useState<any | null>(null);
   // const [techSummary, setTechSummary] = useState<any | null>(null);
 
+  // 기술적 분석을 로딩 중에도 렌더링하기 위한 기본 스톡 값
+  const placeholderStock: StockDetail = {
+    id: 0,
+    name: "",
+    code: code ?? "",
+    price: 0,
+    change: 0,
+    changeAmount: 0,
+    score: 0,
+    sentiment: "neutral",
+    newsCount: 0,
+    prediction: { targetPrice: 0, confidence: 0, recommendation: "hold" },
+  };
+
+  // 섹션별 로딩 상태
+  const isChartLoading = historicalData.length === 0;
+  const isNewsLoading = news.length === 0;
+  const isFinancialLoading = financialData == null;
+
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
@@ -215,7 +234,7 @@ export default function StockDetailPage() {
           if (!financialData) setFinancialData(mockFinancialData);
         }
       } catch {
-        // 실패 시 기존 목데이터로 유지 (아래와 동일)
+        // 실패 시에도 목데이터로 모든 섹션 채워서 UI가 비지 않도록 처리
         if (!cancelled) {
           const fallback: StockDetail = {
             id: 1,
@@ -234,6 +253,50 @@ export default function StockDetailPage() {
             },
           } as StockDetail;
           setStock(fallback);
+
+          const mockHistoricalData: HistoricalData[] = Array.from(
+            { length: 30 },
+            (_, i) => ({
+              date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0],
+              open: 70000 + Math.random() * 10000,
+              high: 75000 + Math.random() * 10000,
+              low: 65000 + Math.random() * 10000,
+              close: 70000 + Math.random() * 10000,
+              volume: Math.floor(Math.random() * 1000000),
+              ma5: 72000 + Math.random() * 5000,
+              ma20: 71000 + Math.random() * 3000,
+              ma60: 70500 + Math.random() * 2000,
+              ma120: 70000 + Math.random() * 1500,
+            })
+          );
+          setHistoricalData(mockHistoricalData);
+
+          const mockNews: NewsItem[] = Array.from({ length: 5 }, (_, i) => ({
+            id: i + 1,
+            title: `${fallback.name || code} 관련 뉴스 ${i + 1}`,
+            source: "한국경제",
+            date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0],
+            sentiment: ["positive", "negative", "neutral"][
+              Math.floor(Math.random() * 3)
+            ] as any,
+            url: "#",
+          }));
+          setNews(mockNews);
+
+          const mockFinancialData: FinancialData = {
+            revenue: 279600000000000,
+            netIncome: 15400000000000,
+            debtRatio: 23.4,
+            roe: 15.8,
+            per: 12.3,
+            pbr: 1.2,
+            dividendYield: 2.1,
+          };
+          setFinancialData(mockFinancialData);
         }
       }
     };
@@ -273,19 +336,21 @@ export default function StockDetailPage() {
       <div className="container mx-auto px-4 py-6 mb-24">
         {/* 차트와 기술적 분석 영역 */}
         <div className="flex gap-6">
-          <div className="flex-1">
-            <StockChartPrice data={historicalData} />
+          <div className="flex-1 min-w-0">
+            {isChartLoading ? (
+              <div className="h-[420px] bg-gray-100 border border-gray-200 rounded-xl animate-pulse" />
+            ) : (
+              <StockChartPrice data={historicalData} />
+            )}
           </div>
 
           {/* 기술적 분석 사이드바 */}
-          <div className="w-118">
-            {stock && (
-              <TechnicalAnalysis
-                stock={stock}
-                historicalData={historicalData}
-                analysis={companyAnalysis}
-              />
-            )}
+          <div className="w-[472px] flex-shrink-0">
+            <TechnicalAnalysis
+              stock={stock ?? placeholderStock}
+              historicalData={historicalData}
+              analysis={companyAnalysis}
+            />
           </div>
         </div>
 
@@ -296,7 +361,21 @@ export default function StockDetailPage() {
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               관련 뉴스
             </h3>
-            <StockNews news={news} />
+            {isNewsLoading ? (
+              <div className="space-y-4">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-16 h-16 rounded bg-gray-200 animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-3 w-2/6 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <StockNews news={news} />
+            )}
           </div>
 
           {/* 관련 회사 영역 */}
@@ -307,7 +386,23 @@ export default function StockDetailPage() {
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               재무제표
             </h3>
-            {financialData && (
+            {isFinancialLoading ? (
+              <div className="space-y-4">
+                <div className="h-4 w-3/6 bg-gray-200 rounded animate-pulse" />
+                <div className="grid grid-cols-2 gap-4">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="border border-gray-100 rounded-lg p-4"
+                    >
+                      <div className="h-3 w-2/6 bg-gray-200 rounded mb-2 animate-pulse" />
+                      <div className="h-5 w-3/6 bg-gray-200 rounded mb-1 animate-pulse" />
+                      <div className="h-3 w-1/6 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
               <FinancialStatement
                 data={financialData}
                 analysis={companyAnalysis}
