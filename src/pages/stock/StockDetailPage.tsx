@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import StockHeader from "@/components/stockDetail/StockHeader";
 
@@ -7,9 +7,11 @@ import TechnicalAnalysis from "@/components/stockDetail/TechnicalAnalysis";
 import FinancialStatement from "@/components/stockDetail/FinancialStatement";
 // Loading 컴포넌트 대신 심플 스켈레톤을 사용합니다
 import { getStockInfoByCode, getCompanyInfoByCode } from "@/api/stock";
+import { getNewsByCompany } from "@/api/news";
 
 import StockChartPrice from "@/components/stockDetail/chart";
 import RelatedCompanies from "@/components/stockDetail/RelatedCompanies";
+import Pagination from "@/components/news/Pagination";
 
 interface StockDetail {
   id: number;
@@ -54,13 +56,12 @@ interface HistoricalData {
   ma120?: number;
 }
 
-interface NewsItem {
-  id: number;
+interface NewsListItem {
+  id: string;
   title: string;
   source: string;
   date: string;
   sentiment: "positive" | "negative" | "neutral";
-  url: string;
 }
 
 interface FinancialData {
@@ -78,7 +79,7 @@ export default function StockDetailPage() {
   const [stock, setStock] = useState<StockDetail | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const [news, setNews] = useState<NewsListItem[]>([]);
   const [financialData, setFinancialData] = useState<FinancialData | null>(
     null
   );
@@ -103,6 +104,18 @@ export default function StockDetailPage() {
   const isChartLoading = historicalData.length === 0;
   const isNewsLoading = news.length === 0;
   const isFinancialLoading = financialData == null;
+
+  // 뉴스 페이지네이션 (5개씩)
+  const NEWS_PAGE_SIZE = 5;
+  const [newsPage, setNewsPage] = useState(1);
+  const totalNewsPages = Math.max(1, Math.ceil(news.length / NEWS_PAGE_SIZE));
+  const pagedNews = useMemo(() => {
+    const start = (newsPage - 1) * NEWS_PAGE_SIZE;
+    return news.slice(start, start + NEWS_PAGE_SIZE);
+  }, [news, newsPage]);
+  useEffect(() => {
+    setNewsPage(1);
+  }, [news]);
 
   useEffect(() => {
     let cancelled = false;
@@ -204,17 +217,14 @@ export default function StockDetailPage() {
           })
         );
 
-        const mockNews: NewsItem[] = Array.from({ length: 5 }, (_, i) => ({
-          id: i + 1,
-          title: `${mapped.name || code} 관련 뉴스 ${i + 1}`,
-          source: "한국경제",
-          date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0],
-          sentiment: ["positive", "negative", "neutral"][
-            Math.floor(Math.random() * 3)
-          ] as any,
-          url: "#",
+        // 기업 뉴스 API 연동
+        const companyNews = await getNewsByCompany(code, 10);
+        const mappedNews: NewsListItem[] = companyNews.map((n) => ({
+          id: n.id,
+          title: n.title,
+          source: n.press,
+          date: n.published_at,
+          sentiment: (n.impact as any) ?? "neutral",
         }));
 
         const mockFinancialData: FinancialData = {
@@ -229,7 +239,7 @@ export default function StockDetailPage() {
 
         if (!cancelled) {
           setHistoricalData(mockHistoricalData);
-          setNews(mockNews);
+          setNews(mappedNews);
           // financialData는 company API에서 세팅됨 (실패 시에만 목데이터 유지)
           if (!financialData) setFinancialData(mockFinancialData);
         }
@@ -273,18 +283,20 @@ export default function StockDetailPage() {
           );
           setHistoricalData(mockHistoricalData);
 
-          const mockNews: NewsItem[] = Array.from({ length: 5 }, (_, i) => ({
-            id: i + 1,
-            title: `${fallback.name || code} 관련 뉴스 ${i + 1}`,
-            source: "한국경제",
-            date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0],
-            sentiment: ["positive", "negative", "neutral"][
-              Math.floor(Math.random() * 3)
-            ] as any,
-            url: "#",
-          }));
+          const mockNews: NewsListItem[] = Array.from(
+            { length: 5 },
+            (_, i) => ({
+              id: String(i + 1),
+              title: `${fallback.name || code} 관련 뉴스 ${i + 1}`,
+              source: "한국경제",
+              date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0],
+              sentiment: ["positive", "negative", "neutral"][
+                Math.floor(Math.random() * 3)
+              ] as any,
+            })
+          );
           setNews(mockNews);
 
           const mockFinancialData: FinancialData = {
@@ -374,7 +386,16 @@ export default function StockDetailPage() {
                 ))}
               </div>
             ) : (
-              <StockNews news={news} />
+              <>
+                <StockNews news={pagedNews} />
+                {totalNewsPages > 1 && (
+                  <Pagination
+                    currentPage={newsPage}
+                    totalPages={totalNewsPages}
+                    onPageChange={(p) => setNewsPage(p)}
+                  />
+                )}
+              </>
             )}
           </div>
 
