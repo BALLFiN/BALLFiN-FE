@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, BarChart3, Activity, Target, Layers } from "lucide-react";
+import { TrendingUp, Activity, Target, Layers } from "lucide-react";
 
 interface StockDetail {
   id: number;
@@ -36,7 +36,7 @@ interface TechnicalAnalysisProps {
   analysis?: any; // /info/company/{code} 응답 전체 또는 필요한 섹션 포함 객체
 }
 
-type TabType = "summary" | "pattern" | "volatility" | "volume";
+type TabType = "summary" | "volatility" | "volume";
 
 export default function TechnicalAnalysis({
   stock: _stock,
@@ -91,7 +91,6 @@ export default function TechnicalAnalysis({
 
   const tabs = [
     { id: "summary", label: "주요 지표", icon: Target },
-    { id: "pattern", label: "차트 패턴", icon: BarChart3 },
     { id: "volatility", label: "가격 변동성", icon: TrendingUp },
     { id: "volume", label: "거래량 분석", icon: Layers },
   ];
@@ -232,99 +231,6 @@ export default function TechnicalAnalysis({
                   {main?.total_analysis ?? "분석 정보를 불러오고 있습니다."}
                 </p>
               )}
-            </div>
-          </div>
-        );
-      case "pattern":
-        return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                <div className="text-sm font-medium text-gray-700 mb-2">
-                  패턴
-                </div>
-                <div className="text-lg font-bold text-red-600">
-                  하락 쐐기형
-                </div>
-              </div>
-
-              <div
-                className="relative bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
-                onMouseEnter={() => setHoveredKey("pattern_rsi")}
-                onMouseLeave={() => setHoveredKey(null)}
-              >
-                <div className="text-sm font-medium text-gray-700 mb-2">
-                  RSI
-                </div>
-                <div className="text-lg font-bold text-orange-600">{rsi}</div>
-                {hoveredKey === "pattern_rsi" && (
-                  <div className="absolute z-50 pointer-events-none bottom-full left-0 right-0 mb-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>
-                      과매도/중립 구간 등 RSI 해석: {main?.rsi?.analysis ?? ""}
-                    </div>
-                    <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700">
-                    MACD
-                  </span>
-                  {main?.macd?.value != null && (
-                    <span className="text-xs font-medium text-gray-500">
-                      {main.macd.value}
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm text-blue-700 leading-relaxed break-words whitespace-pre-line">
-                  {isAnalysisLoading ? (
-                    <div className="space-y-2">
-                      <SkeletonText widthClass="w-4/6" />
-                      <SkeletonText widthClass="w-2/6" />
-                    </div>
-                  ) : (
-                    (main?.macd?.analysis ?? "정보 없음")
-                  )}
-                </div>
-              </div>
-
-              <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700">
-                    스토캐스틱
-                  </span>
-                  <span
-                    className={`text-xs font-semibold ${statusColor(main?.stochastic?.status)}`}
-                  >
-                    {main?.stochastic?.status ?? ""}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-700 leading-relaxed break-words whitespace-pre-line">
-                  {isAnalysisLoading ? (
-                    <div className="space-y-2">
-                      <SkeletonText widthClass="w-5/6" />
-                      <SkeletonText widthClass="w-3/6" />
-                    </div>
-                  ) : (
-                    (main?.stochastic?.analysis ?? "정보 없음")
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-              <div className="flex items-center mb-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                <span className="font-medium text-purple-900">패턴 해석</span>
-              </div>
-              <p className="text-sm text-purple-800 leading-relaxed">
-                현재 하락 쐐기형 패턴이 완성되어 가고 있으며, RSI가 과매도
-                구간에 진입하여 반등 가능성이 높아지고 있습니다.
-              </p>
             </div>
           </div>
         );
@@ -509,7 +415,7 @@ export default function TechnicalAnalysis({
                     거래량 비율
                   </div>
                   <div className="text-lg font-bold text-green-600">
-                    +{volumeRatio}%
+                    {volumeRatio}%
                   </div>
                 </div>
               </div>
