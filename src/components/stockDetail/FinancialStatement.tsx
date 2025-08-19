@@ -179,7 +179,12 @@ export default function FinancialStatement({
         },
       ];
 
-  const getTrendIcon = (trend: "up" | "down" | "neutral") => {
+  const getTrendIcon = (trend: "up" | "down" | "neutral", label: string) => {
+    // ROE는 이모지 표시하지 않음
+    if (label === "ROE") {
+      return <div className="w-4 h-4" />;
+    }
+
     switch (trend) {
       case "up":
         return <TrendingUp className="w-4 h-4 text-gray-400" />;
@@ -192,24 +197,6 @@ export default function FinancialStatement({
 
   return (
     <div className="space-y-4">
-      {/* 종합 해석 */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-        <div className="flex items-center mb-2">
-          <DollarSign className="w-5 h-5 text-blue-600 mr-2" />
-          <h4 className="font-semibold text-blue-800">종합 해석</h4>
-        </div>
-        {isAnalysisLoading ? (
-          <div className="space-y-2">
-            <SkeletonText widthClass="w-10/12" />
-            <SkeletonText widthClass="w-6/12" />
-          </div>
-        ) : (
-          <p className="text-sm text-blue-700 leading-relaxed">
-            {safeText(company?.total_analysis)}
-          </p>
-        )}
-      </div>
-
       {/* 재무 지표 그리드 */}
       <div className="grid grid-cols-2 gap-4">
         {indicators.map((indicator) => (
@@ -226,7 +213,7 @@ export default function FinancialStatement({
                 </span>
                 <Info className="w-3 h-3 text-gray-400 ml-1" />
               </div>
-              {getTrendIcon(indicator.trend)}
+              {getTrendIcon(indicator.trend, indicator.label)}
             </div>
 
             <div className="flex items-baseline">
@@ -302,6 +289,23 @@ export default function FinancialStatement({
             )}
           </div>
         </div>
+      </div>
+      {/* 종합 해석 */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+        <div className="flex items-center mb-2">
+          <DollarSign className="w-5 h-5 text-blue-600 mr-2" />
+          <h4 className="font-semibold text-blue-800">종합 해석</h4>
+        </div>
+        {isAnalysisLoading ? (
+          <div className="space-y-2">
+            <SkeletonText widthClass="w-10/12" />
+            <SkeletonText widthClass="w-6/12" />
+          </div>
+        ) : (
+          <p className="text-sm text-blue-700 leading-relaxed">
+            {safeText(company?.total_analysis)}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, Activity, Target, Layers } from "lucide-react";
+import { TrendingUp, Activity, Target, Layers, FileText } from "lucide-react";
 
 interface StockDetail {
   id: number;
@@ -36,7 +36,7 @@ interface TechnicalAnalysisProps {
   analysis?: any; // /info/company/{code} 응답 전체 또는 필요한 섹션 포함 객체
 }
 
-type TabType = "summary" | "volatility" | "volume";
+type TabType = "summary" | "volatility" | "volume" | "overview";
 
 export default function TechnicalAnalysis({
   stock: _stock,
@@ -93,6 +93,7 @@ export default function TechnicalAnalysis({
     { id: "summary", label: "주요 지표", icon: Target },
     { id: "volatility", label: "가격 변동성", icon: TrendingUp },
     { id: "volume", label: "거래량 분석", icon: Layers },
+    { id: "overview", label: "종합 해석", icon: FileText },
   ];
 
   const renderTabContent = () => {
@@ -107,7 +108,6 @@ export default function TechnicalAnalysis({
                 onMouseLeave={() => setHoveredKey(null)}
               >
                 <div className="flex items-center mb-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">
                     이동평균선
                   </span>
@@ -139,7 +139,6 @@ export default function TechnicalAnalysis({
                 onMouseLeave={() => setHoveredKey(null)}
               >
                 <div className="flex items-center mb-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">
                     스토캐스틱
                   </span>
@@ -167,7 +166,6 @@ export default function TechnicalAnalysis({
                 onMouseLeave={() => setHoveredKey(null)}
               >
                 <div className="flex items-center mb-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">RSI</span>
                 </div>
                 <div
@@ -193,7 +191,6 @@ export default function TechnicalAnalysis({
                 onMouseLeave={() => setHoveredKey(null)}
               >
                 <div className="flex items-center mb-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-gray-700">
                     종합 신호
                   </span>
@@ -219,7 +216,7 @@ export default function TechnicalAnalysis({
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
               <div className="flex items-center mb-2">
                 <Activity className="w-4 h-4 text-blue-600 mr-2" />
-                <span className="font-medium text-blue-900">분석 요약</span>
+                <span className="font-medium text-blue-900">주요지표 분석</span>
               </div>
               {isAnalysisLoading ? (
                 <div className="space-y-2">
@@ -359,7 +356,7 @@ export default function TechnicalAnalysis({
             {/* 변동성 분석 요약 */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
               <div className="flex items-center mb-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                <Activity className="w-4 h-4 text-blue-600 mr-2" />
                 <span className="font-medium text-blue-900">변동성 분석</span>
               </div>
               {isAnalysisLoading ? (
@@ -483,11 +480,11 @@ export default function TechnicalAnalysis({
               </div>
             </div>
 
-            {/* 거래량 해석 */}
+            {/* 거래량 분석 */}
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
               <div className="flex items-center mb-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                <span className="font-medium text-blue-900">거래량 해석</span>
+                <span className="font-medium text-blue-900">거래량 분석</span>
               </div>
               {isAnalysisLoading ? (
                 <div className="space-y-2">
@@ -505,6 +502,30 @@ export default function TechnicalAnalysis({
           </div>
         );
 
+      case "overview":
+        return (
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+              <div className="flex items-center mb-2">
+                <FileText className="w-4 h-4 text-green-600 mr-2" />
+                <span className="font-medium text-green-900">
+                  기술적 분석 종합 해석
+                </span>
+              </div>
+              {isAnalysisLoading ? (
+                <div className="space-y-2">
+                  <SkeletonText widthClass="w-5/6" />
+                  <SkeletonText widthClass="w-4/6" />
+                </div>
+              ) : (
+                <p className="text-sm text-green-800 leading-relaxed">
+                  {analysis?.fin_total_analysis ??
+                    "종합 분석 정보를 불러오고 있습니다."}
+                </p>
+              )}
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -516,15 +537,11 @@ export default function TechnicalAnalysis({
       <div className="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-2 border-b border-gray-100 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">기술적 분석</h3>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs text-gray-600 font-medium">실시간</span>
-          </div>
         </div>
       </div>
 
       {/* 탭 네비게이션 */}
-      <div className="px-6 py-1 border-b border-gray-100 flex-shrink-0">
+      <div className="px-6 py-2 border-b border-gray-100 flex-shrink-0">
         <div className="flex space-x-1 justify-center">
           {tabs.map((tab) => {
             const Icon = tab.icon;

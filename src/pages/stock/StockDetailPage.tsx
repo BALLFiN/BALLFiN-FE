@@ -345,7 +345,7 @@ export default function StockDetailPage() {
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="container mx-auto px-4 py-6 mb-24">
+      <div className="container mx-auto px-4 py-6">
         {/* 차트와 기술적 분석 영역 */}
         <div className="flex gap-6">
           <div className="flex-1 min-w-0">
