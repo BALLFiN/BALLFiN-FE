@@ -277,7 +277,7 @@ export default function TrendingKeywords() {
               value="loc"
               valueFormat=".0f"
               margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-              labelSkipSize={12}
+              labelSkipSize={8}
               labelTextColor={{ from: "color", modifiers: [["darker", 1.2]] }}
               parentLabelPosition="left"
               parentLabelTextColor={{
@@ -292,6 +292,14 @@ export default function TrendingKeywords() {
               tooltip={CustomTooltip}
               onClick={handleNodeClick}
               enableParentLabel={false}
+              label={(node) => {
+                // 주식명이 너무 길면 줄여서 표시
+                const name = node.data.name;
+                if (name.length > 8) {
+                  return name.substring(0, 7) + "...";
+                }
+                return name;
+              }}
             />
           ) : (
             <div className="h-full flex items-center justify-center text-gray-500 text-center">
