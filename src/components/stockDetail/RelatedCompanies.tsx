@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "@/components/news/Pagination";
-import { getRelatedCompanies, RelatedCompanyDTO } from "@/api/stock";
+import { getRelatedCompanies } from "@/api/stock";
 
 interface RelatedCompany {
   id: number;
