@@ -84,7 +84,7 @@ export const ChatMessages = ({
   };
 
   return (
-    <div className="space-y-4 overflow-y-auto h-full p-4">
+    <div className="space-y-4 overflow-y-auto h-full pl-4 pr-2 sm:pr-4">
       {messages.map((msg) => {
         const isUser = msg.role === "user";
         const newsInfo = parseNewsInfo(msg.content);
@@ -92,14 +92,20 @@ export const ChatMessages = ({
         return (
           <div
             key={msg.msg_id}
-            className={`flex items-end gap-3 justify-start`}
+            className={`flex items-end gap-3 justify-start w-full`}
           >
             {newsInfo ? (
               <div
-                className={`flex flex-col gap-3 ${isUser ? "items-end" : "items-start"}`}
+                className={`flex flex-col gap-3 w-full ${
+                  isUser ? "items-end" : "items-start"
+                }`}
               >
                 {/* 뉴스 정보 카드 - 말풍선 외부 */}
-                <div className="max-w-[85%]">
+                <div
+                  className={`w-full max-w-[90%] ${
+                    isUser ? "self-end" : "self-start"
+                  }`}
+                >
                   <NewsInfoCard
                     title={newsInfo.title}
                     press={newsInfo.press}
@@ -111,9 +117,9 @@ export const ChatMessages = ({
 
                 {/* 질문 말풍선 */}
                 <div
-                  className={`max-w-[65%] rounded-2xl p-4 mr-2 shadow-sm ${
+                  className={`max-w-[90%] rounded-2xl p-4 shadow-sm ${
                     isUser
-                      ? "bg-[#0A5C2B] text-white rounded-br-md ml-auto"
+                      ? "bg-[#0A5C2B] text-white rounded-br-md"
                       : "bg-gray-50 text-gray-800 rounded-bl-md border border-gray-100"
                   }`}
                 >
@@ -131,7 +137,7 @@ export const ChatMessages = ({
               </div>
             ) : (
               <div
-                className={`max-w-[80%] w-fit rounded-2xl p-4 text-left shadow-sm ${
+                className={`max-w-[90%] w-fit rounded-2xl p-4 text-left shadow-sm ${
                   isUser
                     ? "bg-[#0A5C2B] text-white rounded-br-md ml-auto"
                     : "bg-gray-50 text-gray-800 rounded-bl-md mr-auto border border-gray-100"

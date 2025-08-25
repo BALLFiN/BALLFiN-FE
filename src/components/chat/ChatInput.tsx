@@ -27,11 +27,11 @@ export default function ChatInput({
         e.preventDefault();
         onSubmit();
       }}
-      className="p-4 sm:p-4 bg-white/70 backdrop-blur-xl border-t border-white/80 ring-1 ring-black/5"
+      className="p-4 sm:p-4 bg-white/70"
     >
       {/* 뉴스 정보 카드 */}
       {newsInfo && (
-        <div className="mb-4 max-w-2xl mx-auto">
+        <div className="mb-4">
           <NewsInfoCard
             title={newsInfo.title}
             press={newsInfo.press}
@@ -43,7 +43,7 @@ export default function ChatInput({
         </div>
       )}
 
-      <div className="flex gap-3 sm:gap-4 max-w-2xl mx-auto">
+      <div className="flex gap-3 sm:gap-4">
         <div className="relative flex-1 min-w-0">
           <textarea
             value={message}
