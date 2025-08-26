@@ -7,7 +7,6 @@ import park from "../assets/member/park.png";
 import kim from "../assets/member/kim.png";
 import jeong from "../assets/member/jeong.png";
 import yoon from "../assets/member/yoon.png";
-import lee from "../assets/member/lee.jpeg";
 import { BarChart2 } from "lucide-react"; // 실시간 시장 지표 및 주가 모니터링
 import { TrendingUp } from "lucide-react"; // 실시간 뉴스 기반 AI 주식 매매 서비스
 import { Newspaper } from "lucide-react"; // AI 기반 금융 뉴스 분석 서비스
@@ -205,7 +204,7 @@ export default function Intro() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 max-w-7xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 max-w-7xl mx-auto"
           >
             {/* 천성윤 */}
             <motion.div
@@ -222,30 +221,6 @@ export default function Intro() {
               />
               <h4 className="text-lg font-semibold text-gray-900 mb-2">
                 천성윤
-              </h4>
-              <p className="text-sm text-[#0A5C2B] font-medium mb-2">
-                Frontend, UX/UI
-              </p>
-              <p className="text-xs text-gray-600">
-                ReactJS, TypeScript, Tailwind CSS
-              </p>
-            </motion.div>
-
-            {/* 이영록 */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow text-center"
-            >
-              <img
-                src={lee}
-                alt="이영록"
-                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-              />
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                이영록
               </h4>
               <p className="text-sm text-[#0A5C2B] font-medium mb-2">
                 Frontend, UX/UI
