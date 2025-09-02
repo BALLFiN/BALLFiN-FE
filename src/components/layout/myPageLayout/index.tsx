@@ -1,11 +1,9 @@
-import { Outlet } from 'react-router-dom';
-import MyPageSidebar from './sideBar';
+import { Outlet } from "react-router-dom";
 
 export default function MyPageLayout() {
   return (
-    <div className="min-h-screen flex ">
-      <MyPageSidebar />
-      <main className=" w-full bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
+      <main className="w-full">
         <Outlet />
       </main>
     </div>
