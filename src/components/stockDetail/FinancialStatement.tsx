@@ -14,6 +14,7 @@ interface FinancialData {
 interface FinancialStatementProps {
   data: FinancialData;
   analysis?: any; // /info/company/{code} 응답 객체 (company_analysis 포함)
+  isAnalysisLoading?: boolean; // LLM 분석 로딩 상태
 }
 
 interface FinancialIndicator {
@@ -30,6 +31,7 @@ interface FinancialIndicator {
 export default function FinancialStatement({
   data,
   analysis,
+  isAnalysisLoading: _isAnalysisLoading = false,
 }: FinancialStatementProps) {
   const [hoveredIndicator, setHoveredIndicator] = useState<string | null>(null);
 
@@ -296,7 +298,7 @@ export default function FinancialStatement({
           <DollarSign className="w-5 h-5 text-blue-600 mr-2" />
           <h4 className="font-semibold text-blue-800">종합 해석</h4>
         </div>
-        {isAnalysisLoading ? (
+        {_isAnalysisLoading ? (
           <div className="space-y-2">
             <SkeletonText widthClass="w-10/12" />
             <SkeletonText widthClass="w-6/12" />

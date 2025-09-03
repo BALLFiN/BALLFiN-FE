@@ -34,6 +34,8 @@ interface TechnicalAnalysisProps {
   stock: StockDetail;
   historicalData: HistoricalData[];
   analysis?: any; // /info/company/{code} 응답 전체 또는 필요한 섹션 포함 객체
+  isAnalysisLoading?: boolean; // LLM 분석 로딩 상태
+  isTechnicalLoading?: boolean; // 기술적 분석 데이터 로딩 상태
 }
 
 type TabType = "summary" | "volatility" | "volume" | "overview";
@@ -42,6 +44,8 @@ export default function TechnicalAnalysis({
   stock: _stock,
   historicalData: _historicalData,
   analysis,
+  isAnalysisLoading: _isAnalysisLoading = false,
+  isTechnicalLoading: _isTechnicalLoading = true,
 }: TechnicalAnalysisProps) {
   const [activeTab, setActiveTab] = useState<TabType>("summary");
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -123,7 +127,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-lg font-bold ${statusColor(mainData?.moving_average?.arrangement?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-28" />
                   ) : (
                     (mainData?.moving_average?.arrangement?.status ??
@@ -155,7 +159,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-lg font-bold ${statusColor(mainData?.stochastic?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-20" />
                   ) : (
                     (mainData?.stochastic?.status ?? "정보 없음")
@@ -182,7 +186,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-lg font-bold ${statusColor(mainData?.rsi?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
                     (mainData?.rsi?.status ?? "중립")
@@ -209,7 +213,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-lg font-bold ${statusColor(mainData?.macd?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-20" />
                   ) : (
                     (mainData?.macd?.status ?? "중립")
@@ -229,7 +233,7 @@ export default function TechnicalAnalysis({
                 <Activity className="w-4 h-4 text-blue-600 mr-2" />
                 <span className="font-medium text-blue-900">주요지표 분석</span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-3/6" />
@@ -318,7 +322,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-base font-semibold ${statusColor(volaData?.atr?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
                     (volaData?.atr?.status ?? "정보 없음")
@@ -343,7 +347,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-base font-semibold ${statusColor(volaData?.rvi?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
                     (volaData?.rvi?.status ?? "정보 없음")
@@ -364,7 +368,7 @@ export default function TechnicalAnalysis({
                 <Activity className="w-4 h-4 text-blue-600 mr-2" />
                 <span className="font-medium text-blue-900">변동성 분석</span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-4/6" />
@@ -435,7 +439,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-lg font-bold ${statusColor(volData?.mfi?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
                     (volData?.mfi?.status ?? "정보 없음")
@@ -465,7 +469,7 @@ export default function TechnicalAnalysis({
                 <div
                   className={`text-lg font-bold ${statusColor(volData?.obv?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
                     (volData?.obv?.status ?? "정보 없음")
@@ -490,7 +494,7 @@ export default function TechnicalAnalysis({
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                 <span className="font-medium text-blue-900">거래량 분석</span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-2/6" />
@@ -515,7 +519,7 @@ export default function TechnicalAnalysis({
                   기술적 분석 종합 해석
                 </span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-4/6" />
