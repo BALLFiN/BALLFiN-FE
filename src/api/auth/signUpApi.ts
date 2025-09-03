@@ -14,7 +14,7 @@ export const register = async (
 ): Promise<RegisterResponse> => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`,
       {
         method: "POST",
         headers: {

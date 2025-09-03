@@ -32,7 +32,7 @@ export const login = async (
 ): Promise<{ token: string; user?: User }> => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/auth/login`,
       {
         method: "POST",
         headers: {
@@ -92,7 +92,7 @@ export const verifyAuth = async (): Promise<{
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/auth/check`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/auth/check`,
       {
         method: "GET",
         headers: {

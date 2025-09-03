@@ -32,6 +32,6 @@ export interface InterestRateWithHistory {
 }
 
 export const getAllMarketInfo = async () => {
-  const { data } = await axiosInstance.get<MarketAllResponse>("/info/all");
+  const { data } = await axiosInstance.get<MarketAllResponse>("/api/info/all");
   return data;
 };

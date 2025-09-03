@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+import { axiosInstance } from "@/lib/axiosInstance";
 
 export interface CompanyNewsItemDTO {
   id: string;
@@ -15,9 +13,11 @@ export interface CompanyNewsResponse {
 }
 
 export async function getNewsByCompany(stockCode: string, limit = 10) {
-  const url = `${API_URL}/news/by-company/${stockCode}`;
-  const { data } = await axios.get<CompanyNewsResponse>(url, {
-    params: { limit },
-  });
+  const { data } = await axiosInstance.get<CompanyNewsResponse>(
+    `/api/news/by-company/${stockCode}`,
+    {
+      params: { limit },
+    }
+  );
   return data.results;
 }

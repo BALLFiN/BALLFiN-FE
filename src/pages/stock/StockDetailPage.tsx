@@ -6,7 +6,11 @@ import StockNews from "@/components/stockDetail/StockNews";
 import TechnicalAnalysis from "@/components/stockDetail/TechnicalAnalysis";
 import FinancialStatement from "@/components/stockDetail/FinancialStatement";
 // Loading 컴포넌트 대신 심플 스켈레톤을 사용합니다
-import { getStockInfoByCode, getCompanyInfoByCode } from "@/api/stock";
+import {
+  getStockInfoByCode,
+  getCompanyInfoByCode,
+  getStockChart,
+} from "@/api/stock";
 import { getNewsByCompany } from "@/api/news";
 
 import StockChartPrice from "@/components/stockDetail/chart";
@@ -101,7 +105,7 @@ export default function StockDetailPage() {
   };
 
   // 섹션별 로딩 상태
-  const isChartLoading = historicalData.length === 0;
+  const [isChartLoading, setIsChartLoading] = useState(true);
   const isNewsLoading = news.length === 0;
   const isFinancialLoading = financialData == null;
 
@@ -198,24 +202,16 @@ export default function StockDetailPage() {
           });
         }
 
-        // 아래는 차트/뉴스/재무는 당장 API 스펙이 없으므로 기존과 동일하게 더미 구성
-        const mockHistoricalData: HistoricalData[] = Array.from(
-          { length: 30 },
-          (_, i) => ({
-            date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0],
-            open: 70000 + Math.random() * 10000,
-            high: 75000 + Math.random() * 10000,
-            low: 65000 + Math.random() * 10000,
-            close: 70000 + Math.random() * 10000,
-            volume: Math.floor(Math.random() * 1000000),
-            ma5: 72000 + Math.random() * 5000,
-            ma20: 71000 + Math.random() * 3000,
-            ma60: 70500 + Math.random() * 2000,
-            ma120: 70000 + Math.random() * 1500,
-          })
-        );
+        // 차트 데이터 API 연동 (일봉 180개 기본)
+        const chartRes = await getStockChart(code, "D", 180);
+        const chartData: HistoricalData[] = chartRes.candles.map((c) => ({
+          date: c.date,
+          open: c.open,
+          high: c.high,
+          low: c.low,
+          close: c.close,
+          volume: c.volume,
+        }));
 
         // 기업 뉴스 API 연동
         const companyNews = await getNewsByCompany(code, 10);
@@ -238,8 +234,9 @@ export default function StockDetailPage() {
         };
 
         if (!cancelled) {
-          setHistoricalData(mockHistoricalData);
+          setHistoricalData(chartData);
           setNews(mappedNews);
+          setIsChartLoading(false);
           // financialData는 company API에서 세팅됨 (실패 시에만 목데이터 유지)
           if (!financialData) setFinancialData(mockFinancialData);
         }
@@ -282,6 +279,7 @@ export default function StockDetailPage() {
             })
           );
           setHistoricalData(mockHistoricalData);
+          setIsChartLoading(false);
 
           const mockNews: NewsListItem[] = Array.from(
             { length: 5 },
@@ -349,11 +347,11 @@ export default function StockDetailPage() {
         {/* 차트와 기술적 분석 영역 */}
         <div className="flex gap-6">
           <div className="flex-1 min-w-0">
-            {isChartLoading ? (
-              <div className="h-[420px] bg-gray-100 border border-gray-200 rounded-xl animate-pulse" />
-            ) : (
-              <StockChartPrice data={historicalData} />
-            )}
+            <StockChartPrice
+              code={stock?.code ?? code ?? ""}
+              data={historicalData}
+              isLoading={isChartLoading}
+            />
           </div>
 
           {/* 기술적 분석 사이드바 */}

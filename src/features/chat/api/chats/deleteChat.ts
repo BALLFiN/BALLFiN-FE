@@ -5,5 +5,5 @@ interface DeleteChatParams {
 }
 
 export const deleteChat = async ({ chatId }: DeleteChatParams) => {
-  await axiosInstance.delete(`/chat/chats/${chatId}`);
+  await axiosInstance.delete(`/api/chat/chats/${chatId}`);
 };

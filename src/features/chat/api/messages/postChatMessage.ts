@@ -9,7 +9,7 @@ export const postChatMessage = async ({
   chatId,
   message,
 }: SendMessageParams) => {
-  const res = await axiosInstance.post(`/chat/chats/${chatId}/messages`, {
+  const res = await axiosInstance.post(`/api/chat/chats/${chatId}/messages`, {
     content: message,
     model: "gpt",
   });

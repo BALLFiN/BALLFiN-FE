@@ -9,6 +9,6 @@ export const updateChatTitle = async ({
   chatId,
   title,
 }: UpdateChatTitleParams) => {
-  const res = await axiosInstance.put(`chat/chats/${chatId}`, { title });
+  const res = await axiosInstance.put(`/api/chat/chats/${chatId}`, { title });
   return res.data;
 };
