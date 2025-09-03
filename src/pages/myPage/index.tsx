@@ -11,6 +11,7 @@ import {
   LogOut,
   Edit3,
 } from "lucide-react";
+import Toast from "@/components/common/Toast";
 
 export default function MyPage() {
   const [user] = useState({
@@ -21,6 +22,10 @@ export default function MyPage() {
     membership: "프리미엄",
     joinDate: "2024년 1월",
   });
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const menuItems = [
     {
@@ -61,13 +66,31 @@ export default function MyPage() {
     },
   ];
 
-  const handleLogout = () => {
-    // 로그아웃 로직
-    console.log("로그아웃");
+  const handleLogout = async () => {
+    const { logout } = await import("@/api/auth/logoutApi");
+    try {
+      await logout();
+      setToast({ message: "로그아웃 되었습니다.", type: "success" });
+    } catch (_) {
+      setToast({ message: "로그아웃 중 오류가 발생했습니다.", type: "error" });
+    } finally {
+      localStorage.removeItem("access_token");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 800);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+          duration={1500}
+        />
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 lg:space-y-10">
         {/* 프로필 카드 */}
         <motion.div

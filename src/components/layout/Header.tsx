@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, Settings } from "lucide-react";
@@ -40,6 +40,7 @@ const Header = () => {
     message: string;
     type: "success" | "error";
   }>({ show: false, message: "", type: "success" });
+  const wasLoggedInRef = useRef(false);
 
   useEffect(() => {
     // 로그인 상태 및 사용자 정보 확인
@@ -47,6 +48,15 @@ const Header = () => {
       const token = localStorage.getItem("access_token");
 
       if (token) {
+        // 로그인 전환 토스트
+        if (!wasLoggedInRef.current) {
+          setToast({
+            show: true,
+            message: "로그인되었습니다.",
+            type: "success",
+          });
+        }
+        wasLoggedInRef.current = true;
         setIsLoggedIn(true);
 
         // 먼저 localStorage에서 사용자 정보 확인
@@ -81,11 +91,13 @@ const Header = () => {
           setIsLoggedIn(false);
           setUserName("");
           setUserEmail("");
+          wasLoggedInRef.current = false;
         }
       } else {
         setIsLoggedIn(false);
         setUserName("");
         setUserEmail("");
+        wasLoggedInRef.current = false;
       }
     };
 
