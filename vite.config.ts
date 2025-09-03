@@ -34,32 +34,32 @@ export default defineConfig(({ mode }) => {
       },
       proxy: {
         "/chat": {
-          target: process.env.VITE_API_BASE_URL,
+          target: process.env.VITE_API_BASE_URL + "/api",
           changeOrigin: true,
           secure: false,
         },
         "/info": {
-          target: process.env.VITE_API_BASE_URL,
+          target: process.env.VITE_API_BASE_URL + "/api",
           changeOrigin: true,
           secure: false,
         },
         "/stock": {
-          target: process.env.VITE_API_BASE_URL,
+          target: process.env.VITE_API_BASE_URL + "/api",
           changeOrigin: true,
           secure: false,
         },
         "/news": {
-          target: process.env.VITE_API_BASE_URL,
+          target: process.env.VITE_API_BASE_URL + "/api",
           changeOrigin: true,
           secure: false,
         },
         "/auth": {
-          target: process.env.VITE_API_BASE_URL,
+          target: process.env.VITE_API_BASE_URL + "/api",
           changeOrigin: true,
           secure: false,
         },
         "/user": {
-          target: process.env.VITE_API_BASE_URL,
+          target: process.env.VITE_API_BASE_URL + "/api",
           changeOrigin: true,
           secure: false,
         },

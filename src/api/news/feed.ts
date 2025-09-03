@@ -1,7 +1,6 @@
-import axios from "axios";
+import { axiosInstance } from "@/lib/axiosInstance";
 import { NewsItem } from "./types";
-
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+import { isAxiosError } from "axios";
 
 export interface MyFeedParams {
   limit?: number;
@@ -16,57 +15,19 @@ export const getMyFeed = async (
   params: MyFeedParams = {}
 ): Promise<NewsItem[]> => {
   try {
-    const requestUrl = `${API_URL}/news/my-feed`;
     const requestParams = {
       limit: params.limit || 20,
     };
 
-    const tokenKey = "access_token";
-    let token = localStorage.getItem(tokenKey);
-    if (token && !token.startsWith("Bearer ")) {
-      token = `Bearer ${token}`;
-    }
-
-    console.log("API 요청 정보:", {
-      url: requestUrl,
+    const response = await axiosInstance.get<MyFeedResponse>("/news/my-feed", {
       params: requestParams,
-      env: {
-        VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
-        NODE_ENV: import.meta.env.NODE_ENV,
-      },
-      headers: {
-        Authorization: token,
-      },
-    });
-
-    const response = await axios.get<MyFeedResponse>(requestUrl, {
-      params: requestParams,
-      headers: {
-        Authorization: token,
-      },
-    });
-
-    console.log("API 응답:", {
-      status: response.status,
-      data: response.data,
-      headers: response.headers,
     });
 
     return response.data.results;
   } catch (error) {
-    console.error("API 에러 상세:", {
-      error,
-      isAxiosError: axios.isAxiosError(error),
-      response: axios.isAxiosError(error)
-        ? {
-            status: error.response?.status,
-            data: error.response?.data,
-            headers: error.response?.headers,
-          }
-        : null,
-    });
+    console.error("API 에러 상세:", error);
 
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       // 404 Not Found - 즐겨찾기 종목이 없는 경우
       if (error.response?.status === 404) {
         const detail = error.response.data?.detail;

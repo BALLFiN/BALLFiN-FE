@@ -1,11 +1,9 @@
-import axios from "axios";
+import { axiosInstance } from "@/lib/axiosInstance";
 import { NewsSearchParams } from "./types";
-
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 export const searchNews = async (params: NewsSearchParams): Promise<any> => {
   try {
-    const response = await axios.get(`${API_URL}/news/search`, {
+    const response = await axiosInstance.get("/news/search", {
       params: {
         keyword: params.keyword,
         impact: params.impact,
