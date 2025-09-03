@@ -9,3 +9,34 @@ export const getStockInfoByCode = async (
   const { data } = await axiosInstance.get(`/info/stock/${stockCode}`);
   return data;
 };
+
+// 차트 데이터 타입 및 API
+export interface StockChartCandle {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export type StockChartPeriod = "D" | "W" | "M";
+
+export interface StockChartResponse {
+  stock_code: string;
+  period: StockChartPeriod;
+  count: number;
+  candles: StockChartCandle[];
+}
+
+export async function getStockChart(
+  stockCode: string,
+  period: StockChartPeriod,
+  count: number
+): Promise<StockChartResponse> {
+  const { data } = await axiosInstance.get<StockChartResponse>(
+    `/stock/chart/${encodeURIComponent(stockCode)}`,
+    { params: { period, count } }
+  );
+  return data;
+}
