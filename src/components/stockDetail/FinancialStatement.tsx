@@ -33,7 +33,7 @@ export default function FinancialStatement({
 }: FinancialStatementProps) {
   const [hoveredIndicator, setHoveredIndicator] = useState<string | null>(null);
 
-  const company = analysis?.company_analysis;
+  const company = analysis?.company_data; // 재무 데이터
   const isAnalysisLoading = !company;
 
   // 간단 스켈레톤 텍스트
@@ -303,7 +303,10 @@ export default function FinancialStatement({
           </div>
         ) : (
           <p className="text-sm text-blue-700 leading-relaxed">
-            {safeText(company?.total_analysis)}
+            {safeText(
+              analysis?.company_analysis ??
+                "재무 분석 정보를 불러오고 있습니다."
+            )}
           </p>
         )}
       </div>

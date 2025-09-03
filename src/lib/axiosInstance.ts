@@ -7,7 +7,7 @@ const baseURL = import.meta.env.DEV
 
 export const axiosInstance = axios.create({
   baseURL,
-  timeout: 15000,
+  timeout: 30000, // 30초로 증가
   headers: {
     "Content-Type": "application/json",
   },

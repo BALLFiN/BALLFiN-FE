@@ -10,6 +10,7 @@ import {
   getStockInfoByCode,
   getCompanyInfoByCode,
   getStockChart,
+  getTotalAnalysis,
 } from "@/api/stock";
 import { getNewsByCompany } from "@/api/news";
 
@@ -185,24 +186,74 @@ export default function StockDetailPage() {
 
         if (!cancelled) setStock(mapped);
 
-        // 기술적/재무 데이터 매핑
-        if (!cancelled && companyInfo) {
-          // setTechSummary(companyInfo.main_analysis ?? null);
-          setCompanyAnalysis(companyInfo);
-          setFinancialData({
-            revenue:
-              (companyInfo.company_analysis?.["매출액"] ?? 0) * 1_000_000_000,
-            netIncome:
-              (companyInfo.company_analysis?.["순이익"] ?? 0) * 1_000_000_000,
-            debtRatio: companyInfo.company_analysis?.["부채비율"] ?? 0,
-            roe: companyInfo.company_analysis?.ROE ?? 0,
-            per: companyInfo.company_analysis?.PER ?? 0,
-            pbr: companyInfo.company_analysis?.PBR ?? 0,
-            dividendYield: 0,
-          });
+        // LLM 종합 분석 요청
+        try {
+          const totalAnalysis = await getTotalAnalysis(code);
+          console.log("Total Analysis Response:", totalAnalysis);
+
+          // 기술적/재무 데이터 매핑
+          if (!cancelled && companyInfo) {
+            const mergedAnalysis = {
+              ...totalAnalysis,
+              company_analysis: totalAnalysis.company_analysis, // API에서 받은 재무 분석 텍스트
+              company_data: companyInfo.company_analysis ?? companyInfo, // 기업 재무 데이터
+              main_analysis: totalAnalysis.main_analysis,
+              volume_analysis: totalAnalysis.volume_analysis,
+              volatility_analysis: totalAnalysis.volatility_analysis,
+              combined_technical_analysis:
+                totalAnalysis.combined_technical_analysis,
+              fin_total_analysis: totalAnalysis.fin_total_analysis,
+              // 기존 기술적 지표 데이터도 포함
+              main_analysis_data: companyInfo.main_analysis,
+              volatility_analysis_data: companyInfo.volatility_analysis,
+              volume_analysis_data: companyInfo.volume_analysis,
+            };
+            setCompanyAnalysis(mergedAnalysis);
+            setFinancialData({
+              revenue:
+                (companyInfo.company_analysis?.["매출액"] ?? 0) * 1_000_000_000,
+              netIncome:
+                (companyInfo.company_analysis?.["순이익"] ?? 0) * 1_000_000_000,
+              debtRatio: companyInfo.company_analysis?.["부채비율"] ?? 0,
+              roe: companyInfo.company_analysis?.ROE ?? 0,
+              per: companyInfo.company_analysis?.PER ?? 0,
+              pbr: companyInfo.company_analysis?.PBR ?? 0,
+              dividendYield: 0,
+            });
+          }
+        } catch (error) {
+          console.error("Total Analysis API Error:", error);
+          // API 실패 시에도 기본 분석 데이터 설정
+          if (!cancelled && companyInfo) {
+            const fallbackAnalysis = {
+              company_analysis: "재무 분석 정보를 불러오고 있습니다.",
+              company_data: companyInfo.company_analysis ?? companyInfo,
+              main_analysis: "분석 정보를 불러오고 있습니다.",
+              volume_analysis: "분석 정보를 불러오고 있습니다.",
+              volatility_analysis: "분석 정보를 불러오고 있습니다.",
+              combined_technical_analysis: "분석 정보를 불러오고 있습니다.",
+              fin_total_analysis: "분석 정보를 불러오고 있습니다.",
+              // 기존 기술적 지표 데이터도 포함
+              main_analysis_data: companyInfo.main_analysis,
+              volatility_analysis_data: companyInfo.volatility_analysis,
+              volume_analysis_data: companyInfo.volume_analysis,
+            };
+            setCompanyAnalysis(fallbackAnalysis);
+            setFinancialData({
+              revenue:
+                (companyInfo.company_analysis?.["매출액"] ?? 0) * 1_000_000_000,
+              netIncome:
+                (companyInfo.company_analysis?.["순이익"] ?? 0) * 1_000_000_000,
+              debtRatio: companyInfo.company_analysis?.["부채비율"] ?? 0,
+              roe: companyInfo.company_analysis?.ROE ?? 0,
+              per: companyInfo.company_analysis?.PER ?? 0,
+              pbr: companyInfo.company_analysis?.PBR ?? 0,
+              dividendYield: 0,
+            });
+          }
         }
 
-        // 차트 데이터 API 연동 (일봉 180개 기본)
+        // 차트, 뉴스
         const chartRes = await getStockChart(code, "D", 180);
         const chartData: HistoricalData[] = chartRes.candles.map((c) => ({
           date: c.date,
@@ -213,7 +264,6 @@ export default function StockDetailPage() {
           volume: c.volume,
         }));
 
-        // 기업 뉴스 API 연동
         const companyNews = await getNewsByCompany(code, 10);
         const mappedNews: NewsListItem[] = companyNews.map((n) => ({
           id: n.id,
@@ -237,7 +287,6 @@ export default function StockDetailPage() {
           setHistoricalData(chartData);
           setNews(mappedNews);
           setIsChartLoading(false);
-          // financialData는 company API에서 세팅됨 (실패 시에만 목데이터 유지)
           if (!financialData) setFinancialData(mockFinancialData);
         }
       } catch {
