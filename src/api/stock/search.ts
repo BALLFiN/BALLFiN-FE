@@ -29,7 +29,7 @@ export const searchStockData = async (
   params: StockSearchParams
 ): Promise<StockSearchResponse> => {
   try {
-    const response = await axiosInstance.get("/stock/search", { params });
+    const response = await axiosInstance.get("/api/stock/search", { params });
     return response.data;
   } catch (error) {
     console.error("주식 검색 중 오류 발생:", error);

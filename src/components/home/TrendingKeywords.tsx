@@ -28,7 +28,7 @@ const getCompanies = async (
   sortBy: SortBy = "market_cap_desc"
 ): Promise<CompanyInfo[]> => {
   try {
-    const response = await fetch(`/info/companies?sort_by=${sortBy}`);
+    const response = await fetch(`/api/info/companies?sort_by=${sortBy}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

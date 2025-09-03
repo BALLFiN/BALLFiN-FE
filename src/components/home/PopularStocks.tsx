@@ -38,7 +38,7 @@ interface Stock {
 // API 호출 함수
 const getPopularCompanies = async (): Promise<CompanyInfo[]> => {
   try {
-    const response = await fetch("/info/companies?sort_by=market_cap_desc");
+    const response = await fetch("/api/info/companies?sort_by=market_cap_desc");
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

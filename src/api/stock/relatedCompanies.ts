@@ -17,7 +17,7 @@ export async function getRelatedCompanies(
   sort_by = "market_cap_desc"
 ) {
   const { data } = await axiosInstance.get<RelatedCompanyDTO[]>(
-    `/info/related-companies/${stockCode}`,
+    `/api/info/related-companies/${stockCode}`,
     { params: { sort_by } }
   );
   return data;

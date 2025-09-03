@@ -55,7 +55,7 @@ export const getStockList = async (
 ): Promise<StockListResponse> => {
   try {
     // 새로운 /info/companies API 사용
-    const response = await axiosInstance.get("/info/companies", {
+    const response = await axiosInstance.get("/api/info/companies", {
       params: {
         sort_by: sortBy,
       },
