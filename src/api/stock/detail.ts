@@ -6,7 +6,7 @@ export type RawStockInfoResponse = Record<string, any>;
 export const getStockInfoByCode = async (
   stockCode: string
 ): Promise<RawStockInfoResponse> => {
-  const { data } = await axiosInstance.get(`/info/stock/${stockCode}`);
+  const { data } = await axiosInstance.get(`/api/info/stock/${stockCode}`);
   return data;
 };
 
@@ -35,7 +35,7 @@ export async function getStockChart(
   count: number
 ): Promise<StockChartResponse> {
   const { data } = await axiosInstance.get<StockChartResponse>(
-    `/stock/chart/${encodeURIComponent(stockCode)}`,
+    `/api/stock/chart/${encodeURIComponent(stockCode)}`,
     { params: { period, count } }
   );
   return data;

@@ -33,33 +33,8 @@ export default defineConfig(({ mode }) => {
         overlay: false,
       },
       proxy: {
-        "/chat": {
-          target: process.env.VITE_API_BASE_URL + "/api",
-          changeOrigin: true,
-          secure: false,
-        },
-        "/info": {
-          target: process.env.VITE_API_BASE_URL + "/api",
-          changeOrigin: true,
-          secure: false,
-        },
-        "/stock": {
-          target: process.env.VITE_API_BASE_URL + "/api",
-          changeOrigin: true,
-          secure: false,
-        },
-        "/news": {
-          target: process.env.VITE_API_BASE_URL + "/api",
-          changeOrigin: true,
-          secure: false,
-        },
-        "/auth": {
-          target: process.env.VITE_API_BASE_URL + "/api",
-          changeOrigin: true,
-          secure: false,
-        },
-        "/user": {
-          target: process.env.VITE_API_BASE_URL + "/api",
+        "^/api/.*": {
+          target: process.env.VITE_API_BASE_URL,
           changeOrigin: true,
           secure: false,
         },

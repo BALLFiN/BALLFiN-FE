@@ -4,7 +4,7 @@ import { isAxiosError } from "axios";
 
 export const getNewsDetail = async (newsId: string): Promise<NewsItem> => {
   try {
-    const response = await axiosInstance.get<NewsItem>(`/news/${newsId}`);
+    const response = await axiosInstance.get<NewsItem>(`/api/news/${newsId}`);
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {

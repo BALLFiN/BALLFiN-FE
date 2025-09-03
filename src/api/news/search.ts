@@ -3,7 +3,7 @@ import { NewsSearchParams } from "./types";
 
 export const searchNews = async (params: NewsSearchParams): Promise<any> => {
   try {
-    const response = await axiosInstance.get("/news/search", {
+    const response = await axiosInstance.get("/api/news/search", {
       params: {
         keyword: params.keyword,
         impact: params.impact,

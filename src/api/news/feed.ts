@@ -19,9 +19,12 @@ export const getMyFeed = async (
       limit: params.limit || 20,
     };
 
-    const response = await axiosInstance.get<MyFeedResponse>("/news/my-feed", {
-      params: requestParams,
-    });
+    const response = await axiosInstance.get<MyFeedResponse>(
+      "/api/news/my-feed",
+      {
+        params: requestParams,
+      }
+    );
 
     return response.data.results;
   } catch (error) {

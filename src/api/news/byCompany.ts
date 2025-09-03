@@ -14,7 +14,7 @@ export interface CompanyNewsResponse {
 
 export async function getNewsByCompany(stockCode: string, limit = 10) {
   const { data } = await axiosInstance.get<CompanyNewsResponse>(
-    `/news/by-company/${stockCode}`,
+    `/api/news/by-company/${stockCode}`,
     {
       params: { limit },
     }
