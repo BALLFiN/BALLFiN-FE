@@ -105,7 +105,7 @@ export default function StockDetailPage() {
   };
 
   // 섹션별 로딩 상태
-  const isChartLoading = historicalData.length === 0;
+  const [isChartLoading, setIsChartLoading] = useState(true);
   const isNewsLoading = news.length === 0;
   const isFinancialLoading = financialData == null;
 
@@ -236,6 +236,7 @@ export default function StockDetailPage() {
         if (!cancelled) {
           setHistoricalData(chartData);
           setNews(mappedNews);
+          setIsChartLoading(false);
           // financialData는 company API에서 세팅됨 (실패 시에만 목데이터 유지)
           if (!financialData) setFinancialData(mockFinancialData);
         }
@@ -278,6 +279,7 @@ export default function StockDetailPage() {
             })
           );
           setHistoricalData(mockHistoricalData);
+          setIsChartLoading(false);
 
           const mockNews: NewsListItem[] = Array.from(
             { length: 5 },
@@ -345,14 +347,11 @@ export default function StockDetailPage() {
         {/* 차트와 기술적 분석 영역 */}
         <div className="flex gap-6">
           <div className="flex-1 min-w-0">
-            {isChartLoading ? (
-              <div className="h-[420px] bg-gray-100 border border-gray-200 rounded-xl animate-pulse" />
-            ) : (
-              <StockChartPrice
-                code={stock?.code ?? code ?? ""}
-                data={historicalData}
-              />
-            )}
+            <StockChartPrice
+              code={stock?.code ?? code ?? ""}
+              data={historicalData}
+              isLoading={isChartLoading}
+            />
           </div>
 
           {/* 기술적 분석 사이드바 */}

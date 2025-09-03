@@ -7,6 +7,7 @@ import { getStockChart } from "@/api/stock";
 interface StockChartProps {
   code: string;
   data?: HistoricalData[];
+  isLoading?: boolean;
 }
 export type TimeRangePT =
   | "1m"
@@ -19,7 +20,11 @@ export type TimeRangePT =
   | "1mo"
   | "1y";
 
-export default function StockChartPrice({ code, data = [] }: StockChartProps) {
+export default function StockChartPrice({
+  code,
+  data = [],
+  isLoading = false,
+}: StockChartProps) {
   const [timeRange, setTimeRange] = useState<TimeRangePT>("1d");
   const [showMA, setShowMA] = useState({
     ma5: true,
@@ -66,7 +71,10 @@ export default function StockChartPrice({ code, data = [] }: StockChartProps) {
         }));
         setRemoteData(mapped);
       } catch {
-        if (!cancelled) setRemoteData(data);
+        if (!cancelled) {
+          // API 실패 시 기본 데이터 사용
+          setRemoteData(data.length > 0 ? data : []);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -74,7 +82,7 @@ export default function StockChartPrice({ code, data = [] }: StockChartProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, period, count]);
+  }, [code, period, count, data]);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-[650px] flex flex-col">
@@ -85,7 +93,7 @@ export default function StockChartPrice({ code, data = [] }: StockChartProps) {
         onToggleMA={handleToggleMA}
       />
       <div className="flex-1">
-        {loading ? (
+        {isLoading || loading ? (
           <div className="h-[500px] bg-gray-100 rounded animate-pulse" />
         ) : (
           <PriceVolumeChart
