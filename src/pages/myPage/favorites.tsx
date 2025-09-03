@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Heart, Trash2, Search, Filter, Star } from "lucide-react";
+import { ArrowLeft, Heart, Trash2, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function FavoritesPage() {

@@ -4,7 +4,6 @@ import {
   User,
   CreditCard,
   Heart,
-  Settings,
   ChevronRight,
   Bell,
   Shield,
