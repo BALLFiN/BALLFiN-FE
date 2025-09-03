@@ -74,9 +74,10 @@ export default function PriceVolumeChart({
           rightPriceScale: { borderColor: "#e2e8f0" },
           timeScale: {
             borderColor: "#e2e8f0",
-            fixLeftEdge: true,
-            fixRightEdge: true,
+            fixLeftEdge: false,
+            fixRightEdge: false,
             barSpacing: 2,
+            rightOffset: 0,
           },
           autoSize: true,
         });
@@ -275,10 +276,6 @@ export default function PriceVolumeChart({
 
   // 3) 차트 옵션
   const options: Highcharts.Options = useMemo(() => {
-    const len = ohlcData.length;
-    const start = len > 0 ? ohlcData[Math.max(0, len - 10)][0] : undefined;
-    const end = len > 0 ? ohlcData[len - 1][0] : undefined;
-
     return {
       chart: {
         zoomType: "x",
@@ -290,8 +287,6 @@ export default function PriceVolumeChart({
       xAxis: {
         type: "datetime",
         crosshair: true,
-        ...(start !== undefined ? { min: start } : {}),
-        ...(end !== undefined ? { max: end } : {}),
         gridLineWidth: 1,
         gridLineColor: "#f1f5f9",
       },
@@ -384,6 +379,7 @@ export default function PriceVolumeChart({
       ],
       rangeSelector: { enabled: false },
       navigator: { enabled: false },
+      scrollbar: { enabled: false },
       credits: { enabled: false },
     };
   }, [
