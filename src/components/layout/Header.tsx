@@ -48,13 +48,15 @@ const Header = () => {
       const token = localStorage.getItem("access_token");
 
       if (token) {
-        // 로그인 전환 토스트
-        if (!wasLoggedInRef.current) {
+        // 첫 로그인 플래그 확인
+        const justLoggedIn = sessionStorage.getItem("just_logged_in");
+        if (justLoggedIn) {
           setToast({
             show: true,
             message: "로그인되었습니다.",
             type: "success",
           });
+          sessionStorage.removeItem("just_logged_in");
         }
         wasLoggedInRef.current = true;
         setIsLoggedIn(true);
