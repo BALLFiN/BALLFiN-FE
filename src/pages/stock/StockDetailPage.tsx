@@ -415,8 +415,8 @@ export default function StockDetailPage() {
       {/* 메인 콘텐츠 */}
       <div className="container mx-auto px-4 py-6">
         {/* 차트와 기술적 분석 영역 */}
-        <div className="flex gap-6">
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1 min-w-0 order-1 lg:order-none">
             <StockChartPrice
               code={stock?.code ?? code ?? ""}
               data={historicalData}
@@ -425,7 +425,7 @@ export default function StockDetailPage() {
           </div>
 
           {/* 기술적 분석 사이드바 */}
-          <div className="w-[472px] flex-shrink-0">
+          <div className="w-full lg:w-[472px] flex-shrink-0 order-0 lg:order-none">
             <TechnicalAnalysis
               stock={stock ?? placeholderStock}
               historicalData={historicalData}

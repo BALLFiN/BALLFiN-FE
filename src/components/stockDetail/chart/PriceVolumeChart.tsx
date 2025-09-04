@@ -72,7 +72,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         const { createChart, CandlestickSeries, HistogramSeries, LineSeries } =
           tv as any;
 
-        chart = createChart(tvContainerRef.current, {
+        const container = tvContainerRef.current;
+        chart = createChart(container, {
           layout: {
             textColor: "#334155",
             background: { type: "solid", color: "#ffffff" },
@@ -170,6 +171,34 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         }
 
         chart.timeScale().fitContent();
+
+        // 반응형: ResizeObserver로 컨테이너 크기 변경 시 차트 리사이즈
+        let resizeObserver: ResizeObserver | null = null;
+        if (typeof ResizeObserver !== "undefined") {
+          resizeObserver = new ResizeObserver(() => {
+            try {
+              const { clientWidth, clientHeight } = container;
+              if (clientWidth && clientHeight) {
+                chart.applyOptions({
+                  width: clientWidth,
+                  height: clientHeight,
+                });
+              }
+            } catch {}
+          });
+          resizeObserver.observe(container);
+        } else {
+          // 폴백: 윈도우 리사이즈
+          const onResize = () => {
+            try {
+              const { clientWidth, clientHeight } = container;
+              chart.applyOptions({ width: clientWidth, height: clientHeight });
+            } catch {}
+          };
+          window.addEventListener("resize", onResize);
+          // cleanup에서 제거
+          (chart as any).__onResize = onResize;
+        }
         setTvReady(true);
         setTvFailed(false);
         clearTimeout(timeoutId); // 성공 시 타임아웃 클리어
@@ -188,6 +217,13 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           chart.remove?.();
         } catch {}
       }
+      // 리사이즈 옵저버/리스너 정리
+      try {
+        const onResize = (chart as any)?.__onResize;
+        if (onResize) {
+          window.removeEventListener("resize", onResize);
+        }
+      } catch {}
     };
   }, [data, showMA, tvReady, tvFailed]);
 
@@ -301,7 +337,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           duration: 500, // 부드러운 전환을 위한 애니메이션
           easing: "easeInOutCubic",
         },
-        reflow: false, // 리플로우 비활성화
+        reflow: true, // 컨테이너 크기 변화에 반응
       },
       accessibility: { enabled: false },
       title: { text: "" },
@@ -428,8 +464,16 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
     return (
       <div
         ref={tvContainerRef}
-        className="h-[500px] w-full transition-all duration-300 ease-in-out"
-        style={{ opacity: 1 }}
+        className="w-full transition-all duration-300 ease-in-out"
+        style={{
+          opacity: 1,
+          height:
+            typeof window !== "undefined" && window.innerWidth < 640
+              ? 360
+              : typeof window !== "undefined" && window.innerWidth < 1024
+                ? 420
+                : 500,
+        }}
       />
     );
   }
@@ -437,7 +481,17 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
   // TradingView 실패 시 Highcharts 사용
   if (tvFailed && ready) {
     return (
-      <div className="transition-all duration-300 ease-in-out">
+      <div
+        className="transition-all duration-300 ease-in-out w-full overflow-hidden"
+        style={{
+          height:
+            typeof window !== "undefined" && window.innerWidth < 640
+              ? 360
+              : typeof window !== "undefined" && window.innerWidth < 1024
+                ? 420
+                : 500,
+        }}
+      >
         <HighchartsReact
           key={`${timeRange}-${ohlcData.length}`}
           highcharts={Highcharts}
@@ -451,7 +505,17 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
   // TradingView 로딩 중이지만 데이터가 있으면 Highcharts로 폴백
   if (data.length > 0 && !tvReady && !tvFailed) {
     return (
-      <div className="transition-all duration-300 ease-in-out">
+      <div
+        className="transition-all duration-300 ease-in-out w-full overflow-hidden"
+        style={{
+          height:
+            typeof window !== "undefined" && window.innerWidth < 640
+              ? 360
+              : typeof window !== "undefined" && window.innerWidth < 1024
+                ? 420
+                : 500,
+        }}
+      >
         <HighchartsReact
           key={`${timeRange}-${ohlcData.length}`}
           highcharts={Highcharts}
