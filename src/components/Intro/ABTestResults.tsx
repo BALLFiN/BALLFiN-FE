@@ -16,19 +16,10 @@ export default function ABTestResults() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-3xl font-bold text-gray-900 mb-4"
+            className="text-3xl font-bold text-gray-900 mb-8"
           >
-            📊 LLM 기반 금융 분석 모델 A/B 테스트 결과
+            LLM 기반 금융 분석 모델 A/B 테스트 결과
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg text-gray-600 mb-8"
-          >
-            CoT/RAG 방식의 우수성을 과학적으로 검증했습니다
-          </motion.p>
 
           {/* 기술 스택 비교 */}
           <motion.div
@@ -36,32 +27,29 @@ export default function ABTestResults() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8"
           >
-            <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div className="bg-white rounded-xl p-6 shadow-lg opacity-90">
               <h4 className="text-lg font-bold text-gray-500 mb-4 text-center">
                 Baseline
               </h4>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-500 mb-2">
+                <div className="text-xl font-bold text-gray-500 mb-1">
                   GPT-4o
                 </div>
-                <div className="text-sm text-gray-600">기본 모델</div>
+                <div className="text-xs text-gray-500">기본 모델</div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#0A5C2B]">
+            <div className="bg-gradient-to-br from-white to-emerald-50 rounded-xl p-6 shadow-2xl border-2 border-[#0A5C2B] ring-4 ring-[#0A5C2B]/10">
               <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center">
                 Ours
               </h4>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#0A5C2B] mb-2">
-                  GPT-4o
-                </div>
-                <div className="text-sm text-gray-600 mb-2">
-                  + BarbellAI 기술
-                </div>
-                <div className="text-xs text-[#0A5C2B] font-medium">
+                <div className="text-2xl font-extrabold text-[#0A5C2B] tracking-tight">
                   Chain of Thought + RAG
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  기반 모델: GPT-4o
                 </div>
               </div>
             </div>
@@ -81,23 +69,23 @@ export default function ABTestResults() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="bg-white rounded-xl p-8 shadow-lg mb-8"
+            className="bg-white rounded-xl p-8 shadow-lg mb-4"
           >
             <h3 className="text-xl font-bold text-[#0A5C2B] mb-6 text-center">
               🎯 종합 분석 평가 (깊이+근거+통찰력 평균)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-[#0A5C2B] mb-2">
-                  6.92
-                </div>
-                <div className="text-sm text-gray-600">CoT/RAG 평균 점수</div>
-              </div>
-              <div className="text-center">
                 <div className="text-3xl font-bold text-gray-500 mb-2">
                   5.25
                 </div>
                 <div className="text-sm text-gray-600">Baseline 평균 점수</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[#0A5C2B] mb-2">
+                  6.92
+                </div>
+                <div className="text-sm text-gray-600">CoT/RAG 평균 점수</div>
               </div>
             </div>
             <div className="mt-6 text-center">
@@ -206,26 +194,6 @@ export default function ABTestResults() {
               </div>
             </motion.div>
           </div>
-
-          {/* 결론 */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-8 text-center"
-          >
-            <div className="bg-[#0A5C2B] text-white rounded-xl p-6">
-              <h4 className="text-xl font-bold mb-2">🏆 결론</h4>
-              <p className="text-white/90">
-                CoT/RAG 방식이 모든 평가 항목에서 통계적으로 유의미하게 우수한
-                성능을 보여주었습니다.
-                <br />
-                <span className="font-semibold">p &lt; 0.001</span> 수준에서
-                통계적 유의성을 확인했습니다.
-              </p>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </div>
