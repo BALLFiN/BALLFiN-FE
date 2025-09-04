@@ -56,8 +56,7 @@ export async function getTotalAnalysis(
   stockCode: string
 ): Promise<TotalAnalysisResponse> {
   const { data } = await axiosInstance.get(
-    `/api/info/total_analysis/${encodeURIComponent(stockCode)}`,
-    { timeout: 60000 } // LLM 분석은 60초 타임아웃
+    `/api/info/total_analysis/${encodeURIComponent(stockCode)}`
   );
   return data;
 }

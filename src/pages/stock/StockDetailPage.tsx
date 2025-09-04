@@ -131,11 +131,12 @@ export default function StockDetailPage() {
       try {
         if (!code) return;
 
-        // 1단계: Stock Header 데이터 로딩
+        // 1단계: Stock Header 데이터 로딩 (병렬 처리)
         console.log("1단계: Stock Header 로딩 시작");
-        const [priceInfo, companyInfo] = await Promise.all([
+        const [priceInfo, companyInfo, chartRes] = await Promise.all([
           getStockInfoByCode(code),
           getCompanyInfoByCode(code),
+          getStockChart(code, "D", 7), // 차트도 병렬로 로딩 (7일로 더 줄임)
         ]);
 
         const mapped: StockDetail = {
@@ -196,9 +197,8 @@ export default function StockDetailPage() {
           console.log("1단계: Stock Header 로딩 완료");
         }
 
-        // 2단계: 차트 데이터 로딩
-        console.log("2단계: 차트 데이터 로딩 시작");
-        const chartRes = await getStockChart(code, "D", 180);
+        // 2단계: 차트 데이터 처리 (이미 병렬로 로딩됨)
+        console.log("2단계: 차트 데이터 처리 시작");
         const chartData: HistoricalData[] = chartRes.candles.map((c) => ({
           date: c.date,
           open: c.open,
@@ -211,7 +211,7 @@ export default function StockDetailPage() {
         if (!cancelled) {
           setHistoricalData(chartData);
           setIsChartLoading(false);
-          console.log("2단계: 차트 데이터 로딩 완료");
+          console.log("2단계: 차트 데이터 처리 완료");
         }
 
         // 3단계: 기술적 분석 데이터 로딩
@@ -246,21 +246,30 @@ export default function StockDetailPage() {
           console.log("3단계: 기술적 분석 데이터 로딩 완료");
         }
 
-        // 4단계: 뉴스 데이터 로딩 (백그라운드)
+        // 4단계: 뉴스 데이터 로딩 (백그라운드, 병렬 처리)
         console.log("4단계: 뉴스 데이터 로딩 시작");
-        const companyNews = await getNewsByCompany(code, 10);
-        const mappedNews: NewsListItem[] = companyNews.map((n) => ({
-          id: n.id,
-          title: n.title,
-          source: n.press,
-          date: n.published_at,
-          sentiment: (n.impact as any) ?? "neutral",
-        }));
+        const loadNews = async () => {
+          try {
+            const companyNews = await getNewsByCompany(code, 10);
+            const mappedNews: NewsListItem[] = companyNews.map((n) => ({
+              id: n.id,
+              title: n.title,
+              source: n.press,
+              date: n.published_at,
+              sentiment: (n.impact as any) ?? "neutral",
+            }));
 
-        if (!cancelled) {
-          setNews(mappedNews);
-          console.log("4단계: 뉴스 데이터 로딩 완료");
-        }
+            if (!cancelled) {
+              setNews(mappedNews);
+              console.log("4단계: 뉴스 데이터 로딩 완료");
+            }
+          } catch (error) {
+            console.error("뉴스 데이터 로딩 실패:", error);
+          }
+        };
+
+        // 뉴스를 백그라운드에서 로딩
+        loadNews();
 
         // 5단계: LLM 종합 분석 요청 (비동기로 별도 처리)
         const loadAnalysis = async () => {
