@@ -174,7 +174,8 @@ export default function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   };
 
   const handleSubmit = useCallback(() => {
-    if (!message.trim() || isCreating) return;
+    if (((message ?? "").trim().length === 0 && !newsInfo) || isCreating)
+      return;
 
     // 뉴스 정보가 있으면 메시지에 포함
     let finalMessage = message;
@@ -212,10 +213,22 @@ ${newsInfo.impact ? `영향도: ${newsInfo.impact === "positive" ? "긍정" : ne
       return;
     }
 
-    // 현재 채팅방이 없으면 새로 생성
+    // 현재 채팅방이 없으면 새로 생성 후 즉시 전송
     const title = generateKoreanTimestamp();
-    createChatWithCallback(title);
-    setPendingMessage(finalMessage); // 새로 생성된 채팅방으로 메시지 전송을 위해 pendingMessage 설정
+    createChatWithCallback(
+      title,
+      (newId) => {
+        setCurrentChatId(newId);
+        sendMessage({ chatId: newId, message: finalMessage });
+        setMessage("");
+        setNewsInfo(null);
+        setShowHistory(false);
+      },
+      () => {
+        // 실패 시 기존 fallback 로직 유지
+        setPendingMessage(finalMessage);
+      }
+    );
   }, [
     message,
     isCreating,

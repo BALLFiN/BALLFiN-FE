@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
       hmr: {
         overlay: false,
       },
+      allowedHosts: ["phrstudio.iptime.org"],
       proxy: {
         "^/api/.*": {
           target: process.env.VITE_API_BASE_URL,

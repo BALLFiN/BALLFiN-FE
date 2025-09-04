@@ -83,13 +83,27 @@ export default function TechnicalAnalysis({
   const volaData = analysis?.volatility_analysis_data;
   const volData = analysis?.volume_analysis_data;
 
-  const isAnalysisLoading = !analysis;
-
   // 기술적 지표 값 (실제 데이터 사용)
   const rsi = mainData?.rsi?.value ?? 28.4;
+  const macdValue: number | undefined =
+    typeof mainData?.macd?.value === "number" ? mainData.macd.value : undefined;
+  const macdDerivedStatus =
+    macdValue === undefined
+      ? undefined
+      : macdValue > 0
+        ? "상승"
+        : macdValue < 0
+          ? "하락"
+          : "중립";
+  const macdStatusText = mainData?.macd?.status ?? macdDerivedStatus;
   const dailyRange = volaData?.volatility?.value?.volatility_percent ?? 2.8;
   const avgVolatility =
-    volaData?.volatility?.value?.avg_volatility_percent ?? 2.8;
+    volaData?.volatility?.value?.avg50_volatility_percent ??
+    volaData?.volatility?.value?.avg_volatility_percent ??
+    2.8;
+  const volatilityAnalysisFromApi = volaData?.volatility?.analysis as
+    | string
+    | undefined;
   const currentVolume = toNum(volData?.volume?.value?.volume) || 15234567;
   const avgVolume = toNum(volData?.volume?.value?.avg_volume_20) || 12456789;
   const volumeRatio = (
@@ -98,8 +112,6 @@ export default function TechnicalAnalysis({
   ).toFixed(1);
   const mfiValue =
     typeof volData?.mfi?.value === "number" ? volData.mfi.value : undefined;
-  const obvValue = toNum(volData?.obv?.value?.obv);
-  const obvMa20Value = toNum(volData?.obv?.value?.obv_ma20);
 
   const tabs = [
     { id: "summary", label: "주요 지표", icon: Target },
@@ -207,16 +219,16 @@ export default function TechnicalAnalysis({
               >
                 <div className="flex items-center mb-3">
                   <span className="text-sm font-medium text-gray-700">
-                    종합 신호
+                    MACD
                   </span>
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(mainData?.macd?.status)}`}
+                  className={`text-lg font-bold ${statusColor(macdStatusText)}`}
                 >
                   {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-20" />
                   ) : (
-                    (mainData?.macd?.status ?? "중립")
+                    (macdStatusText ?? "중립")
                   )}
                 </div>
                 {hoveredKey === "summary_total" && (
@@ -274,7 +286,10 @@ export default function TechnicalAnalysis({
                 </div>
                 {hoveredKey === "vol_daily" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>일일 변동성 관련 참고 값</div>
+                    <div>
+                      {volatilityAnalysisFromApi ??
+                        "분석 정보를 불러오고 있습니다."}
+                    </div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -302,7 +317,10 @@ export default function TechnicalAnalysis({
                 </div>
                 {hoveredKey === "vol_avg" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>RVI: - | ATR: -</div>
+                    <div>
+                      {volatilityAnalysisFromApi ??
+                        "분석 정보를 불러오고 있습니다."}
+                    </div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -477,10 +495,6 @@ export default function TechnicalAnalysis({
                 </div>
                 {hoveredKey === "vol_obv_card" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>
-                      {obvValue ? obvValue.toLocaleString() : "-"} / MA20{" "}
-                      {obvMa20Value ? obvMa20Value.toLocaleString() : "-"}
-                    </div>
                     <div>{volData?.obv?.analysis ?? "OBV 분석 정보"}</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>

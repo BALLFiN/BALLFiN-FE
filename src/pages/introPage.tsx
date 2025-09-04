@@ -14,6 +14,7 @@ import { Newspaper } from "lucide-react"; // AI 기반 금융 뉴스 분석 서�
 import { Activity } from "lucide-react"; // AI 기반 주가 및 재무 분석 서비스
 import { Bot } from "lucide-react"; // RAG 기반 금융 에이전트 챗봇
 import { Bell } from "lucide-react"; // 관심 종목 실시간 모니터링 및 알림
+import { Globe, Tag, Brain, LineChart as LineChartIcon } from "lucide-react"; // 주가예측 과정 아이콘
 
 const features = [
   {
@@ -135,6 +136,102 @@ export default function Intro() {
 
       {/* A/B 테스트 결과 섹션 */}
       <ABTestResults />
+
+      {/* 주가예측 과정 & 성능 섹션 */}
+      <div className="bg-white min-h-screen flex items-center relative snap-start">
+        <div className="container mx-auto px-4 py-8 md:py-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-3xl font-bold text-gray-900 text-center mb-12"
+          >
+            주가예측 과정과 성능
+          </motion.h2>
+
+          {/* 타임라인 */}
+          <motion.ol
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="relative border-s-2 border-[#0A5C2B]/20 max-w-4xl mx-auto pl-6"
+          >
+            {[
+              {
+                icon: <Globe className="w-5 h-5 text-[#0A5C2B]" />,
+                title: "실시간 뉴스 수집",
+                desc: "증권사 HTS에서 제공되는 뉴스 사이트를 대상으로 실시간 수집",
+              },
+              {
+                icon: <Tag className="w-5 h-5 text-[#0A5C2B]" />,
+                title: "키워드 기반 회사 매칭",
+                desc: "키워드 기반 접근으로 뉴스-기업 자동 매핑",
+              },
+              {
+                icon: <Brain className="w-5 h-5 text-[#0A5C2B]" />,
+                title: "BALLFiN만의 CoT·RAG 기술로 Impact Score 산출",
+                desc: "뉴스 중요도를 정교하게 평가",
+              },
+              {
+                icon: <LineChartIcon className="w-5 h-5 text-[#0A5C2B]" />,
+                title: "LLM 기반 주가예측",
+                desc: "Impact Score, 뉴스/차트 분석, few-shot learning을 결합",
+              },
+            ].map((step, idx) => (
+              <motion.li
+                key={idx}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="mb-10 ms-4"
+              >
+                <span className="absolute -start-3 flex items-center justify-center w-6 h-6 bg-white rounded-full ring-2 ring-[#0A5C2B]/30">
+                  {step.icon}
+                </span>
+                <div className="bg-white border border-[#0A5C2B]/10 rounded-lg shadow-sm p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold text-[#0A5C2B]">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="text-base font-semibold text-gray-900">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600">{step.desc}</p>
+                </div>
+              </motion.li>
+            ))}
+          </motion.ol>
+
+          {/* 성능 카드 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto mt-10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-gradient-to-br from-[#0A5C2B] to-emerald-600 text-white rounded-xl p-6 text-center shadow-lg"
+            >
+              <p className="text-sm/5 opacity-90">결과 수익률</p>
+              <p className="text-4xl font-extrabold mt-1">254%</p>
+              <p className="text-xs/5 mt-2 text-white/80">전략 백테스트 기준</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white border border-[#0A5C2B]/10 rounded-xl p-6 text-center shadow-sm"
+            >
+              <p className="text-sm/5 text-gray-600">거래 승률</p>
+              <p className="text-4xl font-extrabold text-[#0A5C2B] mt-1">63%</p>
+              <p className="text-xs/5 mt-2 text-gray-500">실험 환경 내 기준</p>
+            </motion.div>
+          </div>
+        </div>
+      </div>
 
       {/* 시작하기 섹션 */}
       <div className="bg-white min-h-screen flex items-center relative snap-start">

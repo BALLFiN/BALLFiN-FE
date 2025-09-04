@@ -17,6 +17,7 @@ import { getNewsByCompany } from "@/api/news";
 import StockChartPrice from "@/components/stockDetail/chart";
 import RelatedCompanies from "@/components/stockDetail/RelatedCompanies";
 import Pagination from "@/components/news/Pagination";
+import BotButton from "@/components/chat/BotButton";
 
 interface StockDetail {
   id: number;
@@ -107,7 +108,6 @@ export default function StockDetailPage() {
   };
 
   // 섹션별 로딩 상태
-  const [isHeaderLoading, setIsHeaderLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [isTechnicalLoading, setIsTechnicalLoading] = useState(true);
   const isNewsLoading = news.length === 0;
@@ -193,7 +193,7 @@ export default function StockDetailPage() {
 
         if (!cancelled) {
           setStock(mapped);
-          setIsHeaderLoading(false);
+
           console.log("1단계: Stock Header 로딩 완료");
         }
 
@@ -329,7 +329,6 @@ export default function StockDetailPage() {
             },
           } as StockDetail;
           setStock(fallback);
-          setIsHeaderLoading(false);
 
           const mockHistoricalData: HistoricalData[] = Array.from(
             { length: 30 },
@@ -416,8 +415,8 @@ export default function StockDetailPage() {
       {/* 메인 콘텐츠 */}
       <div className="container mx-auto px-4 py-6">
         {/* 차트와 기술적 분석 영역 */}
-        <div className="flex gap-6">
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1 min-w-0 order-1 lg:order-none">
             <StockChartPrice
               code={stock?.code ?? code ?? ""}
               data={historicalData}
@@ -426,7 +425,7 @@ export default function StockDetailPage() {
           </div>
 
           {/* 기술적 분석 사이드바 */}
-          <div className="w-[472px] flex-shrink-0">
+          <div className="w-full lg:w-[472px] flex-shrink-0 order-0 lg:order-none">
             <TechnicalAnalysis
               stock={stock ?? placeholderStock}
               historicalData={historicalData}
@@ -504,6 +503,7 @@ export default function StockDetailPage() {
           </div>
         </div>
       </div>
+      <BotButton />
     </div>
   );
 }
