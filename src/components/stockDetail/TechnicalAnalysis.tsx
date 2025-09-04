@@ -34,6 +34,8 @@ interface TechnicalAnalysisProps {
   stock: StockDetail;
   historicalData: HistoricalData[];
   analysis?: any; // /info/company/{code} 응답 전체 또는 필요한 섹션 포함 객체
+  isAnalysisLoading?: boolean; // LLM 분석 로딩 상태
+  isTechnicalLoading?: boolean; // 기술적 분석 데이터 로딩 상태
 }
 
 type TabType = "summary" | "volatility" | "volume" | "overview";
@@ -42,6 +44,8 @@ export default function TechnicalAnalysis({
   stock: _stock,
   historicalData: _historicalData,
   analysis,
+  isAnalysisLoading: _isAnalysisLoading = false,
+  isTechnicalLoading: _isTechnicalLoading = true,
 }: TechnicalAnalysisProps) {
   const [activeTab, setActiveTab] = useState<TabType>("summary");
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -68,26 +72,34 @@ export default function TechnicalAnalysis({
     return "text-blue-600";
   };
 
-  const main = analysis?.main_analysis;
-  const vola = analysis?.volatility_analysis;
-  const vol = analysis?.volume_analysis;
+  // API 응답이 문자열이므로 직접 사용
+  const mainAnalysisText = analysis?.main_analysis;
+  const volatilityAnalysisText = analysis?.volatility_analysis;
+  const volumeAnalysisText = analysis?.volume_analysis;
+  const combinedAnalysisText = analysis?.combined_technical_analysis;
+
+  // 기존 기술적 지표 데이터
+  const mainData = analysis?.main_analysis_data;
+  const volaData = analysis?.volatility_analysis_data;
+  const volData = analysis?.volume_analysis_data;
 
   const isAnalysisLoading = !analysis;
 
-  // 기술적 지표 값 (없으면 기본값)
-  const rsi = main?.rsi?.value ?? 28.4;
-  const dailyRange = vola?.volatility?.value?.volatility_percent ?? 2.8;
-  const avgVolatility = vola?.volatility?.value?.avg_volatility_percent ?? 2.8;
-  const currentVolume = toNum(vol?.volume?.value?.volume) || 15234567;
-  const avgVolume = toNum(vol?.volume?.value?.avg_volume_20) || 12456789;
+  // 기술적 지표 값 (실제 데이터 사용)
+  const rsi = mainData?.rsi?.value ?? 28.4;
+  const dailyRange = volaData?.volatility?.value?.volatility_percent ?? 2.8;
+  const avgVolatility =
+    volaData?.volatility?.value?.avg_volatility_percent ?? 2.8;
+  const currentVolume = toNum(volData?.volume?.value?.volume) || 15234567;
+  const avgVolume = toNum(volData?.volume?.value?.avg_volume_20) || 12456789;
   const volumeRatio = (
     ((currentVolume - avgVolume) / (avgVolume || 1)) *
     100
   ).toFixed(1);
   const mfiValue =
-    typeof vol?.mfi?.value === "number" ? vol.mfi.value : undefined;
-  const obvValue = toNum(vol?.obv?.value?.obv);
-  const obvMa20Value = toNum(vol?.obv?.value?.obv_ma20);
+    typeof volData?.mfi?.value === "number" ? volData.mfi.value : undefined;
+  const obvValue = toNum(volData?.obv?.value?.obv);
+  const obvMa20Value = toNum(volData?.obv?.value?.obv_ma20);
 
   const tabs = [
     { id: "summary", label: "주요 지표", icon: Target },
@@ -113,20 +125,21 @@ export default function TechnicalAnalysis({
                   </span>
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(main?.moving_average?.arrangement?.status)}`}
+                  className={`text-lg font-bold ${statusColor(mainData?.moving_average?.arrangement?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-28" />
                   ) : (
-                    (main?.moving_average?.arrangement?.status ?? "정보 없음")
+                    (mainData?.moving_average?.arrangement?.status ??
+                    "정보 없음")
                   )}
                 </div>
                 {hoveredKey === "summary_ma" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
                     <div>
-                      {main?.moving_average?.arrangement?.description ??
-                        main?.moving_average?.price_vs_ma20?.description ??
-                        ""}
+                      {mainData?.moving_average?.arrangement?.description ??
+                        mainData?.moving_average?.price_vs_ma20?.description ??
+                        "이동평균선 분석 정보"}
                     </div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
@@ -144,17 +157,19 @@ export default function TechnicalAnalysis({
                   </span>
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(main?.stochastic?.status)}`}
+                  className={`text-lg font-bold ${statusColor(mainData?.stochastic?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-20" />
                   ) : (
-                    (main?.stochastic?.status ?? "정보 없음")
+                    (mainData?.stochastic?.status ?? "정보 없음")
                   )}
                 </div>
                 {hoveredKey === "summary_stoch" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>{main?.stochastic?.analysis ?? ""}</div>
+                    <div>
+                      {mainData?.stochastic?.analysis ?? "스토캐스틱 분석 정보"}
+                    </div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -169,12 +184,12 @@ export default function TechnicalAnalysis({
                   <span className="text-sm font-medium text-gray-700">RSI</span>
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(main?.rsi?.status)}`}
+                  className={`text-lg font-bold ${statusColor(mainData?.rsi?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
-                    (main?.rsi?.status ?? "중립")
+                    (mainData?.rsi?.status ?? "중립")
                   )}
                 </div>
                 {hoveredKey === "summary_rsi" && (
@@ -196,17 +211,17 @@ export default function TechnicalAnalysis({
                   </span>
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(main?.rsi?.status)}`}
+                  className={`text-lg font-bold ${statusColor(mainData?.macd?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-20" />
                   ) : (
-                    (main?.rsi?.status ?? "중립")
+                    (mainData?.macd?.status ?? "중립")
                   )}
                 </div>
                 {hoveredKey === "summary_total" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>{main?.macd?.analysis ?? ""}</div>
+                    <div>{mainData?.macd?.analysis ?? "종합 신호 분석"}</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -218,14 +233,14 @@ export default function TechnicalAnalysis({
                 <Activity className="w-4 h-4 text-blue-600 mr-2" />
                 <span className="font-medium text-blue-900">주요지표 분석</span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-3/6" />
                 </div>
               ) : (
                 <p className="text-sm text-blue-800 leading-relaxed">
-                  {main?.total_analysis ?? "분석 정보를 불러오고 있습니다."}
+                  {mainAnalysisText ?? "분석 정보를 불러오고 있습니다."}
                 </p>
               )}
             </div>
@@ -287,13 +302,7 @@ export default function TechnicalAnalysis({
                 </div>
                 {hoveredKey === "vol_avg" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>
-                      RVI:{" "}
-                      {typeof vola?.rvi?.value?.rvi === "number"
-                        ? vola.rvi.value.rvi.toFixed(4)
-                        : "-"}{" "}
-                      | ATR: {vola?.atr?.value?.atr ?? "-"}
-                    </div>
+                    <div>RVI: - | ATR: -</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -311,17 +320,17 @@ export default function TechnicalAnalysis({
                   ATR
                 </div>
                 <div
-                  className={`text-base font-semibold ${statusColor(vola?.atr?.status)}`}
+                  className={`text-base font-semibold ${statusColor(volaData?.atr?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
-                    (vola?.atr?.status ?? "정보 없음")
+                    (volaData?.atr?.status ?? "정보 없음")
                   )}
                 </div>
                 {hoveredKey === "vol_atr" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>{vola?.atr?.analysis ?? ""}</div>
+                    <div>{volaData?.atr?.analysis ?? "ATR 분석 정보"}</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -336,17 +345,17 @@ export default function TechnicalAnalysis({
                   RVI
                 </div>
                 <div
-                  className={`text-base font-semibold ${statusColor(vola?.rvi?.status)}`}
+                  className={`text-base font-semibold ${statusColor(volaData?.rvi?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
-                    (vola?.rvi?.status ?? "정보 없음")
+                    (volaData?.rvi?.status ?? "정보 없음")
                   )}
                 </div>
                 {hoveredKey === "vol_rvi" && (
                   <div className="absolute z-50 pointer-events-none top-full left-0 right-0 mt-2 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg">
-                    <div>{vola?.rvi?.analysis ?? ""}</div>
+                    <div>{volaData?.rvi?.analysis ?? "RVI 분석 정보"}</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -359,15 +368,14 @@ export default function TechnicalAnalysis({
                 <Activity className="w-4 h-4 text-blue-600 mr-2" />
                 <span className="font-medium text-blue-900">변동성 분석</span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-4/6" />
                 </div>
               ) : (
                 <p className="text-sm text-blue-800 leading-relaxed">
-                  {vola?.total_analysis ??
-                    vola?.volatility?.analysis ??
+                  {volatilityAnalysisText ??
                     "변동성 분석 정보를 불러오고 있습니다."}
                 </p>
               )}
@@ -429,12 +437,12 @@ export default function TechnicalAnalysis({
                   MFI
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(vol?.mfi?.status)}`}
+                  className={`text-lg font-bold ${statusColor(volData?.mfi?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
-                    (vol?.mfi?.status ?? "정보 없음")
+                    (volData?.mfi?.status ?? "정보 없음")
                   )}
                 </div>
                 {hoveredKey === "vol_mfi_card" && (
@@ -444,7 +452,7 @@ export default function TechnicalAnalysis({
                         ? `값 ${mfiValue.toFixed(2)}`
                         : ""}
                     </div>
-                    <div>{vol?.mfi?.analysis ?? ""}</div>
+                    <div>{volData?.mfi?.analysis ?? "MFI 분석 정보"}</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -459,12 +467,12 @@ export default function TechnicalAnalysis({
                   OBV
                 </div>
                 <div
-                  className={`text-lg font-bold ${statusColor(vol?.obv?.status)}`}
+                  className={`text-lg font-bold ${statusColor(volData?.obv?.status)}`}
                 >
-                  {isAnalysisLoading ? (
+                  {_isTechnicalLoading ? (
                     <SkeletonText widthClass="w-16" />
                   ) : (
-                    (vol?.obv?.status ?? "정보 없음")
+                    (volData?.obv?.status ?? "정보 없음")
                   )}
                 </div>
                 {hoveredKey === "vol_obv_card" && (
@@ -473,7 +481,7 @@ export default function TechnicalAnalysis({
                       {obvValue ? obvValue.toLocaleString() : "-"} / MA20{" "}
                       {obvMa20Value ? obvMa20Value.toLocaleString() : "-"}
                     </div>
-                    <div>{vol?.obv?.analysis ?? ""}</div>
+                    <div>{volData?.obv?.analysis ?? "OBV 분석 정보"}</div>
                     <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                   </div>
                 )}
@@ -486,15 +494,14 @@ export default function TechnicalAnalysis({
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                 <span className="font-medium text-blue-900">거래량 분석</span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-2/6" />
                 </div>
               ) : (
                 <p className="text-sm text-blue-800 leading-relaxed">
-                  {vol?.total_analysis ??
-                    vol?.volume?.analysis ??
+                  {volumeAnalysisText ??
                     `평균 대비 ${volumeRatio}% 수준의 거래량입니다.`}
                 </p>
               )}
@@ -512,14 +519,14 @@ export default function TechnicalAnalysis({
                   기술적 분석 종합 해석
                 </span>
               </div>
-              {isAnalysisLoading ? (
+              {_isAnalysisLoading ? (
                 <div className="space-y-2">
                   <SkeletonText widthClass="w-5/6" />
                   <SkeletonText widthClass="w-4/6" />
                 </div>
               ) : (
                 <p className="text-sm text-green-800 leading-relaxed">
-                  {analysis?.fin_total_analysis ??
+                  {combinedAnalysisText ??
                     "종합 분석 정보를 불러오고 있습니다."}
                 </p>
               )}

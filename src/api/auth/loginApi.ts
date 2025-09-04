@@ -68,6 +68,9 @@ export const login = async (
       ? responseData.access_token
       : `Bearer ${responseData.access_token}`;
 
+    // 헤더에서 첫 로그인만 토스트를 띄우기 위한 플래그
+    sessionStorage.setItem("just_logged_in", "1");
+
     return {
       token,
       user: responseData.user,

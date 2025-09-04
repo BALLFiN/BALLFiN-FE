@@ -10,6 +10,7 @@ import {
   getStockInfoByCode,
   getCompanyInfoByCode,
   getStockChart,
+  getTotalAnalysis,
 } from "@/api/stock";
 import { getNewsByCompany } from "@/api/news";
 
@@ -88,6 +89,7 @@ export default function StockDetailPage() {
     null
   );
   const [companyAnalysis, setCompanyAnalysis] = useState<any | null>(null);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(true);
   // const [techSummary, setTechSummary] = useState<any | null>(null);
 
   // 기술적 분석을 로딩 중에도 렌더링하기 위한 기본 스톡 값
@@ -105,7 +107,9 @@ export default function StockDetailPage() {
   };
 
   // 섹션별 로딩 상태
+  const [isHeaderLoading, setIsHeaderLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
+  const [isTechnicalLoading, setIsTechnicalLoading] = useState(true);
   const isNewsLoading = news.length === 0;
   const isFinancialLoading = financialData == null;
 
@@ -126,9 +130,13 @@ export default function StockDetailPage() {
     const run = async () => {
       try {
         if (!code) return;
-        const [priceInfo, companyInfo] = await Promise.all([
+
+        // 1단계: Stock Header 데이터 로딩 (병렬 처리)
+        console.log("1단계: Stock Header 로딩 시작");
+        const [priceInfo, companyInfo, chartRes] = await Promise.all([
           getStockInfoByCode(code),
           getCompanyInfoByCode(code),
+          getStockChart(code, "D", 7), // 차트도 병렬로 로딩 (7일로 더 줄임)
         ]);
 
         const mapped: StockDetail = {
@@ -183,12 +191,46 @@ export default function StockDetailPage() {
           prediction: { targetPrice: 0, confidence: 0, recommendation: "hold" },
         };
 
-        if (!cancelled) setStock(mapped);
+        if (!cancelled) {
+          setStock(mapped);
+          setIsHeaderLoading(false);
+          console.log("1단계: Stock Header 로딩 완료");
+        }
 
-        // 기술적/재무 데이터 매핑
+        // 2단계: 차트 데이터 처리 (이미 병렬로 로딩됨)
+        console.log("2단계: 차트 데이터 처리 시작");
+        const chartData: HistoricalData[] = chartRes.candles.map((c) => ({
+          date: c.date,
+          open: c.open,
+          high: c.high,
+          low: c.low,
+          close: c.close,
+          volume: c.volume,
+        }));
+
+        if (!cancelled) {
+          setHistoricalData(chartData);
+          setIsChartLoading(false);
+          console.log("2단계: 차트 데이터 처리 완료");
+        }
+
+        // 3단계: 기술적 분석 데이터 로딩
+        console.log("3단계: 기술적 분석 데이터 로딩 시작");
         if (!cancelled && companyInfo) {
-          // setTechSummary(companyInfo.main_analysis ?? null);
-          setCompanyAnalysis(companyInfo);
+          const initialAnalysis = {
+            company_analysis: "재무 분석 정보를 불러오고 있습니다.",
+            company_data: companyInfo.company_analysis ?? companyInfo,
+            main_analysis: "분석 정보를 불러오고 있습니다.",
+            volume_analysis: "분석 정보를 불러오고 있습니다.",
+            volatility_analysis: "분석 정보를 불러오고 있습니다.",
+            combined_technical_analysis: "분석 정보를 불러오고 있습니다.",
+            fin_total_analysis: "분석 정보를 불러오고 있습니다.",
+            // 기존 기술적 지표 데이터도 포함
+            main_analysis_data: companyInfo.main_analysis,
+            volatility_analysis_data: companyInfo.volatility_analysis,
+            volume_analysis_data: companyInfo.volume_analysis,
+          };
+          setCompanyAnalysis(initialAnalysis);
           setFinancialData({
             revenue:
               (companyInfo.company_analysis?.["매출액"] ?? 0) * 1_000_000_000,
@@ -200,46 +242,73 @@ export default function StockDetailPage() {
             pbr: companyInfo.company_analysis?.PBR ?? 0,
             dividendYield: 0,
           });
+          setIsTechnicalLoading(false);
+          console.log("3단계: 기술적 분석 데이터 로딩 완료");
         }
 
-        // 차트 데이터 API 연동 (일봉 180개 기본)
-        const chartRes = await getStockChart(code, "D", 180);
-        const chartData: HistoricalData[] = chartRes.candles.map((c) => ({
-          date: c.date,
-          open: c.open,
-          high: c.high,
-          low: c.low,
-          close: c.close,
-          volume: c.volume,
-        }));
+        // 4단계: 뉴스 데이터 로딩 (백그라운드, 병렬 처리)
+        console.log("4단계: 뉴스 데이터 로딩 시작");
+        const loadNews = async () => {
+          try {
+            const companyNews = await getNewsByCompany(code, 10);
+            const mappedNews: NewsListItem[] = companyNews.map((n) => ({
+              id: n.id,
+              title: n.title,
+              source: n.press,
+              date: n.published_at,
+              sentiment: (n.impact as any) ?? "neutral",
+            }));
 
-        // 기업 뉴스 API 연동
-        const companyNews = await getNewsByCompany(code, 10);
-        const mappedNews: NewsListItem[] = companyNews.map((n) => ({
-          id: n.id,
-          title: n.title,
-          source: n.press,
-          date: n.published_at,
-          sentiment: (n.impact as any) ?? "neutral",
-        }));
-
-        const mockFinancialData: FinancialData = {
-          revenue: 279600000000000,
-          netIncome: 15400000000000,
-          debtRatio: 23.4,
-          roe: 15.8,
-          per: 12.3,
-          pbr: 1.2,
-          dividendYield: 2.1,
+            if (!cancelled) {
+              setNews(mappedNews);
+              console.log("4단계: 뉴스 데이터 로딩 완료");
+            }
+          } catch (error) {
+            console.error("뉴스 데이터 로딩 실패:", error);
+          }
         };
 
-        if (!cancelled) {
-          setHistoricalData(chartData);
-          setNews(mappedNews);
-          setIsChartLoading(false);
-          // financialData는 company API에서 세팅됨 (실패 시에만 목데이터 유지)
-          if (!financialData) setFinancialData(mockFinancialData);
-        }
+        // 뉴스를 백그라운드에서 로딩
+        loadNews();
+
+        // 5단계: LLM 종합 분석 요청 (비동기로 별도 처리)
+        const loadAnalysis = async () => {
+          try {
+            console.log("5단계: LLM 분석 로딩 시작");
+            const totalAnalysis = await getTotalAnalysis(code);
+            console.log("Total Analysis Response:", totalAnalysis);
+
+            if (!cancelled && companyInfo) {
+              const mergedAnalysis = {
+                ...totalAnalysis,
+                company_analysis: totalAnalysis.company_analysis, // API에서 받은 재무 분석 텍스트
+                company_data: companyInfo.company_analysis ?? companyInfo, // 기업 재무 데이터
+                main_analysis: totalAnalysis.main_analysis,
+                volume_analysis: totalAnalysis.volume_analysis,
+                volatility_analysis: totalAnalysis.volatility_analysis,
+                combined_technical_analysis:
+                  totalAnalysis.combined_technical_analysis,
+                fin_total_analysis: totalAnalysis.fin_total_analysis,
+                // 기존 기술적 지표 데이터도 포함
+                main_analysis_data: companyInfo.main_analysis,
+                volatility_analysis_data: companyInfo.volatility_analysis,
+                volume_analysis_data: companyInfo.volume_analysis,
+              };
+              setCompanyAnalysis(mergedAnalysis);
+              console.log("5단계: LLM 분석 로딩 완료");
+            }
+          } catch (error) {
+            console.error("Total Analysis API Error:", error);
+            // API 실패 시에도 기본 분석 데이터는 유지
+          } finally {
+            if (!cancelled) {
+              setIsAnalysisLoading(false);
+            }
+          }
+        };
+
+        // LLM 분석을 별도로 실행
+        loadAnalysis();
       } catch {
         // 실패 시에도 목데이터로 모든 섹션 채워서 UI가 비지 않도록 처리
         if (!cancelled) {
@@ -260,6 +329,7 @@ export default function StockDetailPage() {
             },
           } as StockDetail;
           setStock(fallback);
+          setIsHeaderLoading(false);
 
           const mockHistoricalData: HistoricalData[] = Array.from(
             { length: 30 },
@@ -307,6 +377,7 @@ export default function StockDetailPage() {
             dividendYield: 2.1,
           };
           setFinancialData(mockFinancialData);
+          setIsTechnicalLoading(false);
         }
       }
     };
@@ -360,6 +431,8 @@ export default function StockDetailPage() {
               stock={stock ?? placeholderStock}
               historicalData={historicalData}
               analysis={companyAnalysis}
+              isAnalysisLoading={isAnalysisLoading}
+              isTechnicalLoading={isTechnicalLoading}
             />
           </div>
         </div>
@@ -425,6 +498,7 @@ export default function StockDetailPage() {
               <FinancialStatement
                 data={financialData}
                 analysis={companyAnalysis}
+                isAnalysisLoading={isAnalysisLoading}
               />
             )}
           </div>

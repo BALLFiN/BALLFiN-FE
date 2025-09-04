@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, memo } from "react";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import { TimeRangePT } from ".";
@@ -12,38 +12,40 @@ export interface PriceVolumeChartProps {
   showMA: Record<"ma5" | "ma20" | "ma60" | "ma120", boolean>;
 }
 
-export default function PriceVolumeChart({
+const PriceVolumeChart = memo(function PriceVolumeChart({
   data,
   timeRange,
   showMA,
 }: PriceVolumeChartProps) {
-  // 초기부터 렌더링하여 차트가 안 보이는 문제 방지
-  const [ready, setReady] = useState(true);
+  // TradingView 차트 우선 사용
+  const [ready, setReady] = useState(false);
   const tvContainerRef = useRef<HTMLDivElement | null>(null);
   const [tvReady, setTvReady] = useState(false);
+  const [tvFailed, setTvFailed] = useState(false);
 
-  // Annotations 모듈 안전 로딩 (환경별 export 방식 대응)
+  // TradingView 실패 시에만 Highcharts 모듈 로딩
   useEffect(() => {
-    (async () => {
-      try {
-        const mod: any = await import("highcharts/modules/annotations");
-        const initFn =
-          typeof mod === "function"
-            ? mod
-            : typeof mod?.default === "function"
-              ? mod.default
-              : null;
-        if (initFn) {
-          initFn(Highcharts);
+    if (tvFailed) {
+      (async () => {
+        try {
+          const mod: any = await import("highcharts/modules/annotations");
+          const initFn =
+            typeof mod === "function"
+              ? mod
+              : typeof mod?.default === "function"
+                ? mod.default
+                : null;
+          if (initFn) {
+            initFn(Highcharts);
+          }
+        } catch (_) {
+          // 실패해도 치명적이지 않음
+        } finally {
+          setReady(true);
         }
-      } catch (_) {
-        // 실패해도 치명적이지 않음
-      } finally {
-        // 모듈 로딩 실패/성공과 무관하게 이미 렌더링 중
-        setReady(true);
-      }
-    })();
-  }, []);
+      })();
+    }
+  }, [tvFailed]);
 
   // TradingView Lightweight Charts 렌더링 (가능하면 우선 사용)
   useEffect(() => {
@@ -54,6 +56,14 @@ export default function PriceVolumeChart({
     let ma20Series: any | null = null;
     let ma60Series: any | null = null;
     let ma120Series: any | null = null;
+
+    // TradingView 로딩 타임아웃 (3초)
+    const timeoutId = setTimeout(() => {
+      if (!tvReady && !tvFailed) {
+        console.log("TradingView 차트 로딩 타임아웃, Highcharts로 폴백");
+        setTvFailed(true);
+      }
+    }, 3000);
 
     (async () => {
       if (!tvContainerRef.current) return;
@@ -161,19 +171,25 @@ export default function PriceVolumeChart({
 
         chart.timeScale().fitContent();
         setTvReady(true);
-      } catch {
+        setTvFailed(false);
+        clearTimeout(timeoutId); // 성공 시 타임아웃 클리어
+      } catch (error) {
+        console.error("TradingView 차트 로딩 실패:", error);
         setTvReady(false);
+        setTvFailed(true);
+        clearTimeout(timeoutId); // 실패 시 타임아웃 클리어
       }
     })();
 
     return () => {
+      clearTimeout(timeoutId); // 컴포넌트 언마운트 시 타임아웃 클리어
       if (chart && tvContainerRef.current) {
         try {
           chart.remove?.();
         } catch {}
       }
     };
-  }, [data, showMA]);
+  }, [data, showMA, tvReady, tvFailed]);
 
   //  timeRange 에 따른 데이터 필터링 및 Point 생성
   const {
@@ -274,28 +290,36 @@ export default function PriceVolumeChart({
     };
   }, [data, timeRange]);
 
-  // 3) 차트 옵션
+  // 3) 차트 옵션 (최적화)
   const options: Highcharts.Options = useMemo(() => {
     return {
       chart: {
         zoomType: "x",
         backgroundColor: "#ffffff",
         height: 500,
+        animation: {
+          duration: 500, // 부드러운 전환을 위한 애니메이션
+          easing: "easeInOutCubic",
+        },
+        reflow: false, // 리플로우 비활성화
       },
       accessibility: { enabled: false },
       title: { text: "" },
       xAxis: {
         type: "datetime",
-        crosshair: true,
+        crosshair: false, // 크로스헤어 비활성화로 성능 향상
         gridLineWidth: 1,
         gridLineColor: "#f1f5f9",
+        labels: {
+          step: Math.max(1, Math.floor(ohlcData.length / 10)), // 라벨 수 줄이기
+        },
       },
       yAxis: [
         {
           title: { text: "" },
           height: "65%",
           lineWidth: 2,
-          crosshair: true,
+          crosshair: false, // 크로스헤어 비활성화
           opposite: true,
           gridLineColor: "#eef2f7",
           labels: { style: { color: "#475569" } },
@@ -314,6 +338,7 @@ export default function PriceVolumeChart({
       tooltip: {
         shared: false,
         split: true,
+        animation: false, // 툴팁 애니메이션 비활성화
       },
       series: [
         {
@@ -328,6 +353,11 @@ export default function PriceVolumeChart({
           upLineColor: "#16a34a",
           pointPadding: 0,
           dataGrouping: { enabled: false },
+          animation: {
+            duration: 500,
+            easing: "easeInOutCubic",
+          }, // 시리즈 애니메이션 활성화
+          enableMouseTracking: true,
         },
         {
           type: "column",
@@ -393,18 +423,49 @@ export default function PriceVolumeChart({
     lastClose,
   ]);
 
-  if (!ready) {
-    return <div className="h-[500px] bg-gray-100 rounded" />;
+  // TradingView 차트 우선 렌더링
+  if (tvReady) {
+    return (
+      <div
+        ref={tvContainerRef}
+        className="h-[500px] w-full transition-all duration-300 ease-in-out"
+        style={{ opacity: 1 }}
+      />
+    );
   }
 
-  return tvReady ? (
-    <div ref={tvContainerRef} className="h-[500px] w-full" />
-  ) : (
-    <HighchartsReact
-      key={`${timeRange}-${ohlcData.length}`}
-      highcharts={Highcharts}
-      constructorType="stockChart"
-      options={options}
-    />
+  // TradingView 실패 시 Highcharts 사용
+  if (tvFailed && ready) {
+    return (
+      <div className="transition-all duration-300 ease-in-out">
+        <HighchartsReact
+          key={`${timeRange}-${ohlcData.length}`}
+          highcharts={Highcharts}
+          constructorType="stockChart"
+          options={options}
+        />
+      </div>
+    );
+  }
+
+  // TradingView 로딩 중이지만 데이터가 있으면 Highcharts로 폴백
+  if (data.length > 0 && !tvReady && !tvFailed) {
+    return (
+      <div className="transition-all duration-300 ease-in-out">
+        <HighchartsReact
+          key={`${timeRange}-${ohlcData.length}`}
+          highcharts={Highcharts}
+          constructorType="stockChart"
+          options={options}
+        />
+      </div>
+    );
+  }
+
+  // 로딩 중
+  return (
+    <div className="h-[500px] bg-gray-100 rounded animate-pulse transition-all duration-300 ease-in-out" />
   );
-}
+});
+
+export default PriceVolumeChart;

@@ -40,3 +40,23 @@ export async function getStockChart(
   );
   return data;
 }
+
+// Total analysis (LLM) API
+export interface TotalAnalysisResponse {
+  main_analysis?: string;
+  volatility_analysis?: string;
+  volume_analysis?: string;
+  fin_total_analysis?: string;
+  company_analysis?: string;
+  total_analysis?: string;
+  combined_technical_analysis?: string;
+}
+
+export async function getTotalAnalysis(
+  stockCode: string
+): Promise<TotalAnalysisResponse> {
+  const { data } = await axiosInstance.get(
+    `/api/info/total_analysis/${encodeURIComponent(stockCode)}`
+  );
+  return data;
+}

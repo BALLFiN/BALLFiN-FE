@@ -1,5 +1,6 @@
 import BALLFiNLogo from "../assets/BALLFiN.svg";
 import { FeatureCard } from "../components/Intro/FeatureCard";
+import ABTestResults from "../components/Intro/ABTestResults";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import cheon from "../assets/member/cheon.png";
@@ -131,6 +132,9 @@ export default function Intro() {
           </motion.div>
         </div>
       </div>
+
+      {/* A/B 테스트 결과 섹션 */}
+      <ABTestResults />
 
       {/* 시작하기 섹션 */}
       <div className="bg-white min-h-screen flex items-center relative snap-start">
