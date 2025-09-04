@@ -207,7 +207,7 @@ export default function TechnicalAnalysis({
               >
                 <div className="flex items-center mb-3">
                   <span className="text-sm font-medium text-gray-700">
-                    종합 신호
+                    MACD
                   </span>
                 </div>
                 <div
