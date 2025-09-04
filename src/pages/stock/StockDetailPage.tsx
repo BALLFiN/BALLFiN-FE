@@ -17,6 +17,7 @@ import { getNewsByCompany } from "@/api/news";
 import StockChartPrice from "@/components/stockDetail/chart";
 import RelatedCompanies from "@/components/stockDetail/RelatedCompanies";
 import Pagination from "@/components/news/Pagination";
+import BotButton from "@/components/chat/BotButton";
 
 interface StockDetail {
   id: number;
@@ -504,6 +505,7 @@ export default function StockDetailPage() {
           </div>
         </div>
       </div>
+      <BotButton />
     </div>
   );
 }
