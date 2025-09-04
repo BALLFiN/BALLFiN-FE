@@ -108,7 +108,6 @@ export default function StockDetailPage() {
   };
 
   // 섹션별 로딩 상태
-  const [isHeaderLoading, setIsHeaderLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [isTechnicalLoading, setIsTechnicalLoading] = useState(true);
   const isNewsLoading = news.length === 0;
@@ -194,7 +193,7 @@ export default function StockDetailPage() {
 
         if (!cancelled) {
           setStock(mapped);
-          setIsHeaderLoading(false);
+
           console.log("1단계: Stock Header 로딩 완료");
         }
 
@@ -330,7 +329,6 @@ export default function StockDetailPage() {
             },
           } as StockDetail;
           setStock(fallback);
-          setIsHeaderLoading(false);
 
           const mockHistoricalData: HistoricalData[] = Array.from(
             { length: 30 },
