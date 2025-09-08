@@ -72,22 +72,22 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50/50">
       {/* 헤더 */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 flex items-center justify-between">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100/80 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
           <h1 className="text-lg font-semibold text-gray-900">결제 수단</h1>
           <div className="w-9"></div>
         </div>
       </div>
 
-      <div className="px-4 py-6 space-y-6">
+      <div className="max-w-md mx-auto px-6 py-8 space-y-6">
         {/* 결제 수단 섹션 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -98,7 +98,7 @@ export default function PaymentPage() {
             <h2 className="text-lg font-semibold text-gray-900">결제 수단</h2>
             <button
               onClick={handleAddPaymentMethod}
-              className="flex items-center space-x-1 text-[#0A5C2B] hover:text-[#0A5C2B]/80 transition-colors"
+              className="flex items-center space-x-1 text-[#0A5C2B] hover:text-[#0A5C2B]/80 transition-colors px-3 py-1.5 rounded-full hover:bg-[#0A5C2B]/10"
             >
               <Plus className="w-4 h-4" />
               <span className="text-sm font-medium">추가</span>
@@ -112,12 +112,12 @@ export default function PaymentPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <CreditCard className="w-5 h-5 text-gray-600" />
+                    <div className="p-3 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl">
+                      <CreditCard className="w-5 h-5 text-[#0A5C2B]" />
                     </div>
                     <div>
                       <div className="flex items-center space-x-2">
@@ -125,7 +125,7 @@ export default function PaymentPage() {
                           {method.name}
                         </h3>
                         {method.isDefault && (
-                          <span className="px-2 py-1 bg-[#0A5C2B] text-white text-xs font-medium rounded-full">
+                          <span className="px-3 py-1 bg-[#0A5C2B] text-white text-xs font-medium rounded-full">
                             기본
                           </span>
                         )}
@@ -174,7 +174,7 @@ export default function PaymentPage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             결제 내역
           </h2>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 overflow-hidden">
             {billingHistory.map((item, index) => (
               <motion.div
                 key={item.id}
@@ -209,23 +209,23 @@ export default function PaymentPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+          className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20"
         >
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             멤버십 정보
           </h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">현재 멤버십</span>
-              <span className="text-[#0A5C2B] font-medium">프리미엄</span>
+              <span className="text-gray-600 font-medium">현재 멤버십</span>
+              <span className="text-[#0A5C2B] font-semibold">프리미엄</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">월 요금</span>
-              <span className="font-medium">₩29,900</span>
+              <span className="text-gray-600 font-medium">월 요금</span>
+              <span className="font-semibold">₩29,900</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">다음 결제일</span>
-              <span className="font-medium">2024년 2월 15일</span>
+              <span className="text-gray-600 font-medium">다음 결제일</span>
+              <span className="font-semibold">2024년 2월 15일</span>
             </div>
           </div>
         </motion.div>

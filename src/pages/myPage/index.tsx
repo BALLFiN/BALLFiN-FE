@@ -43,7 +43,7 @@ export default function MyPage() {
     {
       icon: <Heart className="w-6 h-6" />,
       title: "즐겨찾기 리스트",
-      subtitle: "관심 종목 및 뉴스 관리",
+      subtitle: "관심 종목 관리",
       href: "/myPage/favorites",
     },
     {
