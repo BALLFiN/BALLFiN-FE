@@ -26,6 +26,11 @@ const TransactionPage = lazy(
 );
 const MyPage = lazy(() => import("./pages/myPage"));
 const ProfilePage = lazy(() => import("./pages/myPage/profile"));
+const PaymentPage = lazy(() => import("./pages/myPage/payment"));
+const NotificationsPage = lazy(() => import("./pages/myPage/notifications"));
+const SupportPage = lazy(() => import("./pages/myPage/support"));
+const SecurityPage = lazy(() => import("./pages/myPage/security"));
+const FavoritesPage = lazy(() => import("./pages/myPage/favorites"));
 const ChatPage = lazy(() => import("./pages/chatPage"));
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -50,6 +55,11 @@ function AnimatedRoutes() {
           <Route path="chart" element={<MyPageChart />} />
           <Route path="news" element={<MyPageNews />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="payment" element={<PaymentPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="support" element={<SupportPage />} />
+          <Route path="security" element={<SecurityPage />} />
+          <Route path="favorites" element={<FavoritesPage />} />
           <Route path="aramSettings" element={<AramSettingsPage />} />
         </Route>
         <Route path="/transaction" element={<TransactionPage />} />

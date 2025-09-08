@@ -1,6 +1,7 @@
 import { Star, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getMyFeed } from "../../api/news/feed";
+import { getStockList } from "../../api/stock/list";
 
 interface Company {
   name: string;
@@ -22,30 +23,76 @@ export default function Watchlist({
   const itemsPerPage = 5;
 
   useEffect(() => {
-    // /news/my-feed에서 뉴스 받아와서 관련 기업 추출
-    getMyFeed({ limit: 100 }).then((newsList) => {
-      // 모든 뉴스의 related_companies를 flat하게 모으고 중복 제거
-      const allCompanies = newsList
-        .flatMap((news) => news.related_companies || [])
-        .filter(Boolean);
-      const uniqueCompanies = Array.from(new Set(allCompanies));
-      // 이름/코드 분리 (예시: "삼성전자(005930)" 형식이면 분리, 아니면 이름만)
-      const companyObjs: Company[] = uniqueCompanies.map((item) => {
-        const match = item.match(/(.+)[(]([0-9A-Za-z]+)[)]/);
-        if (match) {
-          return { name: match[1], code: match[2] };
-        } else {
-          return { name: item, code: item };
+    const loadCompanies = async () => {
+      try {
+        // 먼저 my-feed에서 관련 기업 추출 시도
+        const newsList = await getMyFeed({ limit: 100 });
+        console.log("뉴스 데이터:", newsList);
+        console.log("첫 번째 뉴스 상세:", newsList[0]);
+
+        // 모든 뉴스의 related_companies를 flat하게 모으고 중복 제거
+        const allCompanies = newsList
+          .flatMap((news) => news.related_companies || [])
+          .filter(Boolean);
+
+        console.log("추출된 기업들:", allCompanies);
+
+        // related_companies가 비어있으면 대안으로 인기 종목 사용
+        if (allCompanies.length === 0) {
+          console.log("관련 기업이 없어서 인기 종목을 로딩합니다.");
+          const stockResponse = await getStockList("market_cap_desc");
+          const companyObjs: Company[] = stockResponse.data
+            .slice(0, 20)
+            .map((stock) => ({
+              name: stock.name,
+              code: stock.code,
+            }));
+          console.log("인기 종목으로 대체:", companyObjs);
+          setCompanies(companyObjs);
+          return;
         }
-      });
-      setCompanies(companyObjs);
-    });
+
+        const uniqueCompanies = Array.from(new Set(allCompanies));
+        console.log("중복 제거 후:", uniqueCompanies);
+
+        // 이름/코드 분리 (예시: "삼성전자(005930)" 형식이면 분리, 아니면 이름만)
+        const companyObjs: Company[] = uniqueCompanies.map((item) => {
+          const match = item.match(/(.+)[(]([0-9A-Za-z]+)[)]/);
+          if (match) {
+            return { name: match[1], code: match[2] };
+          } else {
+            return { name: item, code: item };
+          }
+        });
+
+        console.log("최종 기업 객체들:", companyObjs);
+        setCompanies(companyObjs);
+      } catch (error) {
+        console.error("관심기업 데이터 로딩 실패:", error);
+        // 에러 시에도 인기 종목으로 대체
+        try {
+          const stockResponse = await getStockList("market_cap_desc");
+          const companyObjs: Company[] = stockResponse.data
+            .slice(0, 20)
+            .map((stock) => ({
+              name: stock.name,
+              code: stock.code,
+            }));
+          setCompanies(companyObjs);
+        } catch (fallbackError) {
+          console.error("대체 데이터 로딩도 실패:", fallbackError);
+          setCompanies([]);
+        }
+      }
+    };
+
+    loadCompanies();
   }, []);
 
   const filteredCompanies = companies.filter(
     (company) =>
       company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.code.includes(searchQuery),
+      company.code.includes(searchQuery)
   );
 
   const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
@@ -85,7 +132,7 @@ export default function Watchlist({
                   key={index}
                   onClick={() =>
                     onCompanySelect(
-                      company === selectedCompany ? null : company,
+                      company === selectedCompany ? null : company
                     )
                   }
                   className={`p-4 rounded-lg border transition-colors duration-200 cursor-pointer ${

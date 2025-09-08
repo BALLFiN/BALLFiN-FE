@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   User,
   CreditCard,
@@ -14,6 +15,7 @@ import {
 import Toast from "@/components/common/Toast";
 
 export default function MyPage() {
+  const navigate = useNavigate();
   const [user] = useState({
     name: "홍길동",
     email: "hong@example.com",
@@ -32,37 +34,37 @@ export default function MyPage() {
       icon: <User className="w-6 h-6" />,
       title: "개인정보 관리",
       subtitle: "프로필 정보 수정 및 조회",
-      href: "/myPage/profile",
+      href: "/mypage/profile",
     },
     {
       icon: <CreditCard className="w-6 h-6" />,
       title: "결제 수단 관리",
       subtitle: "카드 정보 변경 및 결제 내역",
-      href: "/myPage/payment",
+      href: "/mypage/payment",
     },
     {
       icon: <Heart className="w-6 h-6" />,
       title: "즐겨찾기 리스트",
-      subtitle: "관심 종목 및 뉴스 관리",
-      href: "/myPage/favorites",
+      subtitle: "관심 종목 관리",
+      href: "/mypage/favorites",
     },
     {
       icon: <Bell className="w-6 h-6" />,
       title: "알림 설정",
       subtitle: "푸시 알림 및 이메일 설정",
-      href: "/myPage/notifications",
+      href: "/mypage/notifications",
     },
     {
       icon: <Shield className="w-6 h-6" />,
       title: "보안 설정",
       subtitle: "비밀번호 변경 및 2단계 인증",
-      href: "/myPage/security",
+      href: "/mypage/security",
     },
     {
       icon: <HelpCircle className="w-6 h-6" />,
       title: "고객 지원",
       subtitle: "FAQ 및 문의하기",
-      href: "/myPage/support",
+      href: "/mypage/support",
     },
   ];
 
@@ -91,6 +93,7 @@ export default function MyPage() {
           duration={1500}
         />
       )}
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 lg:space-y-10">
         {/* 프로필 카드 */}
         <motion.div
@@ -145,7 +148,7 @@ export default function MyPage() {
               }}
             >
               <button
-                onClick={() => (window.location.href = item.href)}
+                onClick={() => navigate(item.href)}
                 className="group w-full bg-white rounded-2xl p-4 sm:p-6 shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out active:scale-[0.98]"
               >
                 <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-5">

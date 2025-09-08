@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter } from "lucide-react";
 import { ResponsiveTreeMap } from "@nivo/treemap";
@@ -23,18 +23,38 @@ type SortBy =
   | "volume_desc"
   | "volume_asc";
 
-// API 호출 함수
+// API 호출 함수 (캐싱 추가)
+const companyCache = new Map<
+  SortBy,
+  { data: CompanyInfo[]; timestamp: number }
+>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5분
+
 const getCompanies = async (
   sortBy: SortBy = "market_cap_desc"
 ): Promise<CompanyInfo[]> => {
+  // 캐시 확인
+  const cached = companyCache.get(sortBy);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.data;
+  }
+
   try {
-    const response = await fetch(`/api/info/companies?sort_by=${sortBy}`);
+    const response = await fetch(`/api/info/companies?sort_by=${sortBy}`, {
+      headers: {
+        "Cache-Control": "max-age=300", // 5분 브라우저 캐시
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+
+    // 캐시에 저장
+    companyCache.set(sortBy, { data, timestamp: Date.now() });
+
     return data;
   } catch (error) {
     console.error("Error fetching companies:", error);
@@ -54,8 +74,8 @@ const getSentimentColor = (sentiment: string) => {
   }
 };
 
-// 커스텀 툴팁 컴포넌트
-const CustomTooltip = ({ node }: any) => {
+// 커스텀 툴팁 컴포넌트 (메모이제이션)
+const CustomTooltip = memo(({ node }: any) => {
   return (
     <div className="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-gray-200/50 min-w-[280px] animate-fadeIn z-50 relative">
       {/* 헤더 */}
@@ -107,9 +127,9 @@ const CustomTooltip = ({ node }: any) => {
       </div>
     </div>
   );
-};
+});
 
-export default function TrendingKeywords() {
+const TrendingKeywords = memo(function TrendingKeywords() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<SortBy>("market_cap_desc");
   const [companies, setCompanies] = useState<CompanyInfo[]>([]);
@@ -124,48 +144,67 @@ export default function TrendingKeywords() {
     volume_asc: [],
   });
   const [loading, setLoading] = useState(true);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAllCompanies = async () => {
+    const fetchInitialData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // 3가지 필터링 상태에 대한 데이터를 병렬로 로딩
-        const [marketCapData, changePercentData, volumeData] =
-          await Promise.all([
-            getCompanies("market_cap_desc"),
-            getCompanies("change_percent_desc"),
-            getCompanies("volume_desc"),
-          ]);
+        // 1단계: 시가총액 높은순 데이터를 먼저 로딩하여 즉시 표시
+        const marketCapData = await getCompanies("market_cap_desc");
 
-        setAllCompanies({
+        setAllCompanies((prev) => ({
+          ...prev,
           market_cap_desc: marketCapData,
           market_cap_asc: marketCapData,
-          change_percent_desc: changePercentData,
-          change_percent_asc: changePercentData,
-          volume_desc: volumeData,
-          volume_asc: volumeData,
-        });
-
-        // 초기 필터에 맞는 데이터 설정
+        }));
         setCompanies(marketCapData);
+        setLoading(false);
+
+        // 2단계: 백그라운드에서 나머지 데이터 로딩
+        const loadRemainingData = async () => {
+          try {
+            const [changePercentData, volumeData] = await Promise.all([
+              getCompanies("change_percent_desc"),
+              getCompanies("volume_desc"),
+            ]);
+
+            setAllCompanies((prev) => ({
+              ...prev,
+              change_percent_desc: changePercentData,
+              change_percent_asc: changePercentData,
+              volume_desc: volumeData,
+              volume_asc: volumeData,
+            }));
+          } catch (err) {
+            console.error("Error fetching remaining data:", err);
+            // 백그라운드 로딩 실패는 사용자에게 알리지 않음
+          }
+        };
+
+        // 백그라운드에서 나머지 데이터 로딩 시작
+        loadRemainingData();
       } catch (err) {
         setError("데이터를 불러오는 중 오류가 발생했습니다.");
-        console.error("Error fetching companies:", err);
-      } finally {
+        console.error("Error fetching initial data:", err);
         setLoading(false);
       }
     };
 
-    fetchAllCompanies();
+    fetchInitialData();
   }, []);
 
   // 필터 변경 시 해당 데이터로 업데이트
   useEffect(() => {
     if (allCompanies[filter] && allCompanies[filter].length > 0) {
       setCompanies(allCompanies[filter]);
+      setFilterLoading(false);
+    } else if (allCompanies[filter] && allCompanies[filter].length === 0) {
+      // 데이터가 아직 로딩 중인 경우
+      setFilterLoading(true);
     }
   }, [filter, allCompanies]);
 
@@ -199,11 +238,14 @@ export default function TrendingKeywords() {
     };
   }, [companies, filter]);
 
-  const handleNodeClick = (node: any) => {
-    if (node.data.stockCode) {
-      navigate(`/stock/${node.data.stockCode}`);
-    }
-  };
+  const handleNodeClick = useCallback(
+    (node: any) => {
+      if (node.data.stockCode) {
+        navigate(`/stock/${node.data.stockCode}`);
+      }
+    },
+    [navigate]
+  );
 
   return (
     <div className="rounded-3xl border border-white/70 bg-white/70 backdrop-blur-md shadow-sm">
@@ -253,7 +295,7 @@ export default function TrendingKeywords() {
 
         {/* TreeMap */}
         <div className="h-64 [&_g]:cursor-pointer relative">
-          {loading ? (
+          {loading || filterLoading ? (
             <div className="h-full p-4">
               {/* 스켈레톤 헤더 */}
               <div className="flex items-center justify-between mb-4">
@@ -277,7 +319,7 @@ export default function TrendingKeywords() {
               value="loc"
               valueFormat=".0f"
               margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-              labelSkipSize={8}
+              labelSkipSize={12}
               labelTextColor={{ from: "color", modifiers: [["darker", 1.2]] }}
               parentLabelPosition="left"
               parentLabelTextColor={{
@@ -295,8 +337,8 @@ export default function TrendingKeywords() {
               label={(node) => {
                 // 주식명이 너무 길면 줄여서 표시
                 const name = node.data.name;
-                if (name.length > 8) {
-                  return name.substring(0, 7) + "...";
+                if (name.length > 6) {
+                  return name.substring(0, 5) + "...";
                 }
                 return name;
               }}
@@ -333,4 +375,6 @@ export default function TrendingKeywords() {
       </div>
     </div>
   );
-}
+});
+
+export default TrendingKeywords;

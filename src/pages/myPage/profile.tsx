@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Edit3, Save, X, Camera } from "lucide-react";
+import { ArrowLeft, Edit3, Save, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
@@ -10,8 +10,6 @@ export default function ProfilePage() {
     name: "홍길동",
     email: "hong@example.com",
     phone: "010-1234-5678",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     membership: "프리미엄",
     joinDate: "2024년 1월",
   });
@@ -37,49 +35,33 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 헤더 */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50/50">
+      {/* 헤더 - 모바일에서만 표시 */}
+      <div className="lg:hidden bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
           <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            onClick={() => navigate("/mypage")}
+            className="p-2 rounded-full hover:bg-gray-100/80 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">개인정보 관리</h1>
+          <h1 className="text-lg font-semibold text-gray-900">프로필</h1>
           <div className="w-9"></div>
         </div>
       </div>
 
-      <div className="px-4 py-6 space-y-6">
-        {/* 프로필 이미지 섹션 */}
+      <div className="max-w-md mx-auto px-6 py-8 space-y-6">
+        {/* 사용자 정보 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+          className="text-center space-y-3"
         >
-          <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
-              />
-              <button className="absolute -bottom-2 -right-2 bg-[#0A5C2B] text-white p-2 rounded-full shadow-lg hover:bg-[#0A5C2B]/90 transition-colors">
-                <Camera className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="text-center">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {user.name}
-              </h2>
-              <span className="px-3 py-1 bg-[#0A5C2B] text-white text-sm font-medium rounded-full">
-                {user.membership}
-              </span>
-            </div>
-          </div>
+          <h2 className="text-2xl font-semibold text-gray-900">{user.name}</h2>
+          <span className="inline-flex items-center px-4 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-medium rounded-full shadow-sm">
+            {user.membership}
+          </span>
         </motion.div>
 
         {/* 개인정보 폼 */}
@@ -87,14 +69,14 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+          className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 overflow-hidden"
         >
-          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">기본 정보</h3>
+          <div className="p-6 border-b border-gray-200/30 flex items-center justify-between">
+            <h3 className="font-semibold text-gray-900 text-lg">기본 정보</h3>
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center space-x-1 text-[#0A5C2B] hover:text-[#0A5C2B]/80 transition-colors"
+                className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors px-3 py-1.5 rounded-full hover:bg-blue-50"
               >
                 <Edit3 className="w-4 h-4" />
                 <span className="text-sm font-medium">수정</span>
@@ -103,14 +85,14 @@ export default function ProfilePage() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={handleCancel}
-                  className="flex items-center space-x-1 text-gray-600 hover:text-gray-800 transition-colors"
+                  className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors px-3 py-1.5 rounded-full hover:bg-gray-50"
                 >
                   <X className="w-4 h-4" />
                   <span className="text-sm font-medium">취소</span>
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex items-center space-x-1 text-[#0A5C2B] hover:text-[#0A5C2B]/80 transition-colors"
+                  className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors px-3 py-1.5 rounded-full hover:bg-blue-50"
                 >
                   <Save className="w-4 h-4" />
                   <span className="text-sm font-medium">저장</span>
@@ -119,10 +101,10 @@ export default function ProfilePage() {
             )}
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-6 space-y-6">
             {/* 이름 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-600">
                 이름
               </label>
               {isEditing ? (
@@ -132,16 +114,16 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20 focus:border-[#0A5C2B]"
+                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all"
                 />
               ) : (
-                <p className="text-gray-900">{user.name}</p>
+                <p className="text-gray-900 text-lg py-2">{user.name}</p>
               )}
             </div>
 
             {/* 이메일 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-600">
                 이메일
               </label>
               {isEditing ? (
@@ -151,16 +133,16 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20 focus:border-[#0A5C2B]"
+                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all"
                 />
               ) : (
-                <p className="text-gray-900">{user.email}</p>
+                <p className="text-gray-900 text-lg py-2">{user.email}</p>
               )}
             </div>
 
             {/* 전화번호 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-600">
                 전화번호
               </label>
               {isEditing ? (
@@ -170,19 +152,19 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A5C2B]/20 focus:border-[#0A5C2B]"
+                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all"
                 />
               ) : (
-                <p className="text-gray-900">{user.phone}</p>
+                <p className="text-gray-900 text-lg py-2">{user.phone}</p>
               )}
             </div>
 
             {/* 가입일 (읽기 전용) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-600">
                 가입일
               </label>
-              <p className="text-gray-900">{user.joinDate}</p>
+              <p className="text-gray-900 text-lg py-2">{user.joinDate}</p>
             </div>
           </div>
         </motion.div>
@@ -192,21 +174,21 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+          className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 overflow-hidden"
         >
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">계정 정보</h3>
+          <div className="p-6 border-b border-gray-200/30">
+            <h3 className="font-semibold text-gray-900 text-lg">계정 정보</h3>
           </div>
-          <div className="p-4 space-y-4">
+          <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">멤버십 등급</span>
-              <span className="text-[#0A5C2B] font-medium">
+              <span className="text-gray-600 font-medium">멤버십 등급</span>
+              <span className="text-blue-500 font-semibold">
                 {user.membership}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">계정 상태</span>
-              <span className="text-green-600 font-medium">활성</span>
+              <span className="text-gray-600 font-medium">계정 상태</span>
+              <span className="text-green-500 font-semibold">활성</span>
             </div>
           </div>
         </motion.div>

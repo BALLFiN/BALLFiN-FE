@@ -184,6 +184,15 @@ const Header = () => {
 
   // 현재 경로가 navItem의 경로와 일치하는지 확인하는 함수
   const isActiveRoute = (path: string) => {
+    // 하위 경로까지 활성화 처리할 기본 섹션들
+    const sectionsWithSubroutes = ["/mypage", "/news", "/stock"];
+
+    if (sectionsWithSubroutes.includes(path)) {
+      return (
+        location.pathname === path || location.pathname.startsWith(path + "/")
+      );
+    }
+
     return location.pathname === path;
   };
 
