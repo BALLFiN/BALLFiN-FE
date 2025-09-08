@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   Bell,
   Settings,
   Check,
@@ -58,25 +57,25 @@ export default function NotificationsPage() {
   });
 
   const handleMarkAsRead = (id: number) => {
-    setNotifications(prev =>
-      prev.map(notif =>
+    setNotifications((prev) =>
+      prev.map((notif) =>
         notif.id === id ? { ...notif, isRead: true } : notif
       )
     );
   };
 
   const handleDeleteNotification = (id: number) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
+    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   const handleMarkAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notif => ({ ...notif, isRead: true }))
+    setNotifications((prev) =>
+      prev.map((notif) => ({ ...notif, isRead: true }))
     );
   };
 
   const handleSettingChange = (key: string) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [key]: !prev[key as keyof typeof prev],
     }));
@@ -95,26 +94,10 @@ export default function NotificationsPage() {
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      {/* 헤더 */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-gray-100/80 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
-          </button>
-          <h1 className="text-lg font-semibold text-gray-900">알림</h1>
-          <button className="p-2 rounded-full hover:bg-gray-100/80 transition-colors">
-            <Settings className="w-5 h-5 text-gray-700" />
-          </button>
-        </div>
-      </div>
-
       <div className="max-w-md mx-auto px-6 py-8 space-y-6">
         {/* 알림 요약 */}
         <motion.div
@@ -178,7 +161,9 @@ export default function NotificationsPage() {
                       <p className="text-gray-600 text-sm mb-2">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-500">{notification.time}</p>
+                      <p className="text-xs text-gray-500">
+                        {notification.time}
+                      </p>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
                       {!notification.isRead && (
@@ -190,7 +175,9 @@ export default function NotificationsPage() {
                         </button>
                       )}
                       <button
-                        onClick={() => handleDeleteNotification(notification.id)}
+                        onClick={() =>
+                          handleDeleteNotification(notification.id)
+                        }
                         className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                       >
                         <X className="w-4 h-4" />

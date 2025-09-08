@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   MessageCircle,
   Mail,
   Phone,
@@ -26,17 +25,20 @@ export default function SupportPage() {
     {
       id: 2,
       question: "비밀번호를 잊어버렸어요",
-      answer: "로그인 화면에서 '비밀번호 찾기'를 클릭하여 이메일로 재설정 링크를 받으세요.",
+      answer:
+        "로그인 화면에서 '비밀번호 찾기'를 클릭하여 이메일로 재설정 링크를 받으세요.",
     },
     {
       id: 3,
       question: "앱이 제대로 작동하지 않아요",
-      answer: "앱을 완전히 종료한 후 다시 시작해보세요. 문제가 지속되면 고객지원팀에 문의해주세요.",
+      answer:
+        "앱을 완전히 종료한 후 다시 시작해보세요. 문제가 지속되면 고객지원팀에 문의해주세요.",
     },
     {
       id: 4,
       question: "결제 관련 문의",
-      answer: "결제 수단 페이지에서 결제 내역을 확인하거나, 고객지원팀으로 직접 문의해주세요.",
+      answer:
+        "결제 수단 페이지에서 결제 내역을 확인하거나, 고객지원팀으로 직접 문의해주세요.",
     },
   ];
 
@@ -70,20 +72,6 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      {/* 헤더 */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-gray-100/80 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
-          </button>
-          <h1 className="text-lg font-semibold text-gray-900">고객지원</h1>
-          <div className="w-9"></div>
-        </div>
-      </div>
-
       <div className="max-w-md mx-auto px-6 py-8 space-y-6">
         {/* 문의하기 */}
         <motion.div
@@ -98,7 +86,9 @@ export default function SupportPage() {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">문의하기</h2>
-              <p className="text-sm text-gray-600">궁금한 점을 빠르게 해결해드립니다</p>
+              <p className="text-sm text-gray-600">
+                궁금한 점을 빠르게 해결해드립니다
+              </p>
             </div>
           </div>
 
@@ -152,7 +142,9 @@ export default function SupportPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="space-y-4"
         >
-          <h2 className="text-lg font-semibold text-gray-900">다른 방법으로 연락하기</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            다른 방법으로 연락하기
+          </h2>
           {contactMethods.map((method, index) => (
             <motion.div
               key={index}
@@ -191,7 +183,9 @@ export default function SupportPage() {
               <FileText className="w-6 h-6 text-[#0A5C2B]" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
+              <h2 className="text-lg font-semibold text-gray-900">
+                자주 묻는 질문
+              </h2>
               <p className="text-sm text-gray-600">빠른 답변을 확인해보세요</p>
             </div>
           </div>
