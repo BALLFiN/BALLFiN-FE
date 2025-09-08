@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   User,
   CreditCard,
@@ -14,6 +15,7 @@ import {
 import Toast from "@/components/common/Toast";
 
 export default function MyPage() {
+  const navigate = useNavigate();
   const [user] = useState({
     name: "홍길동",
     email: "hong@example.com",
@@ -146,7 +148,7 @@ export default function MyPage() {
               }}
             >
               <button
-                onClick={() => (window.location.href = item.href)}
+                onClick={() => navigate(item.href)}
                 className="group w-full bg-white rounded-2xl p-4 sm:p-6 shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out active:scale-[0.98]"
               >
                 <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-5">

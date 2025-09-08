@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -9,12 +9,12 @@ import {
   Shield,
   HelpCircle,
   LogOut,
-  Edit3,
 } from "lucide-react";
 import Toast from "@/components/common/Toast";
 
 export default function MyPageLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isSubPage = location.pathname !== "/mypage";
 
   const [user] = useState({
@@ -96,10 +96,10 @@ export default function MyPageLayout() {
       )}
 
       {isSubPage ? (
-        // 사이드바 레이아웃 (하위 페이지일 때)
+        // 하위 페이지일 때 - 모바일에서는 뒤로가기만, 데스크톱에서는 사이드바
         <div className="flex h-screen">
-          {/* 사이드바 */}
-          <div className="w-80 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 flex flex-col">
+          {/* 데스크톱 사이드바 - 모바일에서는 숨김 */}
+          <div className="hidden lg:flex w-80 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 flex-col">
             {/* 프로필 섹션 */}
             <div className="p-6 border-b border-gray-200/50">
               <div className="flex items-center space-x-4">
@@ -132,7 +132,7 @@ export default function MyPageLayout() {
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
                   <button
-                    onClick={() => (window.location.href = item.href)}
+                    onClick={() => navigate(item.href)}
                     className={`w-full flex items-center space-x-3 p-3 rounded-2xl transition-all duration-200 ${
                       location.pathname === item.href
                         ? "bg-[#0A5C2B] text-white"

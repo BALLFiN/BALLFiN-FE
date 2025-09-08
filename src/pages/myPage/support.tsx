@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
+  ArrowLeft,
   MessageCircle,
   Mail,
   Phone,
@@ -72,6 +73,20 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
+      {/* 헤더 - 모바일에서만 표시 */}
+      <div className="lg:hidden bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
+          <button
+            onClick={() => navigate("/mypage")}
+            className="p-2 rounded-full hover:bg-gray-100/80 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">고객지원</h1>
+          <div className="w-9"></div>
+        </div>
+      </div>
+
       <div className="max-w-md mx-auto px-6 py-8 space-y-6">
         {/* 문의하기 */}
         <motion.div
