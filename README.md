@@ -56,7 +56,7 @@ BALLFiN은 최첨단 AI 기술을 활용한 지능형 금융 투자 플랫폼입
 | **Backend**        | FastAPI, Python 3.11+                              |
 | **AI/ML**          | Transformers (Hugging Face), Scikit-learn, PyTorch |
 | **Database**       | MongoDB, Redis                                     |
-| **Infrastructure** | Docker, AWS/GCP                                    |
+| **Infrastructure** | Docker, AWS                                        |
 | **Analytics**      | Highcharts, Chart.js                               |
 
 ---
