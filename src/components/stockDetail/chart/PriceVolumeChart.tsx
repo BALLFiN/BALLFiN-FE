@@ -237,18 +237,22 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
     ma120Data,
     lastClose,
   } = useMemo(() => {
-    const arr = data.map((d) => ({
-      ts: new Date(d.date).getTime(),
-      open: d.open,
-      high: d.high,
-      low: d.low,
-      close: d.close,
-      volume: d.volume,
-      ma5: d.ma5,
-      ma20: d.ma20,
-      ma60: d.ma60,
-      ma120: d.ma120,
-    }));
+    // 원본 데이터 -> 타임스탬프 기준 정렬(오름차순)
+    const arr = data
+      .map((d) => ({
+        ts: new Date(d.date).getTime(),
+        dateStr: d.date,
+        open: d.open,
+        high: d.high,
+        low: d.low,
+        close: d.close,
+        volume: d.volume,
+        ma5: d.ma5,
+        ma20: d.ma20,
+        ma60: d.ma60,
+        ma120: d.ma120,
+      }))
+      .sort((a, b) => a.ts - b.ts);
 
     let filtered = arr;
 
@@ -263,9 +267,35 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
       filtered = arr;
     }
 
-    // 주봉
+    // 주봉: ISO 주 기준으로 그룹핑하여 주별 마지막 데이터 사용
     else if (timeRange === "1w") {
-      filtered = arr.filter((_, i) => i % 7 === 0);
+      const byWeek: Record<string, (typeof arr)[0]> = {};
+      const getIsoWeekKey = (ts: number) => {
+        const d = new Date(ts);
+        // ISO 주 번호 계산
+        const target = new Date(
+          Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+        );
+        const dayNum = (target.getUTCDay() + 6) % 7; // 월=0 ... 일=6
+        target.setUTCDate(target.getUTCDate() - dayNum + 3); // 목요일 기준
+        const firstThursday = new Date(Date.UTC(target.getUTCFullYear(), 0, 4));
+        const weekNo =
+          1 +
+          Math.round(
+            ((target.getTime() - firstThursday.getTime()) / 86400000 -
+              3 +
+              ((firstThursday.getUTCDay() + 6) % 7)) /
+              7
+          );
+        const year = target.getUTCFullYear();
+        return `${year}-W${String(weekNo).padStart(2, "0")}`;
+      };
+
+      arr.forEach((item) => {
+        const key = getIsoWeekKey(item.ts);
+        byWeek[key] = item; // 같은 주의 마지막 아이템으로 갱신
+      });
+      filtered = Object.values(byWeek).sort((a, b) => a.ts - b.ts);
     }
 
     // 월봉
@@ -273,8 +303,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
       const byMonth: Record<string, (typeof arr)[0]> = {};
       arr.forEach((item) => {
         const dt = new Date(item.ts);
-        const key = `${dt.getFullYear()}-${dt.getMonth() + 1}`;
-        byMonth[key] = item; // 마지막 업데이트된 달의 데이터를 남김
+        const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
+        byMonth[key] = item; // 월별 마지막 데이터로 갱신
       });
       filtered = Object.values(byMonth).sort((a, b) => a.ts - b.ts);
     }
@@ -284,7 +314,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
       const byYear: Record<string, (typeof arr)[0]> = {};
       arr.forEach((item) => {
         const yr = new Date(item.ts).getFullYear();
-        byYear[yr] = item;
+        byYear[String(yr)] = item; // 연도별 마지막 데이터
       });
       filtered = Object.values(byYear).sort((a, b) => a.ts - b.ts);
     }
@@ -349,6 +379,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         labels: {
           step: Math.max(1, Math.floor(ohlcData.length / 10)), // 라벨 수 줄이기
         },
+        tickPixelInterval: 80,
+        tickLength: 0,
       },
       yAxis: [
         {
@@ -372,14 +404,90 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         },
       ],
       tooltip: {
-        shared: false,
-        split: true,
-        animation: false, // 툴팁 애니메이션 비활성화
+        shared: true,
+        split: false,
+        animation: true,
+        hideDelay: 120,
+        stickOnContact: true,
+        followPointer: true,
+        followTouchMove: true,
+        distance: 10,
+        padding: 0,
+        borderRadius: 12,
+        shadow: false,
+        borderWidth: 0,
+        backgroundColor: "transparent",
+        useHTML: true,
+        style: {
+          color: "#0f172a",
+          fontSize: "12px",
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif",
+        },
+        formatter: function (this: Highcharts.TooltipFormatterContextObject) {
+          const date = new Date(this.x as number);
+          const dateStr = new Intl.DateTimeFormat("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(date);
+
+          // 시리즈별 값 추출
+          const find = (name: string) =>
+            this.points?.find((p) => p.series.name === name);
+          const pricePoint = find("가격");
+          const volumePoint = find("거래량");
+
+          const priceVal = pricePoint?.y as number | undefined;
+          const volVal = (volumePoint?.point as any)?.y as number | undefined;
+
+          const price =
+            priceVal != null ? priceVal.toLocaleString("ko-KR") : "-";
+          const volume = volVal != null ? volVal.toLocaleString("ko-KR") : "-";
+
+          // iOS 스타일 툴팁 (둥근 모서리, 세미투명 배경, 그림자, 작은 꼬리)
+          return `
+            <div style="pointer-events:none;">
+              <div style="
+                background: rgba(255,255,255,0.96);
+                backdrop-filter: saturate(180%) blur(10px);
+                border: 1px solid rgba(0,0,0,0.06);
+                border-radius: 12px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                padding: 10px 12px;
+                min-width: 160px;
+              ">
+                <div style="font-weight:600; color:#0f172a; margin-bottom:6px;">${dateStr}</div>
+                <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:4px;">
+                  <span style="color:#64748b;">현재가</span>
+                  <span style="color:#0f172a; font-weight:600;">₩${price}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; gap:12px;">
+                  <span style="color:#64748b;">거래량</span>
+                  <span style="color:#0f172a; font-weight:600;">${volume}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        },
+      },
+      plotOptions: {
+        series: {
+          animation: { duration: 350, easing: "easeOutCubic" },
+          states: { inactive: { opacity: 1 } },
+          point: {
+            events: {
+              mouseOver() {
+                // 툴팁 전환시 튐을 줄이기 위해 noop
+              },
+            },
+          },
+        },
       },
       series: [
         {
           type: "candlestick",
-          name: "Price",
+          name: "가격",
           data: ohlcData as any,
           yAxis: 0,
           tooltip: { valueDecimals: 2 },
@@ -394,10 +502,18 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
             easing: "easeInOutCubic",
           }, // 시리즈 애니메이션 활성화
           enableMouseTracking: true,
+          states: {
+            hover: {
+              enabled: true,
+              halo: { size: 6, opacity: 0.15 },
+              lineWidthPlus: 0,
+            },
+            inactive: { opacity: 1 },
+          },
         },
         {
           type: "column",
-          name: "Volume",
+          name: "거래량",
           data: volumePoints as any,
           yAxis: 1,
           color: "#d1e3ea",
@@ -405,6 +521,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           groupPadding: 0.02,
           borderWidth: 0,
           tooltip: { valueDecimals: 0 },
+          states: { hover: { enabled: false }, inactive: { opacity: 1 } },
         },
         {
           type: "line",
