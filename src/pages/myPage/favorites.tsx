@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -10,66 +10,167 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getFavorites, removeFavorite } from "@/api/user/favoritesApi";
+import { getStockInfoByCode } from "@/api/stock";
 
 export default function FavoritesPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [favoriteStocks, setFavoriteStocks] = useState<
+    {
+      symbol: string;
+      name: string;
+      price: number;
+      change: number;
+      changePercent: number;
+      volume?: string | number;
+      marketCap?: string | number;
+    }[]
+  >([]);
 
-  const [favoriteStocks] = useState([
-    {
-      id: 1,
-      symbol: "005930",
-      name: "삼성전자",
-      price: 71500,
-      change: 1500,
-      changePercent: 2.14,
-      volume: "12.5M",
-      marketCap: "427조",
-      isFavorite: true,
-    },
-    {
-      id: 2,
-      symbol: "000660",
-      name: "SK하이닉스",
-      price: 128000,
-      change: -2000,
-      changePercent: -1.54,
-      volume: "3.2M",
-      marketCap: "93조",
-      isFavorite: true,
-    },
-    {
-      id: 3,
-      symbol: "035420",
-      name: "NAVER",
-      price: 198500,
-      change: 3500,
-      changePercent: 1.79,
-      volume: "1.8M",
-      marketCap: "32조",
-      isFavorite: true,
-    },
-    {
-      id: 4,
-      symbol: "051910",
-      name: "LG화학",
-      price: 425000,
-      change: -5000,
-      changePercent: -1.16,
-      volume: "0.8M",
-      marketCap: "30조",
-      isFavorite: true,
-    },
-  ]);
+  useEffect(() => {
+    let cancelled = false;
+    const fetchFavoritesAndDetails = async () => {
+      try {
+        const res = await getFavorites();
+        const codes = Array.isArray(res)
+          ? res
+          : res && typeof res === "object" && "favorites" in res
+            ? (res as any).favorites
+            : [];
 
-  const handleRemoveFavorite = (id: number) => {
-    console.log("즐겨찾기 제거:", id);
+        if (!Array.isArray(codes)) {
+          setFavoriteStocks([]);
+          return;
+        }
+
+        if (cancelled) return;
+
+        // 각 코드별 상세 정보 병렬 조회
+        const details = await Promise.all(
+          codes.map(async (code) => {
+            try {
+              const data = await getStockInfoByCode(code);
+              const price =
+                typeof data["현재가"] === "number" ? data["현재가"] : 0;
+              const name =
+                typeof data["기업명"] === "string" ? data["기업명"] : code;
+              const changePercent =
+                typeof data["등락"] === "number" ? data["등락"] : 0;
+              const changeAmount =
+                typeof data["전일대비"] === "number" ? data["전일대비"] : 0;
+              const volume =
+                typeof data["거래량"] === "number" ? data["거래량"] : undefined;
+              const marketCap =
+                typeof data["시가총액"] === "number"
+                  ? data["시가총액"]
+                  : undefined;
+
+              return {
+                symbol: code,
+                name,
+                price,
+                change: changeAmount,
+                changePercent,
+                volume,
+                marketCap,
+              };
+            } catch {
+              return {
+                symbol: code,
+                name: code,
+                price: 0,
+                change: 0,
+                changePercent: 0,
+              };
+            }
+          })
+        );
+
+        if (cancelled) return;
+        setFavoriteStocks(details);
+      } finally {
+      }
+    };
+
+    fetchFavoritesAndDetails();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleRemoveFavorite = async (symbol: string) => {
+    try {
+      // 낙관적 업데이트
+      setFavoriteStocks((prev) => prev.filter((s) => s.symbol !== symbol));
+
+      await removeFavorite(symbol);
+    } catch (e) {
+      // 실패 시 목록을 다시 불러와 복구
+      try {
+        const res = await getFavorites();
+        const codes = Array.isArray(res)
+          ? res
+          : res && typeof res === "object" && "favorites" in res
+            ? (res as any).favorites
+            : [];
+        if (Array.isArray(codes)) {
+          const details = await Promise.all(
+            codes.map(async (code) => {
+              try {
+                const data = await getStockInfoByCode(code);
+                const price =
+                  typeof data["현재가"] === "number" ? data["현재가"] : 0;
+                const name =
+                  typeof data["기업명"] === "string" ? data["기업명"] : code;
+                const changePercent =
+                  typeof data["등락"] === "number" ? data["등락"] : 0;
+                const changeAmount =
+                  typeof data["전일대비"] === "number" ? data["전일대비"] : 0;
+                const volume =
+                  typeof data["거래량"] === "number"
+                    ? data["거래량"]
+                    : undefined;
+                const marketCap =
+                  typeof data["시가총액"] === "number"
+                    ? data["시가총액"]
+                    : undefined;
+                return {
+                  symbol: code,
+                  name,
+                  price,
+                  change: changeAmount,
+                  changePercent,
+                  volume,
+                  marketCap,
+                };
+              } catch {
+                return {
+                  symbol: code,
+                  name: code,
+                  price: 0,
+                  change: 0,
+                  changePercent: 0,
+                };
+              }
+            })
+          );
+          setFavoriteStocks(details);
+        }
+      } catch {
+        // 무시
+      }
+    }
   };
 
-  const filteredStocks = favoriteStocks.filter(
-    (stock) =>
-      stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      stock.symbol.includes(searchTerm)
+  const filteredStocks = useMemo(
+    () =>
+      favoriteStocks.filter(
+        (stock) =>
+          stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          stock.symbol.includes(searchTerm)
+      ),
+    [favoriteStocks, searchTerm]
   );
 
   return (
@@ -126,7 +227,7 @@ export default function FavoritesPage() {
 
           {filteredStocks.map((stock, index) => (
             <motion.div
-              key={stock.id}
+              key={stock.symbol}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -144,7 +245,7 @@ export default function FavoritesPage() {
                   </div>
                   <div className="flex items-center space-x-4 text-sm">
                     <span className="text-lg font-bold text-gray-900">
-                      ₩{stock.price.toLocaleString()}
+                      ₩{Number(stock.price || 0).toLocaleString()}
                     </span>
                     <div
                       className={`flex items-center space-x-1 ${
@@ -158,20 +259,20 @@ export default function FavoritesPage() {
                       )}
                       <span>
                         {stock.change >= 0 ? "+" : ""}
-                        {stock.change.toLocaleString()}(
+                        {Number(stock.change || 0).toLocaleString()}(
                         {stock.changePercent >= 0 ? "+" : ""}
-                        {stock.changePercent}%)
+                        {Number(stock.changePercent || 0)}%)
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 text-xs text-gray-500 mt-2">
-                    <span>거래량: {stock.volume}</span>
-                    <span>시총: {stock.marketCap}</span>
+                    <span>거래량: {stock.volume ?? "-"}</span>
+                    <span>시총: {stock.marketCap ?? "-"}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => handleRemoveFavorite(stock.id)}
+                    onClick={() => handleRemoveFavorite(stock.symbol)}
                     className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                   >
                     <Heart className="w-5 h-5 fill-current" />
