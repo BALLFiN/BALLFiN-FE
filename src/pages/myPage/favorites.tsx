@@ -27,11 +27,13 @@ export default function FavoritesPage() {
       marketCap?: string | number;
     }[]
   >([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     const fetchFavoritesAndDetails = async () => {
       try {
+        setLoading(true);
         const res = await getFavorites();
         const codes = Array.isArray(res)
           ? res
@@ -90,6 +92,7 @@ export default function FavoritesPage() {
         if (cancelled) return;
         setFavoriteStocks(details);
       } finally {
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -210,84 +213,104 @@ export default function FavoritesPage() {
         </motion.div>
 
         {/* 즐겨찾기 주식 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="space-y-4"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
-              즐겨찾기 주식
-            </h2>
-            <span className="text-sm text-gray-500">
-              {filteredStocks.length}개
-            </span>
-          </div>
-
-          {filteredStocks.map((stock, index) => (
-            <motion.div
-              key={stock.symbol}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="font-semibold text-gray-900">
-                      {stock.name}
-                    </h3>
-                    <span className="text-sm text-gray-500">
-                      {stock.symbol}
-                    </span>
+        {loading ? (
+          <div className="space-y-4">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-pulse"
+              >
+                <div className="h-4 w-24 bg-gray-200 rounded mb-4" />
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 space-y-3">
+                    <div className="h-5 w-32 bg-gray-200 rounded" />
+                    <div className="h-4 w-48 bg-gray-200 rounded" />
                   </div>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span className="text-lg font-bold text-gray-900">
-                      ₩{Number(stock.price || 0).toLocaleString()}
-                    </span>
-                    <div
-                      className={`flex items-center space-x-1 ${
-                        stock.change >= 0 ? "text-red-500" : "text-blue-500"
-                      }`}
-                    >
-                      {stock.change >= 0 ? (
-                        <TrendingUp className="w-4 h-4" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4" />
-                      )}
-                      <span>
-                        {stock.change >= 0 ? "+" : ""}
-                        {Number(stock.change || 0).toLocaleString()}(
-                        {stock.changePercent >= 0 ? "+" : ""}
-                        {Number(stock.changePercent || 0)}%)
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4 text-xs text-gray-500 mt-2">
-                    <span>거래량: {stock.volume ?? "-"}</span>
-                    <span>시총: {stock.marketCap ?? "-"}</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleRemoveFavorite(stock.symbol)}
-                    className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                  >
-                    <Heart className="w-5 h-5 fill-current" />
-                  </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
+                  <div className="h-8 w-8 bg-gray-200 rounded-full" />
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                즐겨찾기 주식
+              </h2>
+              <span className="text-sm text-gray-500">
+                {filteredStocks.length}개
+              </span>
+            </div>
+
+            {filteredStocks.map((stock, index) => (
+              <motion.div
+                key={stock.symbol}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <h3 className="font-semibold text-gray-900">
+                        {stock.name}
+                      </h3>
+                      <span className="text-sm text-gray-500">
+                        {stock.symbol}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-4 text-sm">
+                      <span className="text-lg font-bold text-gray-900">
+                        ₩{Number(stock.price || 0).toLocaleString()}
+                      </span>
+                      <div
+                        className={`flex items-center space-x-1 ${
+                          stock.change >= 0 ? "text-red-500" : "text-blue-500"
+                        }`}
+                      >
+                        {stock.change >= 0 ? (
+                          <TrendingUp className="w-4 h-4" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4" />
+                        )}
+                        <span>
+                          {stock.change >= 0 ? "+" : ""}
+                          {Number(stock.change || 0).toLocaleString()}(
+                          {stock.changePercent >= 0 ? "+" : ""}
+                          {Number(stock.changePercent || 0)}%)
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4 text-xs text-gray-500 mt-2">
+                      <span>거래량: {stock.volume ?? "-"}</span>
+                      <span>시총: {stock.marketCap ?? "-"}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleRemoveFavorite(stock.symbol)}
+                      className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    >
+                      <Heart className="w-5 h-5 fill-current" />
+                    </button>
+                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* 빈 상태 */}
-        {filteredStocks.length === 0 && (
+        {!loading && filteredStocks.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
