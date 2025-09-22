@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, Settings } from "lucide-react";
+import NotificationBell from "@/components/common/NotificationBell";
 import { logout } from "../../api/auth/logoutApi";
 import { verifyAuth } from "../../api/auth/loginApi";
 import Toast from "@/components/common/Toast";
+import NotificationToast from "@/components/common/NotificationToast";
+import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 
 interface NavItem {
   to: string;
@@ -41,6 +44,10 @@ const Header = () => {
     type: "success" | "error";
   }>({ show: false, message: "", type: "success" });
   const wasLoggedInRef = useRef(false);
+
+  // 알림 권한 관리
+  const { permission, isSupported, requestPermission, showToast, hideToast } =
+    useNotificationPermission();
 
   useEffect(() => {
     // 로그인 상태 및 사용자 정보 확인
@@ -236,48 +243,12 @@ const Header = () => {
             <div className="hidden md:flex items-center space-x-4">
               {isLoggedIn && userName && (
                 <div className="relative">
-                  <span
-                    className="text-gray-700 font-medium cursor-pointer hover:text-[#0A5C2B] transition-colors"
-                    onMouseEnter={() => setShowUserTooltip(true)}
-                  >
+                  <span className="text-gray-700 font-medium ">
                     {userName}님
                   </span>
-
-                  {/* 사용자 툴팁 */}
-                  {showUserTooltip && (
-                    <div
-                      className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50"
-                      onMouseEnter={() => setShowUserTooltip(true)}
-                      onMouseLeave={() => setShowUserTooltip(false)}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-[#0A5C2B] rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {userName}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {userEmail}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="border-t border-gray-100 pt-3">
-                        <Link
-                          to="/mypage"
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                          onClick={() => setShowUserTooltip(false)}
-                        >
-                          <Settings className="w-4 h-4" />
-                          마이페이지
-                        </Link>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
+              <NotificationBell />
               {authItems.map((item, index) =>
                 isAuthLink(item) ? (
                   <Link
@@ -304,8 +275,9 @@ const Header = () => {
               )}
             </div>
 
-            {/* 모바일 메뉴 버튼 */}
-            <div className="md:hidden">
+            {/* 모바일 알림 + 메뉴 버튼 */}
+            <div className="md:hidden flex items-center gap-2">
+              <NotificationBell />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="text-gray-700 hover:text-[#0A5C2B] focus:outline-none"
@@ -386,6 +358,17 @@ const Header = () => {
           onClose={() => setToast({ ...toast, show: false })}
         />
       )}
+
+      {/* 알림 권한 요청 토스트 */}
+      <NotificationToast
+        show={showToast && permission === "denied"}
+        onClose={hideToast}
+        type="permission"
+        title="알림 권한이 필요합니다"
+        message="중요한 뉴스와 주가 변동을 실시간으로 받아보세요."
+        actionText="권한 허용"
+        onAction={requestPermission}
+      />
     </>
   );
 };

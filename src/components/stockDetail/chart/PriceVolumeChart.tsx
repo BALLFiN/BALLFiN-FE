@@ -47,6 +47,37 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
     }
   }, [tvFailed]);
 
+  // 1) 데이터 정렬 및 이동평균(MA) 계산
+  const computedData = useMemo(() => {
+    const sorted = [...data]
+      .map((d) => ({ ...d, ts: new Date(d.date).getTime() }))
+      .sort((a, b) => a.ts - b.ts);
+
+    const addSMA = (
+      arr: (typeof sorted)[number][],
+      windowSize: number,
+      key: "ma5" | "ma20" | "ma60" | "ma120"
+    ) => {
+      let sum = 0;
+      const q: number[] = [];
+      for (let i = 0; i < arr.length; i++) {
+        sum += arr[i].close;
+        q.push(arr[i].close);
+        if (q.length > windowSize) sum -= q.shift() as number;
+        if (q.length === windowSize) {
+          (arr[i] as any)[key] = +(sum / windowSize).toFixed(2);
+        }
+      }
+    };
+
+    addSMA(sorted as any, 5, "ma5");
+    addSMA(sorted as any, 20, "ma20");
+    addSMA(sorted as any, 60, "ma60");
+    addSMA(sorted as any, 120, "ma120");
+
+    return sorted.map(({ ts, ...rest }) => rest);
+  }, [data]);
+
   // TradingView Lightweight Charts 렌더링 (가능하면 우선 사용)
   useEffect(() => {
     let chart: any | null = null;
@@ -69,8 +100,14 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
       if (!tvContainerRef.current) return;
       try {
         const tv = await import("lightweight-charts");
-        const { createChart, CandlestickSeries, HistogramSeries, LineSeries } =
-          tv as any;
+        const {
+          createChart,
+          CandlestickSeries,
+          HistogramSeries,
+          LineSeries,
+          CrosshairMode,
+          LineStyle,
+        } = tv as any;
 
         const container = tvContainerRef.current;
         chart = createChart(container, {
@@ -89,6 +126,21 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
             fixRightEdge: false,
             barSpacing: 2,
             rightOffset: 0,
+          },
+          crosshair: {
+            mode: CrosshairMode.Normal,
+            vertLine: {
+              color: "#94a3b8",
+              width: 1,
+              style: LineStyle.Dashed,
+              labelBackgroundColor: "#0f172a",
+            },
+            horzLine: {
+              color: "#94a3b8",
+              width: 1,
+              style: LineStyle.Dashed,
+              labelBackgroundColor: "#0f172a",
+            },
           },
           autoSize: true,
         });
@@ -113,14 +165,14 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           .priceScale()
           .applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
 
-        const tvCandles = data.map((d) => ({
+        const tvCandles = computedData.map((d) => ({
           time: d.date, // YYYY-MM-DD
           open: d.open,
           high: d.high,
           low: d.low,
           close: d.close,
         }));
-        const tvVolumes = data.map((d) => ({
+        const tvVolumes = computedData.map((d) => ({
           time: d.date,
           value: d.volume,
           color: d.close >= d.open ? "#9bd3ae" : "#f3b6b6",
@@ -133,14 +185,16 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         const makeLine = (color: string) =>
           chart.addSeries(LineSeries, {
             color,
-            priceLineVisible: false,
-            lastValueVisible: false,
-            lineWidth: 2,
+            priceLineVisible: true,
+            lastValueVisible: true,
+            lineWidth: 2.5,
+            lineStyle: 0, // solid
+            crossHairMarkerVisible: true,
           });
         if (showMA.ma5) {
           ma5Series = makeLine("#8b5cf6");
           ma5Series.setData(
-            data
+            computedData
               .filter((d) => d.ma5 != null)
               .map((d) => ({ time: d.date, value: d.ma5! }))
           );
@@ -148,7 +202,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         if (showMA.ma20) {
           ma20Series = makeLine("#10b981");
           ma20Series.setData(
-            data
+            computedData
               .filter((d) => d.ma20 != null)
               .map((d) => ({ time: d.date, value: d.ma20! }))
           );
@@ -156,7 +210,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         if (showMA.ma60) {
           ma60Series = makeLine("#fb923c");
           ma60Series.setData(
-            data
+            computedData
               .filter((d) => d.ma60 != null)
               .map((d) => ({ time: d.date, value: d.ma60! }))
           );
@@ -164,7 +218,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         if (showMA.ma120) {
           ma120Series = makeLine("#3b82f6");
           ma120Series.setData(
-            data
+            computedData
               .filter((d) => d.ma120 != null)
               .map((d) => ({ time: d.date, value: d.ma120! }))
           );
@@ -225,7 +279,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         }
       } catch {}
     };
-  }, [data, showMA, tvReady, tvFailed]);
+  }, [computedData, showMA, tvReady, tvFailed]);
 
   //  timeRange 에 따른 데이터 필터링 및 Point 생성
   const {
@@ -237,22 +291,20 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
     ma120Data,
     lastClose,
   } = useMemo(() => {
-    // 원본 데이터 -> 타임스탬프 기준 정렬(오름차순)
-    const arr = data
-      .map((d) => ({
-        ts: new Date(d.date).getTime(),
-        dateStr: d.date,
-        open: d.open,
-        high: d.high,
-        low: d.low,
-        close: d.close,
-        volume: d.volume,
-        ma5: d.ma5,
-        ma20: d.ma20,
-        ma60: d.ma60,
-        ma120: d.ma120,
-      }))
-      .sort((a, b) => a.ts - b.ts);
+    // 이동평균이 포함된 데이터 기준으로 가공
+    const arr = computedData.map((d) => ({
+      ts: new Date(d.date).getTime(),
+      dateStr: d.date,
+      open: d.open,
+      high: d.high,
+      low: d.low,
+      close: d.close,
+      volume: d.volume,
+      ma5: d.ma5,
+      ma20: d.ma20,
+      ma60: d.ma60,
+      ma120: d.ma120,
+    }));
 
     let filtered = arr;
 
@@ -373,7 +425,18 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
       title: { text: "" },
       xAxis: {
         type: "datetime",
-        crosshair: false, // 크로스헤어 비활성화로 성능 향상
+        crosshair: {
+          width: 1,
+          color: "#94a3b8",
+          dashStyle: "Dash",
+          snap: true,
+          label: {
+            enabled: true,
+            backgroundColor: "#0f172a",
+            borderRadius: 4,
+            style: { color: "#fff" },
+          },
+        },
         gridLineWidth: 1,
         gridLineColor: "#f1f5f9",
         labels: {
@@ -387,7 +450,18 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           title: { text: "" },
           height: "65%",
           lineWidth: 2,
-          crosshair: false, // 크로스헤어 비활성화
+          crosshair: {
+            width: 1,
+            color: "#94a3b8",
+            dashStyle: "Dash",
+            snap: true,
+            label: {
+              enabled: true,
+              backgroundColor: "#0f172a",
+              borderRadius: 4,
+              style: { color: "#fff" },
+            },
+          },
           opposite: true,
           gridLineColor: "#eef2f7",
           labels: { style: { color: "#475569" } },
@@ -531,6 +605,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           yAxis: 0,
           visible: !!showMA.ma5,
           tooltip: { valueDecimals: 2 },
+          lineWidth: 2.5,
+          marker: { enabled: false },
         },
         {
           type: "line",
@@ -540,6 +616,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           yAxis: 0,
           visible: !!showMA.ma20,
           tooltip: { valueDecimals: 2 },
+          lineWidth: 2.5,
+          marker: { enabled: false },
         },
         {
           type: "line",
@@ -549,6 +627,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           yAxis: 0,
           visible: !!showMA.ma60,
           tooltip: { valueDecimals: 2 },
+          lineWidth: 2.5,
+          marker: { enabled: false },
         },
         {
           type: "line",
@@ -558,6 +638,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           yAxis: 0,
           visible: !!showMA.ma120,
           tooltip: { valueDecimals: 2 },
+          lineWidth: 2.5,
+          marker: { enabled: false },
         },
       ],
       rangeSelector: { enabled: false },

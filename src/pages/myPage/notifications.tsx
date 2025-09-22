@@ -9,55 +9,69 @@ import {
   AlertCircle,
   Info,
   TrendingUp,
+  Clock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { NotificationItem } from "@/types/notification";
+import { useNotificationSettings } from "@/hooks/useNotificationSettings";
+import { formatRelativeTime } from "@/utils/timeUtils";
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([
+  const { settings, updateSetting, isLoading } = useNotificationSettings();
+
+  const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
-      id: 1,
-      type: "alert",
+      id: "1",
+      type: "price",
       title: "주가 급등 알림",
       message: "삼성전자 주가가 5% 상승했습니다.",
       time: "2분 전",
       isRead: false,
+      createdAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+      priority: "high",
+      data: {
+        stockCode: "005930",
+        stockName: "삼성전자",
+        priceChange: 5.0,
+      },
     },
     {
-      id: 2,
-      type: "info",
+      id: "2",
+      type: "news",
       title: "뉴스 알림",
       message: "새로운 시장 분석 리포트가 업데이트되었습니다.",
       time: "1시간 전",
       isRead: false,
+      createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+      priority: "medium",
+      data: {
+        newsId: "news_002",
+      },
     },
     {
-      id: 3,
+      id: "3",
       type: "trending",
       title: "인기 키워드",
       message: "AI 관련 주식이 오늘 인기 키워드 1위에 올랐습니다.",
       time: "3시간 전",
       isRead: true,
+      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+      priority: "low",
     },
     {
-      id: 4,
-      type: "alert",
+      id: "4",
+      type: "price",
       title: "포트폴리오 알림",
       message: "보유 주식 중 하나가 목표가에 도달했습니다.",
       time: "1일 전",
       isRead: true,
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      priority: "medium",
     },
   ]);
 
-  const [settings, setSettings] = useState({
-    pushNotifications: true,
-    emailNotifications: false,
-    priceAlerts: true,
-    newsAlerts: true,
-    trendingAlerts: false,
-  });
-
-  const handleMarkAsRead = (id: number) => {
+  const handleMarkAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((notif) =>
         notif.id === id ? { ...notif, isRead: true } : notif
@@ -65,7 +79,7 @@ export default function NotificationsPage() {
     );
   };
 
-  const handleDeleteNotification = (id: number) => {
+  const handleDeleteNotification = (id: string) => {
     setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
@@ -75,16 +89,37 @@ export default function NotificationsPage() {
     );
   };
 
-  const handleSettingChange = (key: string) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: !prev[key as keyof typeof prev],
-    }));
+  const handleSettingChange = (key: keyof typeof settings) => {
+    updateSetting(key, !settings[key]);
+  };
+
+  const handleThresholdChange = (value: number) => {
+    updateSetting("priceThreshold", Math.max(1, Math.min(50, value)));
+  };
+
+  const handleKeywordsChange = (value: string) => {
+    updateSetting("newsKeywords", value);
+  };
+
+  const handleQuietHoursToggle = () => {
+    updateSetting("quietHours", {
+      ...settings.quietHours,
+      enabled: !settings.quietHours.enabled,
+    });
+  };
+
+  const handleQuietHoursChange = (field: "start" | "end", value: string) => {
+    updateSetting("quietHours", {
+      ...settings.quietHours,
+      [field]: value,
+    });
   };
 
   const getIcon = (type: string) => {
     switch (type) {
-      case "alert":
+      case "price":
+        return <TrendingUp className="w-5 h-5 text-green-500" />;
+      case "news":
         return <AlertCircle className="w-5 h-5 text-red-500" />;
       case "info":
         return <Info className="w-5 h-5 text-blue-500" />;
@@ -179,7 +214,7 @@ export default function NotificationsPage() {
                         {notification.message}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {notification.time}
+                        {formatRelativeTime(notification.createdAt)}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
@@ -217,30 +252,160 @@ export default function NotificationsPage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-6">
             알림 설정
           </h2>
-          <div className="space-y-4">
-            {Object.entries(settings).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between">
-                <span className="text-gray-700 font-medium">
-                  {key === "pushNotifications" && "푸시 알림"}
-                  {key === "emailNotifications" && "이메일 알림"}
-                  {key === "priceAlerts" && "주가 알림"}
-                  {key === "newsAlerts" && "뉴스 알림"}
-                  {key === "trendingAlerts" && "트렌드 알림"}
-                </span>
-                <button
-                  onClick={() => handleSettingChange(key)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    value ? "bg-[#0A5C2B]" : "bg-gray-200"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      value ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
+          <div className="space-y-6">
+            {/* 기본 알림 설정 */}
+            <div className="space-y-4">
+              {Object.entries(settings)
+                .filter(
+                  ([key]) =>
+                    !["priceThreshold", "newsKeywords", "quietHours"].includes(
+                      key
+                    )
+                )
+                .map(([key, value]) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <span className="text-gray-700 font-medium">
+                      {key === "pushNotifications" && "푸시 알림"}
+                      {key === "emailNotifications" && "이메일 알림"}
+                      {key === "priceAlerts" && "주가 알림"}
+                      {key === "newsAlerts" && "뉴스 알림"}
+                      {key === "trendingAlerts" && "트렌드 알림"}
+                    </span>
+                    <button
+                      onClick={() =>
+                        handleSettingChange(key as keyof typeof settings)
+                      }
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        value ? "bg-[#0A5C2B]" : "bg-gray-200"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          value ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ))}
+            </div>
+
+            {/* 주가 알림 임계값 설정 */}
+            {settings.priceAlerts && (
+              <div className="border-t border-gray-200 pt-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700 font-medium">
+                      주가 변동 임계값
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {settings.priceThreshold}%
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min="1"
+                      max="50"
+                      value={settings.priceThreshold}
+                      onChange={(e) =>
+                        handleThresholdChange(Number(e.target.value))
+                      }
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>1%</span>
+                      <span>50%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            )}
+
+            {/* 뉴스 키워드 필터 설정 */}
+            {settings.newsAlerts && (
+              <div className="border-t border-gray-200 pt-4">
+                <div className="space-y-3">
+                  <label className="text-gray-700 font-medium">
+                    뉴스 키워드 필터
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.newsKeywords}
+                    onChange={(e) => handleKeywordsChange(e.target.value)}
+                    placeholder="예: 삼성전자, AI, 반도체 (쉼표로 구분)"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent outline-none text-sm"
+                  />
+                  <p className="text-xs text-gray-500">
+                    설정한 키워드가 포함된 뉴스만 알림을 받습니다.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 방해 금지 시간 설정 */}
+            <div className="border-t border-gray-200 pt-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gray-500" />
+                    <span className="text-gray-700 font-medium">
+                      방해 금지 시간
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleQuietHoursToggle}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      settings.quietHours.enabled
+                        ? "bg-[#0A5C2B]"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        settings.quietHours.enabled
+                          ? "translate-x-6"
+                          : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {settings.quietHours.enabled && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <label className="block text-sm text-gray-600 mb-1">
+                        시작 시간
+                      </label>
+                      <input
+                        type="time"
+                        value={settings.quietHours.start}
+                        onChange={(e) =>
+                          handleQuietHoursChange("start", e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent outline-none text-sm"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm text-gray-600 mb-1">
+                        종료 시간
+                      </label>
+                      <input
+                        type="time"
+                        value={settings.quietHours.end}
+                        onChange={(e) =>
+                          handleQuietHoursChange("end", e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A5C2B] focus:border-transparent outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-xs text-gray-500">
+                  설정한 시간 동안은 알림을 받지 않습니다.
+                </p>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>

@@ -50,7 +50,7 @@ const StockChartPrice = memo(function StockChartPrice({
       case "1y":
         return { period: "M" as const, count: 24 }; // 24개월로 줄임
       default:
-        return { period: "D" as const, count: 30 }; // 30일로 줄임
+        return { period: "D" as const, count: 180 }; // 180일로 늘려 MA60/120 표시
     }
   }, [timeRange]);
 
@@ -63,15 +63,8 @@ const StockChartPrice = memo(function StockChartPrice({
     }
   }, [data]);
 
-  // 시간대 변경 시에만 추가 API 호출
+  // 시간대 변경 시 추가 API 호출 (일봉 포함)
   useEffect(() => {
-    if (timeRange === "1d") {
-      // 기본 일봉은 부모 데이터 사용하고 로딩 완료
-      setLoading(false);
-      setIsTransitioning(false);
-      return;
-    }
-
     let cancelled = false;
     (async () => {
       try {
