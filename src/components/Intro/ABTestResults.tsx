@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Target, Search, Brain, Lightbulb } from "lucide-react";
 
 export default function ABTestResults() {
   return (
@@ -71,8 +72,9 @@ export default function ABTestResults() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="bg-white rounded-xl p-8 shadow-lg mb-4"
           >
-            <h3 className="text-xl font-bold text-[#0A5C2B] mb-6 text-center">
-              🎯 종합 분석 평가 (깊이+근거+통찰력 평균)
+            <h3 className="text-xl font-bold text-[#0A5C2B] mb-6 text-center flex items-center justify-center gap-2">
+              <Target className="h-5 w-5" aria-hidden />
+              종합 분석 평가 (깊이+근거+통찰력 평균)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="text-center">
@@ -109,8 +111,9 @@ export default function ABTestResults() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="bg-white rounded-xl p-6 shadow-lg"
             >
-              <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center">
-                🔍 분석의 깊이
+              <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center flex items-center justify-center gap-2">
+                <Search className="h-5 w-5" aria-hidden />
+                분석의 깊이
               </h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -140,8 +143,9 @@ export default function ABTestResults() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="bg-white rounded-xl p-6 shadow-lg"
             >
-              <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center">
-                🧠 논리적 근거
+              <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center flex items-center justify-center gap-2">
+                <Brain className="h-5 w-5" aria-hidden />
+                논리적 근거
               </h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -171,8 +175,9 @@ export default function ABTestResults() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="bg-white rounded-xl p-6 shadow-lg"
             >
-              <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center">
-                💡 통찰력
+              <h4 className="text-lg font-bold text-[#0A5C2B] mb-4 text-center flex items-center justify-center gap-2">
+                <Lightbulb className="h-5 w-5" aria-hidden />
+                통찰력
               </h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
