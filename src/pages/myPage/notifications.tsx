@@ -13,12 +13,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NotificationItem } from "@/types/notification";
 import { useNotificationSettings } from "@/hooks/useNotificationSettings";
+import { useAlarmSettings } from "@/hooks/useAlarmSettings";
 import { useAlarms } from "@/hooks/useAlarms";
 import { formatRelativeTime } from "@/utils/timeUtils";
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
   const { settings, updateSetting } = useNotificationSettings();
+  const {
+    settings: alarmSettings,
+    updateSetting: updateAlarmSetting,
+    loading: alarmSettingsLoading,
+    error: alarmSettingsError,
+  } = useAlarmSettings();
 
   // API에서 알림 데이터 가져오기
   const {
@@ -258,11 +265,68 @@ export default function NotificationsPage() {
             ))}
         </motion.div>
 
-        {/* 알림 설정 */}
+        {/* 알람 설정 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20"
+        >
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            알람 설정
+          </h2>
+          <div className="space-y-4">
+            {alarmSettingsLoading ? (
+              <div className="text-center text-gray-500">
+                알람 설정을 불러오는 중...
+              </div>
+            ) : alarmSettingsError ? (
+              <div className="text-center text-red-500">
+                알람 설정을 불러오는데 실패했습니다: {alarmSettingsError}
+              </div>
+            ) : (
+              // 알람 키와 한국어 이름 매핑
+              [
+                { key: "price_volatility", label: "가격 변동성 알람" },
+                { key: "golden_cross", label: "골든크로스 알람" },
+                { key: "dead_cross", label: "데드크로스 알람" },
+                { key: "rsi_low", label: "RSI 저점 알람" },
+                { key: "rsi_high", label: "RSI 고점 알람" },
+                { key: "news_alert", label: "뉴스 알람" },
+              ].map(({ key, label }) => {
+                const value = alarmSettings[key as keyof typeof alarmSettings];
+                return (
+                  <div key={key} className="flex items-center justify-between">
+                    <span className="text-gray-700 font-medium">{label}</span>
+                    <button
+                      onClick={() =>
+                        updateAlarmSetting(
+                          key as keyof typeof alarmSettings,
+                          !value
+                        )
+                      }
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        value ? "bg-[#0A5C2B]" : "bg-gray-200"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          value ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </motion.div>
+
+        {/* 알림 설정 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20"
         >
           <h2 className="text-lg font-semibold text-gray-900 mb-6">
