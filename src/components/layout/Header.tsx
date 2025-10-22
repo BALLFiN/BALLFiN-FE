@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import BALLFiNLogo from "../../assets/BALLFiN.svg";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User, Settings } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import NotificationBell from "@/components/common/NotificationBell";
 import { logout } from "../../api/auth/logoutApi";
 import { verifyAuth } from "../../api/auth/loginApi";
@@ -36,8 +36,6 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [showUserTooltip, setShowUserTooltip] = useState(false);
   const [toast, setToast] = useState<{
     show: boolean;
     message: string;
@@ -46,7 +44,7 @@ const Header = () => {
   const wasLoggedInRef = useRef(false);
 
   // 알림 권한 관리
-  const { permission, isSupported, requestPermission, showToast, hideToast } =
+  const { permission, requestPermission, showToast, hideToast } =
     useNotificationPermission();
 
   useEffect(() => {
@@ -75,7 +73,6 @@ const Header = () => {
             const user = JSON.parse(storedUserInfo);
             if (user.name) {
               setUserName(user.name);
-              setUserEmail(user.email || "");
               return; // 사용자 정보가 있으면 API 호출하지 않음
             }
           } catch (error) {
@@ -88,7 +85,6 @@ const Header = () => {
           const response = await verifyAuth();
           if (response.user?.name) {
             setUserName(response.user.name);
-            setUserEmail(response.user.email || "");
             // API에서 받은 사용자 정보를 localStorage에 저장
             localStorage.setItem("user_info", JSON.stringify(response.user));
           }
@@ -99,13 +95,11 @@ const Header = () => {
           localStorage.removeItem("user_info");
           setIsLoggedIn(false);
           setUserName("");
-          setUserEmail("");
           wasLoggedInRef.current = false;
         }
       } else {
         setIsLoggedIn(false);
         setUserName("");
-        setUserEmail("");
         wasLoggedInRef.current = false;
       }
     };
@@ -147,7 +141,6 @@ const Header = () => {
       await logout();
       setIsLoggedIn(false);
       setUserName("");
-      setUserEmail("");
       localStorage.removeItem("user_info"); // 사용자 정보도 제거
       setToast({
         show: true,

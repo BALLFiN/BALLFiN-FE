@@ -498,7 +498,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           fontFamily:
             "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif",
         },
-        formatter: function (this: Highcharts.TooltipFormatterContextObject) {
+        formatter: function (this: any) {
           const date = new Date(this.x as number);
           const dateStr = new Intl.DateTimeFormat("ko-KR", {
             year: "numeric",
@@ -508,7 +508,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
 
           // 시리즈별 값 추출
           const find = (name: string) =>
-            this.points?.find((p) => p.series.name === name);
+            this.points?.find((p: any) => p.series.name === name);
           const pricePoint = find("가격");
           const volumePoint = find("거래량");
 

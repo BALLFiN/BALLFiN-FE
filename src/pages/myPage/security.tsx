@@ -261,7 +261,7 @@ export default function SecurityPage() {
                 </div>
                 {key === "sessionTimeout" ? (
                   <select
-                    value={value}
+                    value={value as string}
                     onChange={(e) =>
                       setSecuritySettings((prev) => ({
                         ...prev,
