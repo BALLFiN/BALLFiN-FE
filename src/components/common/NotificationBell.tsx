@@ -2,15 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, Check, X, Filter } from "lucide-react";
 import { NotificationItem } from "@/types/notification";
 import { formatRelativeTime } from "@/utils/timeUtils";
+import { useAlarms } from "@/hooks/useAlarms";
 
 interface NotificationBellProps {
-  initialItems?: NotificationItem[];
   onMarkAsRead?: (id: string) => void;
   onRemove?: (id: string) => void;
 }
 
 export default function NotificationBell({
-  initialItems = [],
   onMarkAsRead,
   onRemove,
 }: NotificationBellProps) {
@@ -22,54 +21,55 @@ export default function NotificationBell({
   );
   const [isAnimating, setIsAnimating] = useState(false);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
-  const [items, setItems] = useState<NotificationItem[]>(() =>
-    initialItems.length
-      ? initialItems
-      : [
-          {
-            id: "1",
-            title: "중요 뉴스",
-            message: "삼성전자, AI 반도체 신규 계약 체결",
-            time: "방금 전",
-            type: "news",
-            isRead: false,
-            createdAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-            priority: "high",
-            data: {
-              newsId: "news_001",
-              stockCode: "005930",
-              stockName: "삼성전자",
-            },
-          },
-          {
-            id: "2",
-            title: "주가 변동",
-            message: "NAVER +3.2% 상승",
-            time: "10분 전",
-            type: "price",
-            isRead: false,
-            createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-            priority: "medium",
-            data: {
-              stockCode: "035420",
-              stockName: "NAVER",
-              priceChange: 3.2,
-            },
-          },
-          {
-            id: "3",
-            title: "리서치",
-            message: "시장 분석 리포트 업데이트",
-            time: "1시간 전",
-            type: "info",
-            isRead: true,
-            createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-            priority: "low",
-          },
-        ]
-  );
 
-  const unread = useMemo(() => items.filter((i) => !i.isRead).length, [items]);
+  // API에서 알림 데이터 가져오기
+  const {
+    alarms,
+    loading,
+    error,
+    unreadCount,
+    markAsRead: apiMarkAsRead,
+    removeAlarm,
+    markAllAsRead: apiMarkAllAsRead,
+    deleteAll: apiDeleteAll,
+  } = useAlarms(100);
+
+  // API 데이터를 NotificationItem 형태로 변환
+  const items: NotificationItem[] = useMemo(() => {
+    return alarms.map((alarm) => ({
+      id: alarm._id,
+      title:
+        alarm.alarm_type === "news"
+          ? "뉴스 알림"
+          : alarm.alarm_type === "price"
+            ? "주가 변동"
+            : alarm.alarm_type === "analysis"
+              ? "분석 결과"
+              : "알림",
+      message: alarm.content,
+      time: formatRelativeTime(alarm.created_at),
+      type:
+        alarm.alarm_type === "news"
+          ? "news"
+          : alarm.alarm_type === "price"
+            ? "price"
+            : "info",
+      isRead: alarm.read,
+      createdAt: alarm.created_at,
+      priority: alarm.score > 7 ? "high" : alarm.score > 4 ? "medium" : "low",
+      data: {
+        stockCode: alarm.company, // company를 stockCode로 매핑
+        stockName: alarm.company, // company를 stockName으로도 매핑
+        newsId: alarm._id, // 알림 ID를 newsId로 사용
+        url: alarm.target_path, // target_path를 url로 사용
+      },
+    }));
+  }, [alarms]);
+
+  const unread = useMemo(
+    () => unreadCount || items.filter((i) => !i.isRead).length,
+    [unreadCount, items]
+  );
   const filteredItems = useMemo(
     () => (showUnreadOnly ? items.filter((i) => !i.isRead) : items),
     [items, showUnreadOnly]
@@ -112,26 +112,40 @@ export default function NotificationBell({
     };
   }, [open, isMobile]);
 
-  const markAsRead = (id: string) => {
-    setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-    );
-    onMarkAsRead?.(id);
+  const markAsRead = async (id: string) => {
+    try {
+      await apiMarkAsRead(id);
+      onMarkAsRead?.(id);
+    } catch (error) {
+      console.error("알림 읽음 처리 실패:", error);
+    }
   };
 
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((n) => n.id !== id));
-    onRemove?.(id);
+  const removeItem = async (id: string) => {
+    try {
+      await removeAlarm(id);
+      onRemove?.(id);
+    } catch (error) {
+      console.error("알림 삭제 실패:", error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    items.forEach((item) => onMarkAsRead?.(item.id));
+  const markAllAsRead = async () => {
+    try {
+      await apiMarkAllAsRead();
+      items.forEach((item) => onMarkAsRead?.(item.id));
+    } catch (error) {
+      console.error("모든 알림 읽음 처리 실패:", error);
+    }
   };
 
-  const deleteAll = () => {
-    items.forEach((item) => onRemove?.(item.id));
-    setItems([]);
+  const deleteAll = async () => {
+    try {
+      await apiDeleteAll();
+      items.forEach((item) => onRemove?.(item.id));
+    } catch (error) {
+      console.error("모든 알림 삭제 실패:", error);
+    }
   };
 
   const toggleOpen = () => {
@@ -192,7 +206,17 @@ export default function NotificationBell({
   const PanelBody = (
     <>
       <div className="max-h-96 overflow-auto py-2 md:max-h-[28rem]">
-        {filteredItems.length === 0 && (
+        {loading && (
+          <div className="px-4 py-10 text-center text-sm text-gray-500">
+            알림을 불러오는 중...
+          </div>
+        )}
+        {error && (
+          <div className="px-4 py-10 text-center text-sm text-red-500">
+            알림을 불러오는데 실패했습니다.
+          </div>
+        )}
+        {!loading && !error && filteredItems.length === 0 && (
           <div className="px-4 py-10 text-center text-sm text-gray-500">
             {showUnreadOnly ? "읽지 않은 알림이 없습니다" : "알림이 없습니다"}
           </div>

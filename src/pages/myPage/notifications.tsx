@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -14,79 +13,76 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NotificationItem } from "@/types/notification";
 import { useNotificationSettings } from "@/hooks/useNotificationSettings";
+import { useAlarms } from "@/hooks/useAlarms";
 import { formatRelativeTime } from "@/utils/timeUtils";
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const { settings, updateSetting, isLoading } = useNotificationSettings();
+  const { settings, updateSetting } = useNotificationSettings();
 
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: "1",
-      type: "price",
-      title: "주가 급등 알림",
-      message: "삼성전자 주가가 5% 상승했습니다.",
-      time: "2분 전",
-      isRead: false,
-      createdAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-      priority: "high",
-      data: {
-        stockCode: "005930",
-        stockName: "삼성전자",
-        priceChange: 5.0,
-      },
-    },
-    {
-      id: "2",
-      type: "news",
-      title: "뉴스 알림",
-      message: "새로운 시장 분석 리포트가 업데이트되었습니다.",
-      time: "1시간 전",
-      isRead: false,
-      createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-      priority: "medium",
-      data: {
-        newsId: "news_002",
-      },
-    },
-    {
-      id: "3",
-      type: "trending",
-      title: "인기 키워드",
-      message: "AI 관련 주식이 오늘 인기 키워드 1위에 올랐습니다.",
-      time: "3시간 전",
-      isRead: true,
-      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      priority: "low",
-    },
-    {
-      id: "4",
-      type: "price",
-      title: "포트폴리오 알림",
-      message: "보유 주식 중 하나가 목표가에 도달했습니다.",
-      time: "1일 전",
-      isRead: true,
-      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      priority: "medium",
-    },
-  ]);
+  // API에서 알림 데이터 가져오기
+  const {
+    alarms,
+    loading: alarmsLoading,
+    error: alarmsError,
+    unreadCount,
+    markAsRead: apiMarkAsRead,
+    removeAlarm,
+    markAllAsRead: apiMarkAllAsRead,
+  } = useAlarms(100);
 
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif
-      )
-    );
+  // API 데이터를 NotificationItem 형태로 변환
+  const notifications: NotificationItem[] = alarms.map((alarm) => ({
+    id: alarm._id,
+    title:
+      alarm.alarm_type === "news"
+        ? "뉴스 알림"
+        : alarm.alarm_type === "price"
+          ? "주가 변동"
+          : alarm.alarm_type === "analysis"
+            ? "분석 결과"
+            : "알림",
+    message: alarm.content,
+    time: formatRelativeTime(alarm.created_at),
+    type:
+      alarm.alarm_type === "news"
+        ? "news"
+        : alarm.alarm_type === "price"
+          ? "price"
+          : "info",
+    isRead: alarm.read,
+    createdAt: alarm.created_at,
+    priority: alarm.score > 7 ? "high" : alarm.score > 4 ? "medium" : "low",
+    data: {
+      stockCode: alarm.company,
+      stockName: alarm.company,
+      newsId: alarm._id,
+      url: alarm.target_path,
+    },
+  }));
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await apiMarkAsRead(id);
+    } catch (error) {
+      console.error("알림 읽음 처리 실패:", error);
+    }
   };
 
-  const handleDeleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
+  const handleDeleteNotification = async (id: string) => {
+    try {
+      await removeAlarm(id);
+    } catch (error) {
+      console.error("알림 삭제 실패:", error);
+    }
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notif) => ({ ...notif, isRead: true }))
-    );
+  const handleMarkAllAsRead = async () => {
+    try {
+      await apiMarkAllAsRead();
+    } catch (error) {
+      console.error("모든 알림 읽음 처리 실패:", error);
+    }
   };
 
   const handleSettingChange = (key: keyof typeof settings) => {
@@ -130,7 +126,8 @@ export default function NotificationsPage() {
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const totalUnreadCount =
+    unreadCount || notifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -168,11 +165,11 @@ export default function NotificationsPage() {
                   알림 요약
                 </h2>
                 <p className="text-sm text-gray-600">
-                  {unreadCount}개의 읽지 않은 알림
+                  {totalUnreadCount}개의 읽지 않은 알림
                 </p>
               </div>
             </div>
-            {unreadCount > 0 && (
+            {totalUnreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
                 className="px-4 py-2 bg-[#0A5C2B] text-white text-sm font-medium rounded-full hover:bg-[#0A5C2B]/90 transition-colors"
@@ -190,56 +187,75 @@ export default function NotificationsPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="space-y-4"
         >
-          {notifications.map((notification, index) => (
-            <motion.div
-              key={notification.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={`bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 ${
-                !notification.isRead ? "ring-2 ring-[#0A5C2B]/20" : ""
-              }`}
-            >
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 mt-1">
-                  {getIcon(notification.type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {notification.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-2">
-                        {notification.message}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {formatRelativeTime(notification.createdAt)}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2 ml-4">
-                      {!notification.isRead && (
+          {alarmsLoading && (
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+              <div className="text-gray-500">알림을 불러오는 중...</div>
+            </div>
+          )}
+          {alarmsError && (
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+              <div className="text-red-500">
+                알림을 불러오는데 실패했습니다.
+              </div>
+            </div>
+          )}
+          {!alarmsLoading && !alarmsError && notifications.length === 0 && (
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+              <div className="text-gray-500">알림이 없습니다.</div>
+            </div>
+          )}
+          {!alarmsLoading &&
+            !alarmsError &&
+            notifications.map((notification, index) => (
+              <motion.div
+                key={notification.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className={`bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 ${
+                  !notification.isRead ? "ring-2 ring-[#0A5C2B]/20" : ""
+                }`}
+              >
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 mt-1">
+                    {getIcon(notification.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 mb-1">
+                          {notification.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-2">
+                          {notification.message}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {formatRelativeTime(notification.createdAt)}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2 ml-4">
+                        {!notification.isRead && (
+                          <button
+                            onClick={() => handleMarkAsRead(notification.id)}
+                            className="p-2 text-gray-400 hover:text-[#0A5C2B] hover:bg-[#0A5C2B]/10 rounded-full transition-colors"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleMarkAsRead(notification.id)}
-                          className="p-2 text-gray-400 hover:text-[#0A5C2B] hover:bg-[#0A5C2B]/10 rounded-full transition-colors"
+                          onClick={() =>
+                            handleDeleteNotification(notification.id)
+                          }
+                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                         >
-                          <Check className="w-4 h-4" />
+                          <X className="w-4 h-4" />
                         </button>
-                      )}
-                      <button
-                        onClick={() =>
-                          handleDeleteNotification(notification.id)
-                        }
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
         </motion.div>
 
         {/* 알림 설정 */}

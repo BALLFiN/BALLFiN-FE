@@ -1,19 +1,10 @@
+import { axiosInstance } from "@/lib/axiosInstance";
+
 // 즐겨찾기 목록 조회
 export const getFavorites = async (): Promise<string[]> => {
   try {
-    const response = await fetch("/api/user/favorites", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    const response = await axiosInstance.get("/api/user/favorites");
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -22,22 +13,10 @@ export const getFavorites = async (): Promise<string[]> => {
 // 즐겨찾기 추가
 export const addFavorite = async (tickerOrCompany: string): Promise<string> => {
   try {
-    const response = await fetch("/api/user/favorites", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ticker_or_company: tickerOrCompany,
-      }),
+    const response = await axiosInstance.post("/api/user/favorites", {
+      ticker_or_company: tickerOrCompany,
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -48,22 +27,12 @@ export const removeFavorite = async (
   tickerOrCompany: string
 ): Promise<string> => {
   try {
-    const response = await fetch("/api/user/favorites", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const response = await axiosInstance.delete("/api/user/favorites", {
+      data: {
         ticker_or_company: tickerOrCompany,
-      }),
+      },
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     throw error;
   }
