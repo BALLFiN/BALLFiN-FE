@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import Pagination from "@/components/news/Pagination";
 import { getRelatedCompanies } from "@/api/stock";
 
@@ -13,144 +13,24 @@ interface RelatedCompany {
   changePercent: number;
 }
 
-const mockRelatedCompanies: RelatedCompany[] = [
-  {
-    id: 1,
-    name: "SK하이닉스",
-    code: "000660",
-    currentPrice: 120000,
-    changeAmount: 2000,
-    changePercent: 1.69,
-  },
-  {
-    id: 2,
-    name: "LG에너지솔루션",
-    code: "373220",
-    currentPrice: 450000,
-    changeAmount: -5000,
-    changePercent: -1.1,
-  },
-  {
-    id: 3,
-    name: "삼성SDI",
-    code: "006400",
-    currentPrice: 380000,
-    changeAmount: 8000,
-    changePercent: 2.15,
-  },
-  {
-    id: 4,
-    name: "LG전자",
-    code: "066570",
-    currentPrice: 98000,
-    changeAmount: -1200,
-    changePercent: -1.21,
-  },
-  {
-    id: 5,
-    name: "LG디스플레이",
-    code: "034220",
-    currentPrice: 15000,
-    changeAmount: 300,
-    changePercent: 2.04,
-  },
-  {
-    id: 6,
-    name: "LG유플러스",
-    code: "032640",
-    currentPrice: 12000,
-    changeAmount: 100,
-    changePercent: 0.84,
-  },
-  {
-    id: 7,
-    name: "KT",
-    code: "030200",
-    currentPrice: 32000,
-    changeAmount: -400,
-    changePercent: -1.23,
-  },
-  {
-    id: 8,
-    name: "현대자동차",
-    code: "005380",
-    currentPrice: 185000,
-    changeAmount: -1200,
-    changePercent: -0.65,
-  },
-  {
-    id: 9,
-    name: "기아",
-    code: "000270",
-    currentPrice: 85000,
-    changeAmount: 1500,
-    changePercent: 1.8,
-  },
-  {
-    id: 10,
-    name: "현대건설",
-    code: "000720",
-    currentPrice: 45000,
-    changeAmount: 800,
-    changePercent: 1.81,
-  },
-  {
-    id: 11,
-    name: "포스코홀딩스",
-    code: "005490",
-    currentPrice: 420000,
-    changeAmount: -3000,
-    changePercent: -0.71,
-  },
-  {
-    id: 12,
-    name: "삼성바이오로직스",
-    code: "207940",
-    currentPrice: 850000,
-    changeAmount: 15000,
-    changePercent: 1.8,
-  },
-  {
-    id: 13,
-    name: "삼성생명",
-    code: "032830",
-    currentPrice: 65000,
-    changeAmount: -800,
-    changePercent: -1.22,
-  },
-  {
-    id: 14,
-    name: "KB금융",
-    code: "105560",
-    currentPrice: 52000,
-    changeAmount: 600,
-    changePercent: 1.17,
-  },
-  {
-    id: 15,
-    name: "신한지주",
-    code: "055550",
-    currentPrice: 38000,
-    changeAmount: -400,
-    changePercent: -1.04,
-  },
-];
-
-export default function RelatedCompanies() {
+const RelatedCompanies = memo(function RelatedCompanies() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [companies, setCompanies] =
-    useState<RelatedCompany[]>(mockRelatedCompanies);
+  const [companies, setCompanies] = useState<RelatedCompany[]>([]);
 
-  const handleCompanyClick = (code: string) => {
-    navigate(`/stock/${code}`);
-  };
+  // 메모이제이션된 핸들러들
+  const handleCompanyClick = useCallback(
+    (code: string) => {
+      navigate(`/stock/${code}`);
+    },
+    [navigate]
+  );
 
-  const formatNumber = (num: number) => {
+  const formatNumber = useCallback((num: number) => {
     if (num >= 1000000000) {
       return (num / 1000000000).toFixed(1) + "B";
     } else if (num >= 1000000) {
@@ -159,65 +39,108 @@ export default function RelatedCompanies() {
       return (num / 1000).toFixed(1) + "K";
     }
     return num.toLocaleString();
-  };
+  }, []);
 
-  // 데이터 로드
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  // 데이터 변환 함수 메모이제이션
+  const transformCompanyData = useCallback(
+    (rawData: any[]): RelatedCompany[] => {
+      return rawData.map((r, idx) => ({
+        id: idx + 1,
+        name: r.corp_name,
+        code: r.stock_code,
+        currentPrice: r.current_price,
+        changeAmount: r.change,
+        changePercent: r.change_percent,
+      }));
+    },
+    []
+  );
+
+  // 최적화된 데이터 로드
   useEffect(() => {
-    const run = async () => {
+    let cancelled = false;
+    const abortController = new AbortController();
+
+    const loadCompanies = async () => {
       if (!code) return;
+
+      const startTime = performance.now();
       setLoading(true);
       setError(null);
+
       try {
         const list = await getRelatedCompanies(code, "market_cap_desc");
-        const mapped: RelatedCompany[] = list.map((r, idx) => ({
-          id: idx + 1,
-          name: r.corp_name,
-          code: r.stock_code,
-          currentPrice: r.current_price,
-          changeAmount: r.change,
-          changePercent: r.change_percent,
-        }));
+        if (cancelled) return;
+
+        const mapped = transformCompanyData(list);
         setCompanies(mapped);
+
+        const endTime = performance.now();
+        console.log(
+          `🏢 관련회사 로딩 완료: ${(endTime - startTime).toFixed(2)}ms`
+        );
       } catch (e: any) {
-        setError(e?.message || "관련 기업을 불러오지 못했습니다.");
+        if (!cancelled) {
+          console.error("관련회사 로딩 실패:", e);
+          setError(e?.message || "관련 기업을 불러오지 못했습니다.");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
-    run();
-  }, [code]);
 
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(companies.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentCompanies = companies.slice(startIndex, endIndex);
+    loadCompanies();
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+    return () => {
+      cancelled = true;
+      abortController.abort();
+    };
+  }, [code, transformCompanyData]);
+
+  // 페이지네이션 계산 최적화
+  const { totalPages, currentCompanies } = useMemo(() => {
+    const total = Math.ceil(companies.length / itemsPerPage);
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const current = companies.slice(start, end);
+    return { totalPages: total, currentCompanies: current };
+  }, [companies, currentPage, itemsPerPage]);
+
+  // 로딩 스켈레톤 최적화
+  const loadingSkeleton = useMemo(
+    () => (
+      <div className="space-y-3">
+        {Array.from({ length: itemsPerPage }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between p-3 rounded-lg border border-gray-100"
+          >
+            <div className="flex-1 min-w-0">
+              <div className="h-4 w-32 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="text-right">
+              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+    ),
+    [itemsPerPage]
+  );
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h3 className="text-xl font-semibold text-gray-900 mb-4">관련기업</h3>
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: itemsPerPage }).map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between p-3 rounded-lg border border-gray-100"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse mb-2" />
-                <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
-              </div>
-              <div className="text-right">
-                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2" />
-                <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
-              </div>
-            </div>
-          ))}
-        </div>
+        loadingSkeleton
       ) : error ? (
         <div className="text-sm text-red-500">{error}</div>
       ) : (
@@ -296,4 +219,6 @@ export default function RelatedCompanies() {
       )}
     </div>
   );
-}
+});
+
+export default RelatedCompanies;

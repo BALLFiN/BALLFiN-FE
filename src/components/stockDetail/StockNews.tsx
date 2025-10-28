@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 
 interface NewsItem {
   id: string;
@@ -13,8 +13,9 @@ interface StockNewsProps {
   news: NewsItem[];
 }
 
-export default function StockNews({ news }: StockNewsProps) {
-  const getSentimentColor = (sentiment: string) => {
+const StockNews = memo(function StockNews({ news }: StockNewsProps) {
+  // 메모이제이션된 감정 색상 함수
+  const getSentimentColor = useCallback((sentiment: string) => {
     switch (sentiment) {
       case "positive":
         return "text-green-500";
@@ -23,9 +24,21 @@ export default function StockNews({ news }: StockNewsProps) {
       default:
         return "text-gray-500";
     }
-  };
+  }, []);
 
-  // 반응형 임계값: 모바일 12자, 데스크톱 18자
+  // 메모이제이션된 감정 텍스트 함수
+  const getSentimentText = useCallback((sentiment: string) => {
+    switch (sentiment) {
+      case "positive":
+        return "긍정";
+      case "negative":
+        return "부정";
+      default:
+        return "중립";
+    }
+  }, []);
+
+  // 반응형 임계값 최적화
   const [isDesktop, setIsDesktop] = useState<boolean>(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(min-width: 768px)").matches
@@ -51,51 +64,53 @@ export default function StockNews({ news }: StockNewsProps) {
     };
   }, []);
 
-  const maxTitleLength = isDesktop ? 18 : 12;
+  const maxTitleLength = useMemo(() => (isDesktop ? 18 : 12), [isDesktop]);
 
-  return (
-    <div className="space-y-4">
-      {news.map((item) => {
-        const isLongTitle = (item.title?.length || 0) >= maxTitleLength;
-        return (
-          <Link
-            key={item.id}
-            to={`/news/${item.id}`}
-            className="block p-4 hover:bg-gray-50 rounded-lg transition-colors"
-          >
-            <div className="grid grid-cols-[1fr_auto] items-start gap-3 mb-2">
-              <h3
-                className="font-medium text-gray-900 leading-snug min-w-0"
-                style={
-                  isLongTitle
-                    ? {
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 2,
-                        overflow: "hidden",
-                      }
-                    : undefined
-                }
-              >
-                {item.title}
-              </h3>
-              <span
-                className={`text-sm whitespace-nowrap shrink-0 ${getSentimentColor(item.sentiment)}`}
-              >
-                {item.sentiment === "positive"
-                  ? "긍정"
-                  : item.sentiment === "negative"
-                    ? "부정"
-                    : "중립"}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>{item.source}</span>
-              <span>{item.date}</span>
-            </div>
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
+  // 뉴스 아이템 렌더링 최적화
+  const newsItems = useMemo(() => {
+    return news.map((item) => {
+      const isLongTitle = (item.title?.length || 0) >= maxTitleLength;
+      const sentimentColor = getSentimentColor(item.sentiment);
+      const sentimentText = getSentimentText(item.sentiment);
+
+      return (
+        <Link
+          key={item.id}
+          to={`/news/${item.id}`}
+          className="block p-4 hover:bg-gray-50 rounded-lg transition-colors"
+        >
+          <div className="grid grid-cols-[1fr_auto] items-start gap-3 mb-2">
+            <h3
+              className="font-medium text-gray-900 leading-snug min-w-0"
+              style={
+                isLongTitle
+                  ? {
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 2,
+                      overflow: "hidden",
+                    }
+                  : undefined
+              }
+            >
+              {item.title}
+            </h3>
+            <span
+              className={`text-sm whitespace-nowrap shrink-0 ${sentimentColor}`}
+            >
+              {sentimentText}
+            </span>
+          </div>
+          <div className="flex justify-between text-sm text-gray-500">
+            <span>{item.source}</span>
+            <span>{item.date}</span>
+          </div>
+        </Link>
+      );
+    });
+  }, [news, maxTitleLength, getSentimentColor, getSentimentText]);
+
+  return <div className="space-y-4">{newsItems}</div>;
+});
+
+export default StockNews;
