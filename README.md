@@ -316,18 +316,11 @@ src/
 
 - **이메일**: contact@1112csy@naver.com
 - **GitHub**: [@BALLFiN](https://github.com/BALLFiN)
-- **포트폴리오**: [개인 포트폴리오 링크]
 
 ---
 
 <div align="center">
 
 ## 🚀 **BALLFiN으로 더 스마트한 투자를 시작하세요!** 💰
-
-**최첨단 AI 기술과 실시간 데이터 처리의 만남**
-
-[![GitHub stars](https://img.shields.io/github/stars/BALLFiN/BALLFiN-FE?style=social)](https://github.com/BALLFiN/BALLFiN-FE)
-[![GitHub forks](https://img.shields.io/github/forks/BALLFiN/BALLFiN-FE?style=social)](https://github.com/BALLFiN/BALLFiN-FE)
-[![GitHub issues](https://img.shields.io/github/issues/BALLFiN/BALLFiN-FE)](https://github.com/BALLFiN/BALLFiN-FE)
 
 </div>
