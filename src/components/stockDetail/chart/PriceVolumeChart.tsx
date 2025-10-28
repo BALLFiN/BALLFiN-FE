@@ -47,54 +47,86 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
     }
   }, [tvFailed]);
 
-  // 1) 데이터 정렬 및 이동평균(MA) 계산
+  // 1) 데이터 정렬 및 이동평균(MA) 계산 - 최적화된 버전
   const computedData = useMemo(() => {
+    if (!data.length) return [];
+
     const sorted = [...data]
       .map((d) => ({ ...d, ts: new Date(d.date).getTime() }))
       .sort((a, b) => a.ts - b.ts);
 
-    const addSMA = (
-      arr: (typeof sorted)[number][],
-      windowSize: number,
-      key: "ma5" | "ma20" | "ma60" | "ma120"
-    ) => {
-      let sum = 0;
-      const q: number[] = [];
+    // 이동평균 계산 최적화 - 한 번에 모든 MA 계산
+    const addAllSMA = (arr: (typeof sorted)[number][]) => {
+      const ma5: number[] = [];
+      const ma20: number[] = [];
+      const ma60: number[] = [];
+      const ma120: number[] = [];
+
+      let sum5 = 0,
+        sum20 = 0,
+        sum60 = 0,
+        sum120 = 0;
+      const queue5: number[] = [];
+      const queue20: number[] = [];
+      const queue60: number[] = [];
+      const queue120: number[] = [];
+
       for (let i = 0; i < arr.length; i++) {
-        sum += arr[i].close;
-        q.push(arr[i].close);
-        if (q.length > windowSize) sum -= q.shift() as number;
-        if (q.length === windowSize) {
-          (arr[i] as any)[key] = +(sum / windowSize).toFixed(2);
-        }
+        const close = arr[i].close;
+
+        // MA5 계산
+        sum5 += close;
+        queue5.push(close);
+        if (queue5.length > 5) sum5 -= queue5.shift()!;
+        if (queue5.length === 5) ma5[i] = +(sum5 / 5).toFixed(2);
+
+        // MA20 계산
+        sum20 += close;
+        queue20.push(close);
+        if (queue20.length > 20) sum20 -= queue20.shift()!;
+        if (queue20.length === 20) ma20[i] = +(sum20 / 20).toFixed(2);
+
+        // MA60 계산
+        sum60 += close;
+        queue60.push(close);
+        if (queue60.length > 60) sum60 -= queue60.shift()!;
+        if (queue60.length === 60) ma60[i] = +(sum60 / 60).toFixed(2);
+
+        // MA120 계산
+        sum120 += close;
+        queue120.push(close);
+        if (queue120.length > 120) sum120 -= queue120.shift()!;
+        if (queue120.length === 120) ma120[i] = +(sum120 / 120).toFixed(2);
+      }
+
+      // 결과를 배열에 할당
+      for (let i = 0; i < arr.length; i++) {
+        (arr[i] as any).ma5 = ma5[i];
+        (arr[i] as any).ma20 = ma20[i];
+        (arr[i] as any).ma60 = ma60[i];
+        (arr[i] as any).ma120 = ma120[i];
       }
     };
 
-    addSMA(sorted as any, 5, "ma5");
-    addSMA(sorted as any, 20, "ma20");
-    addSMA(sorted as any, 60, "ma60");
-    addSMA(sorted as any, 120, "ma120");
-
+    addAllSMA(sorted as any);
     return sorted.map(({ ts, ...rest }) => rest);
   }, [data]);
 
-  // TradingView Lightweight Charts 렌더링 (가능하면 우선 사용)
+  // TradingView Lightweight Charts 렌더링 (최적화된 버전)
   useEffect(() => {
+    if (!computedData.length || !tvContainerRef.current) return;
+
     let chart: any | null = null;
     let candleSeries: any | null = null;
     let volumeSeries: any | null = null;
-    let ma5Series: any | null = null;
-    let ma20Series: any | null = null;
-    let ma60Series: any | null = null;
-    let ma120Series: any | null = null;
 
-    // TradingView 로딩 타임아웃 (3초)
+    // TradingView 로딩 타임아웃 (1초로 단축)
     const timeoutId = setTimeout(() => {
       if (!tvReady && !tvFailed) {
         console.log("TradingView 차트 로딩 타임아웃, Highcharts로 폴백");
         setTvFailed(true);
       }
-    }, 3000);
+    }, 1000);
 
     (async () => {
       if (!tvContainerRef.current) return;
@@ -165,64 +197,76 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           .priceScale()
           .applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
 
-        const tvCandles = computedData.map((d) => ({
-          time: d.date, // YYYY-MM-DD
-          open: d.open,
-          high: d.high,
-          low: d.low,
-          close: d.close,
+        // 데이터 변환 최적화 - 한 번에 처리
+        const tvData = computedData.map((d) => ({
+          candle: {
+            time: d.date,
+            open: d.open,
+            high: d.high,
+            low: d.low,
+            close: d.close,
+          },
+          volume: {
+            time: d.date,
+            value: d.volume,
+            color: d.close >= d.open ? "#9bd3ae" : "#f3b6b6",
+          },
         }));
-        const tvVolumes = computedData.map((d) => ({
-          time: d.date,
-          value: d.volume,
-          color: d.close >= d.open ? "#9bd3ae" : "#f3b6b6",
-        }));
+
+        const tvCandles = tvData.map((d) => d.candle);
+        const tvVolumes = tvData.map((d) => d.volume);
 
         candleSeries.setData(tvCandles);
         volumeSeries.setData(tvVolumes);
 
-        // MA 시리즈
-        const makeLine = (color: string) =>
-          chart.addSeries(LineSeries, {
-            color,
-            priceLineVisible: true,
-            lastValueVisible: true,
-            lineWidth: 2.5,
-            lineStyle: 0, // solid
-            crossHairMarkerVisible: true,
-          });
-        if (showMA.ma5) {
-          ma5Series = makeLine("#8b5cf6");
-          ma5Series.setData(
-            computedData
-              .filter((d) => d.ma5 != null)
-              .map((d) => ({ time: d.date, value: d.ma5! }))
-          );
-        }
-        if (showMA.ma20) {
-          ma20Series = makeLine("#10b981");
-          ma20Series.setData(
-            computedData
-              .filter((d) => d.ma20 != null)
-              .map((d) => ({ time: d.date, value: d.ma20! }))
-          );
-        }
-        if (showMA.ma60) {
-          ma60Series = makeLine("#fb923c");
-          ma60Series.setData(
-            computedData
-              .filter((d) => d.ma60 != null)
-              .map((d) => ({ time: d.date, value: d.ma60! }))
-          );
-        }
-        if (showMA.ma120) {
-          ma120Series = makeLine("#3b82f6");
-          ma120Series.setData(
-            computedData
-              .filter((d) => d.ma120 != null)
-              .map((d) => ({ time: d.date, value: d.ma120! }))
-          );
-        }
+        // MA 시리즈 최적화 - 한 번에 처리
+        const maConfigs = [
+          {
+            key: "ma5",
+            show: showMA.ma5,
+            color: "#8b5cf6",
+            series: null as any,
+          },
+          {
+            key: "ma20",
+            show: showMA.ma20,
+            color: "#10b981",
+            series: null as any,
+          },
+          {
+            key: "ma60",
+            show: showMA.ma60,
+            color: "#fb923c",
+            series: null as any,
+          },
+          {
+            key: "ma120",
+            show: showMA.ma120,
+            color: "#3b82f6",
+            series: null as any,
+          },
+        ];
+
+        maConfigs.forEach((config) => {
+          if (config.show) {
+            config.series = chart.addSeries(LineSeries, {
+              color: config.color,
+              priceLineVisible: true,
+              lastValueVisible: true,
+              lineWidth: 2.5,
+              lineStyle: 0,
+              crossHairMarkerVisible: true,
+            });
+
+            const maData = computedData
+              .filter((d) => (d as any)[config.key] != null)
+              .map((d) => ({ time: d.date, value: (d as any)[config.key] }));
+
+            config.series.setData(maData);
+          }
+        });
+
+        // MA 시리즈 설정 완료
 
         chart.timeScale().fitContent();
 
@@ -416,8 +460,8 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
         backgroundColor: "#ffffff",
         height: 500,
         animation: {
-          duration: 500, // 부드러운 전환을 위한 애니메이션
-          easing: "easeInOutCubic",
+          duration: 200, // 빠른 전환을 위한 애니메이션
+          easing: "easeOutCubic",
         },
         reflow: true, // 컨테이너 크기 변화에 반응
       },
@@ -547,7 +591,7 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
       },
       plotOptions: {
         series: {
-          animation: { duration: 350, easing: "easeOutCubic" },
+          animation: { duration: 150, easing: "easeOutCubic" },
           states: { inactive: { opacity: 1 } },
           point: {
             events: {
@@ -572,9 +616,9 @@ const PriceVolumeChart = memo(function PriceVolumeChart({
           pointPadding: 0,
           dataGrouping: { enabled: false },
           animation: {
-            duration: 500,
-            easing: "easeInOutCubic",
-          }, // 시리즈 애니메이션 활성화
+            duration: 200,
+            easing: "easeOutCubic",
+          }, // 빠른 시리즈 애니메이션
           enableMouseTracking: true,
           states: {
             hover: {

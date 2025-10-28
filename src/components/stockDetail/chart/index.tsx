@@ -33,47 +33,52 @@ const StockChartPrice = memo(function StockChartPrice({
     ma120: false,
   });
   const [remoteData, setRemoteData] = useState<HistoricalData[]>(data);
-  const [loading, setLoading] = useState(false); // 초기에는 로딩하지 않음
-  const [isTransitioning, setIsTransitioning] = useState(false); // 전환 애니메이션 상태
+  const [loading, setLoading] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // 메모이제이션된 핸들러들
   const handleToggleMA = useCallback((key: keyof typeof showMA) => {
     setShowMA((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  const handleTimeRangeChange = useCallback((newTimeRange: TimeRangePT) => {
+    setTimeRange(newTimeRange);
   }, []);
 
   // timeRange -> API period/count 매핑 (최적화: 데이터 양 줄임)
   const { period, count } = useMemo(() => {
     switch (timeRange) {
       case "1w":
-        return { period: "W" as const, count: 50 }; // 50주로 줄임
+        return { period: "W" as const, count: 50 };
       case "1mo":
-        return { period: "M" as const, count: 24 }; // 24개월로 줄임
+        return { period: "M" as const, count: 24 };
       case "1y":
-        return { period: "M" as const, count: 24 }; // 24개월로 줄임
+        return { period: "M" as const, count: 24 };
       default:
-        return { period: "D" as const, count: 180 }; // 180일로 늘려 MA60/120 표시
+        return { period: "D" as const, count: 180 };
     }
   }, [timeRange]);
 
   // 부모에서 받은 데이터를 우선 사용하고, 시간대 변경 시에만 추가 API 호출
   useEffect(() => {
-    // 부모에서 받은 초기 데이터 설정
     if (data.length > 0) {
       setRemoteData(data);
       setLoading(false);
     }
   }, [data]);
 
-  // 시간대 변경 시 추가 API 호출 (일봉 포함)
+  // 시간대 변경 시 추가 API 호출 (초고속 버전)
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const abortController = new AbortController();
+
+    const loadChartData = async () => {
+      const startTime = performance.now();
       try {
         setLoading(true);
         setIsTransitioning(true);
 
-        // 부드러운 전환을 위한 약간의 지연
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
+        // 지연 제거 - 즉시 API 호출
         const res = await getStockChart(code, period, count);
         if (cancelled) return;
 
@@ -88,30 +93,37 @@ const StockChartPrice = memo(function StockChartPrice({
 
         setRemoteData(mapped);
 
-        // 데이터 설정 후 약간의 지연으로 부드러운 전환
-        await new Promise((resolve) => setTimeout(resolve, 200));
-      } catch {
+        // 즉시 로딩 상태 해제
+        setLoading(false);
+        setIsTransitioning(false);
+
+        const endTime = performance.now();
+        console.log(
+          `⚡ 차트 업데이트 완료: ${(endTime - startTime).toFixed(2)}ms`
+        );
+      } catch (error) {
         if (!cancelled) {
-          // API 실패 시 기본 데이터 사용
+          console.error("차트 데이터 로딩 실패:", error);
           setRemoteData(data.length > 0 ? data : []);
-        }
-      } finally {
-        if (!cancelled) {
           setLoading(false);
           setIsTransitioning(false);
         }
       }
-    })();
+    };
+
+    loadChartData();
+
     return () => {
       cancelled = true;
+      abortController.abort();
     };
-  }, [code, period, count, timeRange, data]); // data 의존성 다시 추가
+  }, [code, period, count, timeRange, data]);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-[650px] flex flex-col">
       <StockChartHeader
         timeRange={timeRange}
-        onTimeRangeChange={setTimeRange}
+        onTimeRangeChange={handleTimeRangeChange}
         showMA={showMA}
         onToggleMA={handleToggleMA}
       />
@@ -120,7 +132,7 @@ const StockChartPrice = memo(function StockChartPrice({
           <div className="h-[500px] bg-gray-100 rounded animate-pulse" />
         ) : (
           <div
-            className={`transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
+            className={`transition-opacity duration-150 ${isTransitioning ? "opacity-70" : "opacity-100"}`}
           >
             <PriceVolumeChart
               data={remoteData}
@@ -130,12 +142,12 @@ const StockChartPrice = memo(function StockChartPrice({
           </div>
         )}
 
-        {/* 전환 중 오버레이 */}
+        {/* 전환 중 오버레이 - 빠른 표시 */}
         {isTransitioning && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded">
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 rounded transition-opacity duration-100">
             <div className="flex items-center space-x-2 text-gray-600">
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-sm">차트 업데이트 중...</span>
+              <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-xs">업데이트 중...</span>
             </div>
           </div>
         )}
