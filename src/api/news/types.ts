@@ -16,7 +16,7 @@ export interface NewsItem {
 
 export interface NewsSearchParams {
   keyword?: string;
-  sort_by?: "relevance" | "date" | "views";
+  sort_by?: "relevance" | "newest" | "oldest" | "views";
   start_date?: string;
   end_date?: string;
   impact?: "positive" | "negative" | "neutral";
