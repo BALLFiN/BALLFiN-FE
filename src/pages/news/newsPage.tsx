@@ -42,7 +42,7 @@ export default function NewsPage() {
           // 즐겨찾기 없는 경우 최신 뉴스 표시
           try {
             const response = await searchNews({
-              sort_by: "date",
+              sort_by: "newest",
               limit: 20,
               offset: 0,
             });
@@ -56,7 +56,7 @@ export default function NewsPage() {
           // API 미구현 시 최신 뉴스 표시
           try {
             const response = await searchNews({
-              sort_by: "date",
+              sort_by: "newest",
               limit: 20,
               offset: 0,
             });
