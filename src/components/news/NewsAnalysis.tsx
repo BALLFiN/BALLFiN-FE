@@ -142,9 +142,11 @@ export default function NewsAnalysis({
                     />
                   </button>
                 </div>
-                <p className="text-[15px] text-gray-700 leading-relaxed">
-                  {displayNews?.summary}
-                </p>
+                <div className="max-h-[200px] overflow-y-auto pr-2">
+                  <p className="text-[15px] text-gray-700 leading-relaxed">
+                    {displayNews?.summary}
+                  </p>
+                </div>
               </div>
               <div className="bg-white/90 backdrop-blur rounded-2xl p-4 border border-white/70 ring-1 ring-black/5 shadow-sm">
                 <div className="flex justify-between items-center mb-2.5">
@@ -163,7 +165,7 @@ export default function NewsAnalysis({
                     />
                   </button>
                 </div>
-                <div className="max-h-[300px] overflow-y-auto pr-2">
+                <div className="max-h-[200px] overflow-y-auto pr-2">
                   <p className="text-[15px] text-gray-700 leading-relaxed whitespace-pre-line">
                     {displayNews?.analysis}
                   </p>
