@@ -41,14 +41,32 @@ interface MarketStat {
   detailedInfo?: {
     currentMeaning: string;
     ranges: ReadonlyArray<{
-      range: string;
+      label: string;
       meaning: string;
+      isActive?: boolean;
     }>;
   };
 }
 
 // API 키와 화면 메타데이터 매핑
-const STAT_METADATA = {
+type RangeDefinition = {
+  label: string;
+  meaning: string;
+  min?: number;
+  max?: number;
+};
+
+type StatMeta = {
+  id: string;
+  title: string;
+  unit: string;
+  description: string;
+  detailedInfo?: {
+    ranges: ReadonlyArray<RangeDefinition>;
+  };
+};
+
+const STAT_METADATA: Record<string, StatMeta> = {
   kospi: {
     id: "korean-market",
     title: "한국 주식시장",
@@ -56,13 +74,29 @@ const STAT_METADATA = {
     description:
       "한국 종합주가지수(KOSPI)와 기술주 중심의 KOSDAQ 지수를 포함한 한국 주식시장의 전반적인 움직임을 나타냅니다. KOSPI는 대형주 중심, KOSDAQ은 IT, 바이오 등 혁신기업들의 성과를 반영합니다.",
     detailedInfo: {
-      currentMeaning:
-        "KOSPI 3,100pt 돌파로 상승 모멘텀 강화, 대형주 중심의 상승세 지속",
       ranges: [
-        { range: "2,800pt 이하", meaning: "저평가 구간, 매수 기회로 간주" },
-        { range: "2,800~3,000pt", meaning: "적정 수준, 안정적인 투자 환경" },
-        { range: "3,000~3,200pt", meaning: "상승 추세, 모멘텀 주의" },
-        { range: "3,200pt 이상", meaning: "고평가 우려, 수익 실현 고려" },
+        {
+          label: "2,800pt 이하",
+          meaning: "저평가 구간, 매수 기회로 간주",
+          max: 2800,
+        },
+        {
+          label: "2,800~3,200pt",
+          meaning: "상승 추세, 모멘텀 주의",
+          min: 2800,
+          max: 3200,
+        },
+        {
+          label: "3,200~3,500pt",
+          meaning: "고평가 구간 진입, 수익 실현 점검",
+          min: 3200,
+          max: 3500,
+        },
+        {
+          label: "3,500pt 이상",
+          meaning: "과열 구간, 변동성 확대 가능성",
+          min: 3500,
+        },
       ],
     },
   },
@@ -73,13 +107,29 @@ const STAT_METADATA = {
     description:
       "미국 기술주 중심의 주가지수로 글로벌 IT 기업들의 성과를 나타냅니다.",
     detailedInfo: {
-      currentMeaning:
-        "AI 반도체 수요 증가로 기술주 상승세 지속, 글로벌 IT 섹터 호조",
       ranges: [
-        { range: "15,000pt 이하", meaning: "기술주 조정, 매수 기회" },
-        { range: "15,000~16,000pt", meaning: "적정 수준, 안정적 성장" },
-        { range: "16,000~17,000pt", meaning: "강세 지속, AI 테마 주목" },
-        { range: "17,000pt 이상", meaning: "고평가 우려, 수익 실현 고려" },
+        {
+          label: "14,000pt 이하",
+          meaning: "조정 국면, 장기 투자 기회 탐색",
+          max: 14000,
+        },
+        {
+          label: "14,000~16,000pt",
+          meaning: "적정 수준, 안정적 성장 흐름",
+          min: 14000,
+          max: 16000,
+        },
+        {
+          label: "16,000~18,000pt",
+          meaning: "강세장 지속, AI·테크 섹터 모멘텀",
+          min: 16000,
+          max: 18000,
+        },
+        {
+          label: "18,000pt 이상",
+          meaning: "고평가 가능성, 변동성 확대 주의",
+          min: 18000,
+        },
       ],
     },
   },
@@ -90,12 +140,29 @@ const STAT_METADATA = {
     description:
       "원화 대비 달러화의 가치를 나타내며, 수출입과 자본이동에 영향을 줍니다.",
     detailedInfo: {
-      currentMeaning: "원화 강세로 수출 경쟁력 악화 우려, 수입 물가 하락 효과",
       ranges: [
-        { range: "1,200원 이하", meaning: "원화 과강세, 수출업계 부담" },
-        { range: "1,200~1,300원", meaning: "적정 수준, 수출입 균형" },
-        { range: "1,300~1,400원", meaning: "원화 약세, 수출 경쟁력 향상" },
-        { range: "1,400원 이상", meaning: "원화 과약세, 수입 물가 상승" },
+        {
+          label: "1,200원 이하",
+          meaning: "원화 강세, 수출업계 부담 확대",
+          max: 1200,
+        },
+        {
+          label: "1,200~1,350원",
+          meaning: "적정 범위, 수출입 균형 유지",
+          min: 1200,
+          max: 1350,
+        },
+        {
+          label: "1,350~1,450원",
+          meaning: "원화 약세, 수출 경쟁력 개선",
+          min: 1350,
+          max: 1450,
+        },
+        {
+          label: "1,450원 이상",
+          meaning: "급격한 원화 약세, 물가 상승 압력",
+          min: 1450,
+        },
       ],
     },
   },
@@ -106,15 +173,29 @@ const STAT_METADATA = {
     description:
       "서부텍사스산 원유 가격으로 글로벌 에너지 시장의 동향을 반영합니다.",
     detailedInfo: {
-      currentMeaning: "중동 정세 불안과 수요 증가로 원유 가격 상승세 지속",
       ranges: [
         {
-          range: "60달러 이하",
+          label: "60달러 이하",
           meaning: "저유가, 소비자 혜택, 산업 비용 절감",
+          max: 60,
         },
-        { range: "60~80달러", meaning: "적정 수준, 안정적 에너지 시장" },
-        { range: "80~100달러", meaning: "고유가, 인플레이션 압박" },
-        { range: "100달러 이상", meaning: "초고유가, 경제 성장 저해" },
+        {
+          label: "60~80달러",
+          meaning: "적정 수준, 안정적 에너지 시장",
+          min: 60,
+          max: 80,
+        },
+        {
+          label: "80~100달러",
+          meaning: "고유가, 인플레이션 압박",
+          min: 80,
+          max: 100,
+        },
+        {
+          label: "100달러 이상",
+          meaning: "초고유가, 경제 성장 저해",
+          min: 100,
+        },
       ],
     },
   },
@@ -124,16 +205,28 @@ const STAT_METADATA = {
     unit: "",
     description: "변동성 지수로 시장의 불확실성과 투자자 심리를 나타냅니다.",
     detailedInfo: {
-      currentMeaning:
-        "VIX 20 이하로 시장이 매우 안정적임을 의미, 투자자 심리 양호",
       ranges: [
-        { range: "20 이하", meaning: "시장이 매우 안정적임을 의미" },
-        { range: "20~30", meaning: "평균 수준의 변동성" },
-        { range: "30~40", meaning: "높은 변동성, 투자자 불안 심화" },
         {
-          range: "40 이상",
-          meaning:
-            "시장의 공포 심리가 극에 달해 주가가 바닥을 다질 가능성도 있음",
+          label: "20 이하",
+          meaning: "매우 안정적인 시장 심리",
+          max: 20,
+        },
+        {
+          label: "20~30",
+          meaning: "평균 수준 변동성, 주의 필요",
+          min: 20,
+          max: 30,
+        },
+        {
+          label: "30~40",
+          meaning: "높은 변동성, 투자자 불안 심화",
+          min: 30,
+          max: 40,
+        },
+        {
+          label: "40 이상",
+          meaning: "공포 구간, 급락 후 반등 가능성",
+          min: 40,
         },
       ],
     },
@@ -145,16 +238,33 @@ const STAT_METADATA = {
     description:
       "한국은행이 설정하는 기준금리로 통화정책의 방향성을 나타냅니다.",
     detailedInfo: {
-      currentMeaning: "금리 동결로 안정적 통화정책 유지, 인플레이션 관리 중점",
       ranges: [
-        { range: "3.0% 이하", meaning: "확장적 통화정책, 투자/소비 촉진" },
-        { range: "3.0~3.5%", meaning: "중립적 통화정책, 경제 안정" },
-        { range: "3.5~4.0%", meaning: "긴축적 통화정책, 인플레이션 억제" },
-        { range: "4.0% 이상", meaning: "강력한 긴축, 경제 침체 우려" },
+        {
+          label: "2.5% 이하",
+          meaning: "완화적 통화정책, 경기 부양 기조",
+          max: 2.5,
+        },
+        {
+          label: "2.5~3.5%",
+          meaning: "중립적 통화정책, 물가 안정 추구",
+          min: 2.5,
+          max: 3.5,
+        },
+        {
+          label: "3.5~4.0%",
+          meaning: "점진적 긴축, 인플레이션 관리",
+          min: 3.5,
+          max: 4.0,
+        },
+        {
+          label: "4.0% 이상",
+          meaning: "강한 긴축 기조, 경기 둔화 리스크",
+          min: 4.0,
+        },
       ],
     },
   },
-} as const;
+};
 
 interface MarketModalContentProps {
   data: MarketStat;
@@ -257,11 +367,26 @@ const MarketModalContent = ({ data }: MarketModalContentProps) => {
               </h4>
               <div className="space-y-2">
                 {data.detailedInfo.ranges.map((range, idx) => (
-                  <div key={idx} className="flex gap-2 text-sm">
-                    <span className="font-medium text-[#0A5C2B] min-w-[80px]">
-                      {range.range}:
+                  <div
+                    key={idx}
+                    className={`flex gap-2 text-sm ${
+                      range.isActive ? "text-[#0A5C2B] font-semibold" : ""
+                    }`}
+                  >
+                    <span
+                      className={`font-medium min-w-[90px] ${
+                        range.isActive ? "text-[#0A5C2B]" : "text-gray-500"
+                      }`}
+                    >
+                      {range.label}
                     </span>
-                    <span className="text-gray-600">{range.meaning}</span>
+                    <span
+                      className={
+                        range.isActive ? "text-[#0A5C2B]" : "text-gray-600"
+                      }
+                    >
+                      {range.meaning}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -318,6 +443,36 @@ export default function MarketOverview() {
     );
   };
 
+  const deriveDetailedInfo = (
+    meta: StatMeta,
+    numericValue: number,
+    formattedValue: string
+  ): MarketStat["detailedInfo"] | undefined => {
+    if (!meta.detailedInfo || meta.detailedInfo.ranges.length === 0) {
+      return undefined;
+    }
+
+    const activeRange =
+      meta.detailedInfo.ranges.find((range) => {
+        const min = range.min ?? -Infinity;
+        const max = range.max ?? Infinity;
+        return numericValue >= min && numericValue < max;
+      }) ?? meta.detailedInfo.ranges[meta.detailedInfo.ranges.length - 1];
+
+    const valueWithUnit = `${formattedValue}${
+      meta.unit ? ` ${meta.unit}` : ""
+    }`.trim();
+
+    return {
+      currentMeaning: `${valueWithUnit} → ${activeRange.meaning}`,
+      ranges: meta.detailedInfo.ranges.map((range) => ({
+        label: range.label,
+        meaning: range.meaning,
+        isActive: range === activeRange,
+      })),
+    };
+  };
+
   const mapResponseToStats = (resp: MarketAllResponse): MarketStat[] => {
     if (
       !resp ||
@@ -357,7 +512,15 @@ export default function MarketOverview() {
             },
             sparklineData: [],
             description: meta.description,
-            detailedInfo: meta.detailedInfo,
+            detailedInfo: meta.detailedInfo
+              ? {
+                  currentMeaning: "현재 수치를 확인할 수 없습니다.",
+                  ranges: meta.detailedInfo.ranges.map((range) => ({
+                    label: range.label,
+                    meaning: range.meaning,
+                  })),
+                }
+              : undefined,
           });
         }
         return;
@@ -383,12 +546,13 @@ export default function MarketOverview() {
       const sparkline = buildSparkline(
         Array.isArray(quote.historical_data) ? quote.historical_data : []
       );
+      const formattedValue = formatNumber(valueNumber, 2);
 
       result.push({
         id: meta.id,
         title: meta.title,
         unit: meta.unit,
-        value: formatNumber(valueNumber, key === "usd_krw" ? 2 : 2),
+        value: formattedValue,
         change: {
           value: formatSigned(changeNumber, 2),
           percentage: formatPercent(changePercentNumber),
@@ -396,7 +560,7 @@ export default function MarketOverview() {
         },
         sparklineData: sparkline,
         description: meta.description,
-        detailedInfo: meta.detailedInfo,
+        detailedInfo: deriveDetailedInfo(meta, valueNumber, formattedValue),
       });
     });
 
@@ -416,12 +580,13 @@ export default function MarketOverview() {
       const change = last - prev;
       const changePct = prev !== 0 ? (change / prev) * 100 : 0;
       const sparkline = buildSparkline(history);
+      const formattedValue = formatNumber(last, 2);
 
       result.push({
         id: meta.id,
         title: meta.title,
         unit: meta.unit,
-        value: formatNumber(last, 2),
+        value: formattedValue,
         change: {
           value: formatSigned(change, 2),
           percentage: formatPercent(changePct),
@@ -429,7 +594,7 @@ export default function MarketOverview() {
         },
         sparklineData: sparkline,
         description: meta.description,
-        detailedInfo: meta.detailedInfo,
+        detailedInfo: deriveDetailedInfo(meta, last, formattedValue),
       });
     }
 
