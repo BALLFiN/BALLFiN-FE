@@ -17,12 +17,12 @@ import Toast from "@/components/common/Toast";
 export default function MyPage() {
   const navigate = useNavigate();
   const [user] = useState({
-    name: "홍길동",
+    name: "김테스트",
     email: "hong@example.com",
     avatar:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     membership: "프리미엄",
-    joinDate: "2024년 1월",
+    joinDate: "2025년 11월",
   });
   const [toast, setToast] = useState<{
     message: string;

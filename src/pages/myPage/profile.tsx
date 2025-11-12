@@ -7,11 +7,11 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
-    name: "홍길동",
+    name: "김테스트",
     email: "hong@example.com",
     phone: "010-1234-5678",
     membership: "프리미엄",
-    joinDate: "2024년 1월",
+    joinDate: "2025년 11월",
   });
 
   const [formData, setFormData] = useState({

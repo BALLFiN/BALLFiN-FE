@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -271,52 +270,6 @@ interface MarketModalContentProps {
 }
 
 const MarketModalContent = ({ data }: MarketModalContentProps) => {
-  const chartData = {
-    labels: ["5일 전", "4일 전", "3일 전", "2일 전", "오늘"],
-    datasets: [
-      {
-        label: data.title,
-        data: data.sparklineData,
-        borderColor: data.change.isPositive ? "#10B981" : "#EF4444",
-        backgroundColor: data.change.isPositive
-          ? "rgba(16, 185, 129, 0.1)"
-          : "rgba(239, 68, 68, 0.1)",
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        mode: "index" as const,
-        intersect: false,
-      },
-    },
-    scales: {
-      x: {
-        display: true,
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        display: false,
-      },
-    },
-    elements: {
-      point: {
-        radius: 0,
-      },
-    },
-  };
-
   return (
     <>
       <div className="mb-4">
@@ -336,13 +289,6 @@ const MarketModalContent = ({ data }: MarketModalContentProps) => {
           <span className="text-sm font-medium">
             {data.change.percentage} ({data.change.value})
           </span>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">5일 추세</h3>
-        <div className="h-32">
-          <Line data={chartData} options={chartOptions} />
         </div>
       </div>
 

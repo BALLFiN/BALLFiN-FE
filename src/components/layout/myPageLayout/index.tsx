@@ -18,12 +18,12 @@ export default function MyPageLayout() {
   const isSubPage = location.pathname !== "/mypage";
 
   const [user] = useState({
-    name: "홍길동",
-    email: "hong@example.com",
+    name: "김테스트",
+    email: "test@example.com",
     avatar:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     membership: "프리미엄",
-    joinDate: "2024년 1월",
+    joinDate: "2025년 11월",
   });
   const [toast, setToast] = useState<{
     message: string;
