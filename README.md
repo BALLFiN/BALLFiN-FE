@@ -15,9 +15,10 @@
 
 ## 🎯 프로젝트 개요
 
-BALLFiN은 **최첨단 AI 기술과 실시간 데이터 처리**를 결합한 차세대 금융 투자 플랫폼입니다.  
-**React 18 + TypeScript** 기반의 고성능 프론트엔드와 **FastAPI + Python** 백엔드로 구축된  
-**풀스택 금융 애플리케이션**으로, 실제 투자자들이 사용할 수 있는 수준의 완성도를 추구합니다.
+BALLFiN은 **RAG 기술과 퀀트 트레이딩 전략**을 결합한 차세대 투자 지원 서비스입니다. 금융 정보의 **복잡성으로 인한 금융 격차** 문제를 해소하고, 누구나 쉽게 정보를 이해하고 합리적 결정을 내릴 수 있도록 돕는 것을 목표로 합니다.
+
+* **문제 인식:** 기존 서비스의 단순 정보 나열로 인해 금융 정보 격차가 심화되며, 일반인(OECD 조사 기준 63%가 금융 문해 최소 기준 미달)의 정보 해석 어려움이 큼.
+* **핵심 목표:** RAG 기술 기반의 LLM을 활용하여 복잡한 금융 뉴스와 데이터를 **정확하게 해석**하고, 사용자에게 **신뢰도 있는 판단 근거**를 제공합니다.
 
 ### 🏆 핵심 기술적 성과
 
@@ -27,102 +28,59 @@ BALLFiN은 **최첨단 AI 기술과 실시간 데이터 처리**를 결합한 �
 - **🔄 병렬 처리**: Promise.all + AbortController로 **API 응답 시간 50% 단축**
 - **📱 반응형 디자인**: TailwindCSS + Framer Motion으로 **모든 디바이스 최적화**
 
-## 🚀 핵심 기능 & 기술 구현
+---
 
-### 📊 **실시간 주가 차트 시스템**
+## 🔒 BALLFiN의 신뢰성 검증 및 구성 축
 
-```typescript
-// 고성능 차트 렌더링 최적화
-const PriceVolumeChart = memo(function PriceVolumeChart({
-  data,
-  timeRange,
-  showMA,
-}) {
-  // 이동평균 계산 최적화 - O(n) 복잡도로 모든 MA 한 번에 계산
-  const computedData = useMemo(() => {
-    const addAllSMA = (arr) => {
-      // MA5, MA20, MA60, MA120 동시 계산으로 성능 향상
-    };
-  }, [data]);
+BALLFiN의 프로젝트는 두 가지 핵심 축을 통해 신뢰성과 성능을 확보합니다.
 
-  // TradingView + Highcharts 폴백 시스템
-  const [tvReady, setTvReady] = useState(false);
-  const [tvFailed, setTvFailed] = useState(false);
-});
-```
+### 1. RAG System을 통한 정보 신뢰성 확보
 
-**기술적 특징:**
+가장 중요한 축으로, LLM이 복잡한 금융 뉴스를 정확하게 해석하여 사용자에게 제공할 수 있도록 **뉴스, 기업 리포트 등의 적절한 지식 베이스**를 함께 제공합니다.
 
-- **TradingView Lightweight Charts**: 업계 표준 차트 라이브러리로 60fps 렌더링
-- **Highcharts 폴백**: 로딩 실패 시 자동 전환으로 안정성 보장
-- **메모이제이션 최적화**: React.memo + useMemo로 불필요한 리렌더링 방지
-- **이동평균 계산**: O(n) 복잡도로 모든 MA를 한 번에 계산하여 성능 향상
+* **RAG 성능 최적화:** **Graph Indexing**, **Quantization**, **Ensemble**, **Rerank** 기술을 적용하여 **GPT-4o만으로 분석했을 때보다 향상된 성능**을 보입니다.
+* **도메인 특화 학습:** **Hard Negative 기반 Contrastive Learning**을 통해 금융 도메인 특화 파인튜닝을 진행했습니다.
+* **검증 체계:** 제공되는 정보는 LLM as a judge 방식을 활용한 **엄격한 평가 기준**을 거쳐 신뢰도를 확보합니다.
 
-### 🤖 **AI 기반 뉴스 감정 분석**
+### 2. Quant Trading System을 통한 실질적 성과 입증
 
-```python
-# FastAPI + Hugging Face Transformers
-@app.post("/api/news/sentiment")
-async def analyze_sentiment(news_data: List[NewsItem]):
-    # 실시간 뉴스 감정 분석
-    sentiment_model = pipeline("sentiment-analysis",
-                              model="nlptown/bert-base-multilingual-uncased-sentiment")
+사용자에게 **'제공된 정보로 돈을 벌 수 있다'**는 점을 실증적으로 보여주기 위해 퀀트 전략을 개발하고 서비스 분석 정보를 결합했습니다.
 
-    results = []
-    for news in news_data:
-        sentiment = sentiment_model(news.title + " " + news.content)
-        results.append({
-            "id": news.id,
-            "sentiment": sentiment[0]["label"],
-            "confidence": sentiment[0]["score"]
-        })
-    return results
-```
+* **전략 기본:** 사람들에게 잘 알려진 **이동평균선의 배열 전략**을 기본으로 합니다.
+* **단점 보완:** 후행성 지표의 단점을 보완하기 위해 **MACD 지표**를 활용하여 단기, 중기, 장기의 추세를 세밀하게 분석, **추세의 시작과 끝을 빠르게 포착**합니다.
+* **전략 활용 예시:** 기업 분석 정보를 활용하여 분기별 투자 종목을 선별, **투자 부적합 종목을 제거**함으로써 **동일 기간 대비 포트폴리오의 안정성이 대폭 개선**되었음(정성적 분석 정보가 리스크 관리에 실질적 기여)을 입증했습니다.
 
-**기술적 특징:**
+---
 
-- **실시간 처리**: WebSocket을 통한 실시간 뉴스 스트리밍
-- **다국어 지원**: BERT 기반 멀티링구얼 모델로 한국어 뉴스 정확 분석
-- **RAG 시스템**: Vector DB + 웹 서치로 최신 정보 기반 답변 생성
+## 📊 핵심 기능 & 기술 구현
 
-### ⚡ **고성능 API 최적화**
+BALLFiN 서비스는 크게 4가지 기능으로 구성되며, 생성된 정보는 React + FastAPI를 주축으로 웹 서비스 형태로 제공됩니다.
 
-```typescript
-// 병렬 처리 + 에러 핸들링 최적화
-useEffect(() => {
-  const loadData = async () => {
-    try {
-      // 1단계: 핵심 데이터 병렬 로딩 (Promise.all)
-      const [priceInfo, companyInfo, chartRes] = await Promise.all([
-        getStockInfoByCode(code),
-        getCompanyInfoByCode(code),
-        getStockChart(code, "D", 7),
-      ]);
+| 주요 기능 | 정보 생성 방식 | 설명 |
+| :--- | :--- | :--- |
+| **매수/매도 타이밍 알람** | Quant Trading 주가 예측 알고리즘 | 개발된 퀀트 전략에 의거하여 매수/매도 타이밍 신호를 생성. |
+| **뉴스 분석** | RAG System 기반 LLM | 복잡한 금융 뉴스를 심층 분석하여 투자 시사점 제공. |
+| **기업/차트 분석** | RAG System 기반 LLM | 재무 정보 및 기술적 지표를 해석하여 쉬운 통찰력 제공. |
+| **금융 전문 챗봇** | RAG System 기반 LLM | 사용자 질문에 신뢰도 높은 답변 제공 및 **뉴스 카드 드래그앤드랍** 기능 제공. |
 
-      // 즉시 UI 업데이트로 사용자 경험 향상
-      setStock(transformStockData(priceInfo, code));
-      setHistoricalData(transformChartData(chartRes));
+---
 
-      // 2단계: 백그라운드 작업 (Promise.allSettled)
-      const backgroundTasks = [
-        getNewsByCompany(code, 10),
-        getTotalAnalysis(code),
-      ];
+## 📈 Quant Trading 시스템 성과 지표 해석
 
-      Promise.allSettled(backgroundTasks); // 결과를 기다리지 않음
-    } catch (error) {
-      // AbortController로 메모리 누수 방지
-    }
-  };
-}, [code]);
-```
+개발된 퀀트 전략의 백테스팅 결과(동일 기간 내)는 **위험 대비 수익 효율**이 매우 높음을 입증합니다.
 
-**기술적 특징:**
+| 지표 | 결과 | 해석 |
+| :--- | :--- | :--- |
+| **CAGR (연복리)** | 19.34% | 연평균 수익률이 코스피 수익률(8.2%)을 크게 상회. |
+| **MDD (최대 낙폭)** | -19.21% | 투자 기간 중 자산 하락 최대 폭이 약 19.21%로, 위기 상황에서 하방 방어가 잘 이루어졌음. |
+| **Sharpe Ratio** | **1.599** | **'매우 우수'** 등급(1.5 이상)으로, 총 리스크 1단위 대비 얻은 초과 수익률이 매우 효율적임을 입증. |
+| **Calmar Ratio** | **1.007** | **최대 손실(MDD) 대비 수익 효율**이 높아, 하락장을 빠르게 만회할 수 있는 강력한 리스크 관리 능력을 보여줌. |
 
-- **병렬 처리**: Promise.all로 핵심 API 동시 호출하여 응답 시간 50% 단축
-- **백그라운드 로딩**: Promise.allSettled로 부가 기능을 백그라운드에서 처리
-- **메모리 관리**: AbortController로 컴포넌트 언마운트 시 요청 취소
-- **에러 바운더리**: 실패 시 폴백 데이터 제공으로 안정성 보장
+---
+
+## 🚀 향후 계획
+
+저희는 RAG 기술을 활용한 분석 정보의 성능을 지속적으로 높이고, 이를 활용한 투자 성과 창출을 위해 연구를 계속할 것입니다. 나아가 데이터 수집, 분석, 예측은 물론 **실제 매매 실행까지 자동화**하는 **완전 자동 매매 시스템**으로 고도화할 예정입니다.
 
 ---
 
